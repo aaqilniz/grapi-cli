@@ -1,0 +1,76 @@
+{
+  "name": "grapi-cli",
+  "version": "0.0.1",
+  "description": "oclif example Hello World CLI (ESM)",
+  "keywords": [
+    "oclif"
+  ],
+  "homepage": "https://github.com/patrick/grapi-cli",
+  "bugs": "https://github.com/patrick/grapi-cli/issues",
+  "repository": "patrick/grapi-cli",
+  "license": "MIT",
+  "author": "Muhammad Aaqil",
+  "type": "module",
+  "exports": "./lib/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "grapi-cli": "./bin/run.js"
+  },
+  "files": [
+    "/bin",
+    "/dist",
+    "/oclif.manifest.json"
+  ],
+  "scripts": {
+    "build": "shx rm -rf dist && tsc -b",
+    "lint": "eslint . --ext .ts",
+    "prepack": "oclif manifest && oclif readme",
+    "postpack": "shx rm -f oclif.manifest.json",
+    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "posttest": "npm run lint",
+    "version": "oclif readme && git add README.md",
+    "postinstall": "node ./dist/patches/index.js"
+  },
+  "oclif": {
+    "bin": "grapi-cli",
+    "commands": "./dist/commands",
+    "dirname": "grapi-cli",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-plugins"
+    ],
+    "topicSeparator": ":",
+    "topics": {
+      "update": {
+        "description": "enable updating loopback 4 based models"
+      }
+    }
+  },
+  "dependencies": {
+    "@oclif/core": "^3",
+    "@oclif/plugin-help": "^6",
+    "@oclif/plugin-plugins": "^5",
+    "@types/glob": "^8.1.0",
+    "chalk": "^5.3.0"
+  },
+  "devDependencies": {
+    "@oclif/prettier-config": "^0.2.1",
+    "@oclif/test": "^3",
+    "@types/chai": "^4",
+    "@types/mocha": "^10",
+    "@types/node": "^18",
+    "chai": "^4",
+    "eslint": "^8",
+    "eslint-config-oclif": "^5",
+    "eslint-config-oclif-typescript": "^3",
+    "eslint-config-prettier": "^9.1.0",
+    "mocha": "^10",
+    "oclif": "^4.9.0",
+    "shx": "^0.3.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
