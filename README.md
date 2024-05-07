@@ -14,7 +14,7 @@ $ npm install -g grapi-cli
 $ grapi-cli COMMAND
 running command...
 $ grapi-cli (--version)
-grapi-cli/0.0.1 linux-x64 node-v18.17.1
+grapi-cli/0.0.2 linux-x64 node-v18.17.1
 $ grapi-cli --help [COMMAND]
 USAGE
   $ grapi-cli COMMAND
@@ -23,7 +23,7 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`grapi-cli app NAME`](#grapi-cli-app-name)
+* [`grapi-cli app [NAME]`](#grapi-cli-app-name)
 * [`grapi-cli cache`](#grapi-cli-cache)
 * [`grapi-cli controller [NAME]`](#grapi-cli-controller-name)
 * [`grapi-cli copyright`](#grapi-cli-copyright)
@@ -56,13 +56,13 @@ USAGE
 * [`grapi-cli update`](#grapi-cli-update)
 * [`grapi-cli update:model`](#grapi-cli-updatemodel)
 
-## `grapi-cli app NAME`
+## `grapi-cli app [NAME]`
 
 generate application.
 
 ```
 USAGE
-  $ grapi-cli app NAME [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--licationName <value>]
+  $ grapi-cli app [NAME] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--name <value>]
     [--description <value>] [--outdir <value>] [--eslint] [--prettier] [--mocha] [--loopbackBuild] [--vscode] [--docker]
     [--repositories] [--services] [--apiconnect]
 
@@ -70,29 +70,29 @@ ARGUMENTS
   NAME  name of the application.
 
 FLAGS
-  -c, --config=<value>           Config JSON object
-  -h, --help                     Print the generator’s options and usage.
-  -y, --yes                      Skip all confirmation prompts with default or provided value.
-      --apiconnect               Include ApiConnectComponent.
-      --applicationName=<value>  Application class name.
-      --description=<value>      Description of the application.
-      --docker                   Generate Dockerfile and add npm scripts to build/run the project in a docker container.
-      --eslint                   Add ESLint to LoopBack4 application project.
-      --loopbackBuild            Add @loopback/build module’s script set to LoopBack4 application project.
-      --mocha                    Add Mocha to LoopBack4 application project.
-      --outdir=<value>           Project root directory for the application.
-      --prettier                 Add Prettier to LoopBack4 application project.
-      --repositories             include repository imports and RepositoryMixin.
-      --services                 include service-proxy imports and ServiceMixin.
-      --skip-cache               Do not remember prompt answers. Default is false.
-      --skip-install             Do not automatically install dependencies. Default is false.
-      --vscode                   Add VSCode config files to LoopBack4 application project
+  -c, --config=<value>       Config JSON object
+  -h, --help                 Print the generator’s options and usage.
+  -y, --yes                  Skip all confirmation prompts with default or provided value.
+      --apiconnect           Include ApiConnectComponent.
+      --description=<value>  Description of the application.
+      --docker               Generate Dockerfile and add npm scripts to build/run the project in a docker container.
+      --eslint               Add ESLint to LoopBack4 application project.
+      --loopbackBuild        Add @loopback/build module’s script set to LoopBack4 application project.
+      --mocha                Add Mocha to LoopBack4 application project.
+      --name=<value>         Application class name.
+      --outdir=<value>       Project root directory for the application.
+      --prettier             Add Prettier to LoopBack4 application project.
+      --repositories         include repository imports and RepositoryMixin.
+      --services             include service-proxy imports and ServiceMixin.
+      --skip-cache           Do not remember prompt answers. Default is false.
+      --skip-install         Do not automatically install dependencies. Default is false.
+      --vscode               Add VSCode config files to LoopBack4 application project
 
 DESCRIPTION
   generate application.
 ```
 
-_See code: [src/commands/app.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/app.ts)_
+_See code: [src/commands/app.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/app.ts)_
 
 ## `grapi-cli cache`
 
@@ -118,7 +118,7 @@ DESCRIPTION
   creating cache for endpoints
 ```
 
-_See code: [src/commands/cache.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/cache.ts)_
+_See code: [src/commands/cache.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/cache.ts)_
 
 ## `grapi-cli controller [NAME]`
 
@@ -145,7 +145,7 @@ DESCRIPTION
   generate controllers
 ```
 
-_See code: [src/commands/controller.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/controller.ts)_
+_See code: [src/commands/controller.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/controller.ts)_
 
 ## `grapi-cli copyright`
 
@@ -174,7 +174,7 @@ DESCRIPTION
   add/update copyright
 ```
 
-_See code: [src/commands/copyright.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/copyright.ts)_
+_See code: [src/commands/copyright.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/copyright.ts)_
 
 ## `grapi-cli datasource [NAME]`
 
@@ -199,7 +199,7 @@ DESCRIPTION
   generate datasource.
 ```
 
-_See code: [src/commands/datasource.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/datasource.ts)_
+_See code: [src/commands/datasource.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/datasource.ts)_
 
 ## `grapi-cli discover [URL]`
 
@@ -236,7 +236,7 @@ DESCRIPTION
   discover models.
 ```
 
-_See code: [src/commands/discover.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/discover.ts)_
+_See code: [src/commands/discover.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/discover.ts)_
 
 ## `grapi-cli example [EXAMPLE-NAME]`
 
@@ -261,7 +261,7 @@ DESCRIPTION
   download examples.
 ```
 
-_See code: [src/commands/example.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/example.ts)_
+_See code: [src/commands/example.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/example.ts)_
 
 ## `grapi-cli extension [NAME]`
 
@@ -294,7 +294,7 @@ DESCRIPTION
   generate extension.
 ```
 
-_See code: [src/commands/extension.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/extension.ts)_
+_See code: [src/commands/extension.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/extension.ts)_
 
 ## `grapi-cli fuzzy`
 
@@ -318,7 +318,7 @@ DESCRIPTION
   generate fuzzy endpoints for lb4 based controllers
 ```
 
-_See code: [src/commands/fuzzy.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/fuzzy.ts)_
+_See code: [src/commands/fuzzy.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/fuzzy.ts)_
 
 ## `grapi-cli help [COMMAND]`
 
@@ -363,7 +363,7 @@ DESCRIPTION
   import lb3 models.
 ```
 
-_See code: [src/commands/import-lb3-models.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/import-lb3-models.ts)_
+_See code: [src/commands/import-lb3-models.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/import-lb3-models.ts)_
 
 ## `grapi-cli interceptor NAME`
 
@@ -393,7 +393,7 @@ DESCRIPTION
   generate interceptor.
 ```
 
-_See code: [src/commands/interceptor.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/interceptor.ts)_
+_See code: [src/commands/interceptor.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/interceptor.ts)_
 
 ## `grapi-cli model NAME`
 
@@ -423,7 +423,7 @@ DESCRIPTION
   generate model.
 ```
 
-_See code: [src/commands/model.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/model.ts)_
+_See code: [src/commands/model.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/model.ts)_
 
 ## `grapi-cli observer NAME`
 
@@ -448,7 +448,7 @@ DESCRIPTION
   generate observer.
 ```
 
-_See code: [src/commands/observer.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/observer.ts)_
+_See code: [src/commands/observer.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/observer.ts)_
 
 ## `grapi-cli openapi [URL]`
 
@@ -481,7 +481,7 @@ DESCRIPTION
   generate openapi based apis.
 ```
 
-_See code: [src/commands/openapi.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/openapi.ts)_
+_See code: [src/commands/openapi.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/openapi.ts)_
 
 ## `grapi-cli plugins`
 
@@ -809,7 +809,7 @@ DESCRIPTION
   generate relations.
 ```
 
-_See code: [src/commands/relation.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/relation.ts)_
+_See code: [src/commands/relation.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/relation.ts)_
 
 ## `grapi-cli repository [NAME]`
 
@@ -840,7 +840,7 @@ DESCRIPTION
   generate repositories.
 ```
 
-_See code: [src/commands/repository.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/repository.ts)_
+_See code: [src/commands/repository.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/repository.ts)_
 
 ## `grapi-cli rest-crud`
 
@@ -866,7 +866,7 @@ DESCRIPTION
   generate rest crud apis.
 ```
 
-_See code: [src/commands/rest-crud.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/rest-crud.ts)_
+_See code: [src/commands/rest-crud.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/rest-crud.ts)_
 
 ## `grapi-cli service NAME`
 
@@ -893,7 +893,7 @@ DESCRIPTION
   generate a service.
 ```
 
-_See code: [src/commands/service.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/service.ts)_
+_See code: [src/commands/service.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/service.ts)_
 
 ## `grapi-cli sql-controller`
 
@@ -916,7 +916,7 @@ DESCRIPTION
   describe the command here
 ```
 
-_See code: [src/commands/sql-controller.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/sql-controller.ts)_
+_See code: [src/commands/sql-controller.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/sql-controller.ts)_
 
 ## `grapi-cli update`
 
@@ -939,7 +939,7 @@ DESCRIPTION
   update application dependencies.
 ```
 
-_See code: [src/commands/update.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/update.ts)_
 
 ## `grapi-cli update:model`
 
@@ -958,5 +958,5 @@ DESCRIPTION
   enable updating loopoback 4 models
 ```
 
-_See code: [src/commands/update/model.ts](https://github.com/patrick/grapi-cli/blob/v0.0.1/src/commands/update/model.ts)_
+_See code: [src/commands/update/model.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.2/src/commands/update/model.ts)_
 <!-- commandsstop -->
