@@ -1,6 +1,6 @@
 {
   "name": "grapi-cli",
-  "version": "0.0.3",
+  "version": "0.0.2",
   "description": "oclif example Hello World CLI (ESM)",
   "keywords": [
     "oclif"
