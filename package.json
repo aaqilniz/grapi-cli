@@ -1,9 +1,12 @@
 {
   "name": "grapi-cli",
-  "version": "0.0.2",
-  "description": "oclif example Hello World CLI (ESM)",
+  "version": "0.0.3",
+  "description": "a cli tool to generate loopback 4 applications with extra features like caching & fuzzy search",
   "keywords": [
-    "oclif"
+    "lb4",
+    "cli",
+    "cache",
+    "fuzzy"
   ],
   "homepage": "https://github.com/aaqilniz/grapi-cli",
   "bugs": "https://github.com/aaqilniz/grapi-cli/issues",
