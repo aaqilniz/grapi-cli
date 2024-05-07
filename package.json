@@ -5,9 +5,9 @@
   "keywords": [
     "oclif"
   ],
-  "homepage": "https://github.com/patrick/grapi-cli",
-  "bugs": "https://github.com/patrick/grapi-cli/issues",
-  "repository": "patrick/grapi-cli",
+  "homepage": "https://github.com/aaqilniz/grapi-cli",
+  "bugs": "https://github.com/aaqilniz/grapi-cli/issues",
+  "repository": "aaqilniz/grapi-cli",
   "license": "MIT",
   "author": "Muhammad Aaqil",
   "type": "module",
