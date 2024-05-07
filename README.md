@@ -1,10 +1,7 @@
-oclif-hello-world
+grapi-cli
 =================
 
-oclif example Hello World CLI
-
-[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![GitHub license](https://img.shields.io/github/license/oclif/hello-world)](https://github.com/oclif/hello-world/blob/main/LICENSE)
+a cli tool to generate loopback 4 applications with extra features like caching & fuzzy search
 
 <!-- toc -->
 * [Usage](#usage)
