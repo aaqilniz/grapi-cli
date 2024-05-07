@@ -7,12 +7,12 @@ import { processOptions, execute, standardFlags } from '../utils/index.js';
 export default class App extends Command {
   static override description = 'generate application.'
   static override args = {
-    name: Args.string({ description: 'name of the application.', required: true }),
+    name: Args.string({ description: 'name of the application.' }), //the argument shouldn't be required here!!!!
   };
 
   static override flags = {
     ...standardFlags,
-    applicationName: Flags.string({ description: 'Application class name.' }),
+    name: Flags.string({ description: 'Application class name.' }),
     description: Flags.string({ description: 'Description of the application.' }),
     outdir: Flags.string({ description: 'Project root directory for the application.' }),
     eslint: Flags.boolean({ description: 'Add ESLint to LoopBack4 application project.' }),
@@ -29,14 +29,17 @@ export default class App extends Command {
   public async run(): Promise<void> {
     const parsed = await this.parse(App);
     let options: AppGeneratorFlags = processOptions(parsed.flags);
-    if (!options.applicationName) {
-      options.applicationName = parsed.args.name;
+    if (!options.name && parsed.args.name) {
+      options.name = parsed.args.name;
     }
     let configs = '';
     if (Object.keys(options).length) {
-      configs = `--config='${JSON.stringify(options)}' `;
+      configs = ` --config='${JSON.stringify(options)}' `;
     }
-    const command = `lb4 ${parsed.args.name} ${configs}--yes`;
+    let argument = '';
+    if (parsed.args.name) { argument = ` ${parsed.args.name}`; }
+    const command = `lb4${argument}${configs}--yes`;
+
     const executed: any = await execute(command, 'generating application.');
     if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
     if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));

@@ -1,6 +1,6 @@
 export type AppGeneratorFlags = {
     config: string,
-    applicationName: string,
+    name: string,
     description: string,
     outdir: string,
     eslint: string,
