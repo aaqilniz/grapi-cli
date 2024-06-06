@@ -16,7 +16,6 @@ export default class Auth extends Command {
 
   static override flags = {
     config: Flags.string({ char: 'c', description: 'Config JSON object' }),
-    authAll: Flags.boolean({ description: 'auth for all.' }),
     include: Flags.string({ char: 'i', description: 'include auth to the apis.' }),
     exclude: Flags.string({ char: 'e', description: 'exclude auth to the apis.' }),
     readonly: Flags.string({ char: 'r', description: 'auth to readonly apis.' }),
