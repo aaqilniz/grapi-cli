@@ -28,7 +28,7 @@ export default class Auth extends Command {
       users,
       include,
       exclude,
-      readonly    } = options;
+      readonly } = options;
     const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
     if (include && exclude) {
       throw new Error('Cannot have include and exclude at the same time.');
@@ -100,7 +100,10 @@ export default class Auth extends Command {
 
     project.addSourceFilesAtPaths(`${invokedFrom}/node_modules/**/*.ts`);
 
-    const installRestCrudDep: any = await execute(`cd ./node_modules/@loopback/rest-crud && npm install`, 'installing dep.');
+    const installRestCrudDep: any = await execute(
+      `cd ./node_modules/@loopback/rest-crud && npm install && npm install @loopback/authentication @loopback/authentication-jwt`,
+      'installing dep.'
+    );
     if (installRestCrudDep.stderr) console.log(chalk.bold(chalk.green(installRestCrudDep.stderr)));
     if (installRestCrudDep.stdout) console.log(chalk.bold(chalk.green(installRestCrudDep.stdout)));
 
