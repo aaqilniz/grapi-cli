@@ -31,11 +31,15 @@ export class NewUserRequest extends User {
 
 const CredentialsSchema: SchemaObject = {
   type: 'object',
-  required: ['email', 'password'],
+  required: ['password'],
   properties: {
     email: {
       type: 'string',
       format: 'email',
+    },
+    username: {
+      type: 'string',
+      minLength: 4,
     },
     password: {
       type: 'string',
