@@ -353,6 +353,10 @@ export default class Auth extends Command {
         file?.formatText();
       }
     }
+
+    const tempFile = project.getSourceFile('temp.ts');
+    if (tempFile) project.removeSourceFile(tempFile);
+
     await project.save();
 
     const buildRestCrud: any = await execute(`cd ./node_modules/@loopback/rest-crud && npm run build`, 'building rest-crud.');
