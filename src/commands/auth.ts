@@ -194,9 +194,9 @@ export default class Auth extends Command {
 
     // fetch and iterate through all model-endpoints files to add auth options
     const modelEndpointFiles = getFiles(`./src/model-endpoints`);
-    const all = ['post', 'patch', 'patchById', 'putById', 'deleteById', 'get', 'count'];
+    const all = ['post', 'patch', 'patchById', 'putById', 'deleteById', 'get', 'getById', 'count'];
     const allButReadOnly = ['post', 'patch', 'patchById', 'putById', 'deleteById'];
-    const readOnly = ['get', 'count'];
+    const readOnly = ['get', 'getById', 'count'];
 
     for (let i = 0; i < modelEndpointFiles.length; i++) {
       const filePath = modelEndpointFiles[i];
