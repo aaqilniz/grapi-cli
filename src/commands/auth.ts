@@ -86,34 +86,43 @@ export default class Auth extends Command {
     }
 
     // install deps if not already installed
-    let pkgToInstall = '@loopback/rest-crud ';
+    let pkgToInstall = '';
+    if (!pkg.dependencies['@loopback/rest-crud']) pkgToInstall += '@loopback/rest-crud ';
     if (!pkg.dependencies['@loopback/metrics']) pkgToInstall += '@loopback/metrics ';
     if (!pkg.dependencies['@loopback/authentication']) pkgToInstall += '@loopback/authentication ';
     if (!pkg.dependencies['@loopback/authentication-jwt']) pkgToInstall += '@loopback/authentication-jwt ';
 
-    const installDep: any = await execute(`npm i ${pkgToInstall}`, 'installing dep.');
-    if (installDep.stderr) console.log(chalk.bold(chalk.green(installDep.stderr)));
-    if (installDep.stdout) console.log(chalk.bold(chalk.green(installDep.stdout)));
+    let promises = [];
+    if (pkgToInstall) {
+      promises.push(execute(`npm i ${pkgToInstall}`, 'installing dep.'));
+    }
 
     const project = new Project({});
     const invokedFrom = process.cwd();
 
     project.addSourceFilesAtPaths(`${invokedFrom}/node_modules/**/*.ts`);
 
-    const installRestCrudDep: any = await execute(
-      `cd ./node_modules/@loopback/rest-crud && npm install && npm install @loopback/authentication @loopback/authentication-jwt`,
-      'installing dep.'
-    );
-    if (installRestCrudDep.stderr) console.log(chalk.bold(chalk.green(installRestCrudDep.stderr)));
-    if (installRestCrudDep.stdout) console.log(chalk.bold(chalk.green(installRestCrudDep.stdout)));
+    const authDS = fs.existsSync('./src/datasources/auth.datasource.ts');
+    if (!authDS) {
+      promises.push(execute(`lb4 datasource auth -c '{ "name": "auth", "connector": "memory", "file": "./auth.json", "localStorage": "auth" }' --yes`, 'generating datasource for auth.'));
+    }
 
-    const generateDatasource: any = await execute(`lb4 datasource auth -c '{ "name": "auth", "connector": "memory", "file": "./auth.json", "localStorage": "auth" }' --yes`, 'generating datasource for auth.');
-    if (generateDatasource.stderr) console.log(chalk.bold(chalk.green(generateDatasource.stderr)));
-    if (generateDatasource.stdout) console.log(chalk.bold(chalk.green(generateDatasource.stdout)));
+    //executing all the promises    
+    (await Promise.all(promises)).forEach(({ stderr, stdout }: any) => {
+      if (stderr) console.log(chalk.bold(chalk.green(stderr)));
+      if (stdout) console.log(chalk.bold(chalk.green(stdout)));
+    });
+    promises = [];
 
-    const migrate: any = await execute(`yarn build && npm run migrate`, 'running migration.');
-    if (migrate.stderr) console.log(chalk.bold(chalk.green(migrate.stderr)));
-    if (migrate.stdout) console.log(chalk.bold(chalk.green(migrate.stdout)));
+    const runBuild: any = await execute('yarn build', 'building the files.')
+    if (runBuild.stderr) console.log(chalk.bold(chalk.green(runBuild.stderr)));
+    if (runBuild.stdout) console.log(chalk.bold(chalk.green(runBuild.stdout)));
+
+
+    //migration
+    // const runMigration: any = await execute(`npm run migrate`, 'running migration.')
+    // if (runMigration.stderr) console.log(chalk.bold(chalk.green(runMigration.stderr)));
+    // if (runMigration.stdout) console.log(chalk.bold(chalk.green(runMigration.stdout)));
 
     // manipulate application file to include auth
     project.addSourceFilesAtPaths(`${invokedFrom}/src/**/*.ts`);
@@ -186,9 +195,7 @@ export default class Auth extends Command {
 
     // generate auth controller if not present
     if (!fs.existsSync(`./src/controllers/auth.controller.ts`)) {
-      const generateEmptyController: any = await execute(`lb4 controller --config '{ "name": "auth", "controllerType": "Empty Controller" }' --yes`, 'generating empty controller.');
-      if (generateEmptyController.stderr) console.log(chalk.bold(chalk.green(generateEmptyController.stderr)));
-      if (generateEmptyController.stdout) console.log(chalk.bold(chalk.green(generateEmptyController.stdout)));
+      promises.push(execute(`lb4 controller --config '{ "name": "auth", "controllerType": "Empty Controller" }' --yes`, 'generating empty controller.'))
       fs.copyFileSync(path.join(__dirname, `../files/auth.controller.txt`), `./src/controllers/auth.controller.ts`);
     }
 
@@ -202,37 +209,42 @@ export default class Auth extends Command {
       const filePath = modelEndpointFiles[i];
       const file = project.getSourceFile(filePath);
       const variables = file?.getVariableDeclarations() || [];
-      for (let i = 0; i < variables.length; i++) {
-        const variable = variables[i];
+
+      for (let j = 0; j < variables.length; j++) {
+        const variable = variables[j];
         const initializer = variable.getInitializerIfKind(SyntaxKind.ObjectLiteralExpression);
         const authProperty = initializer?.getProperty('auth');
+
         if (!authProperty) {
           const properties = initializer?.getProperties() || [];
-          for (let i = 0; i < properties.length; i++) {
-            const prop = properties[i];
+
+          for (let k = 0; k < properties.length; k++) {
+            const prop = properties[k];
+
             if (prop.getKind() === SyntaxKind.PropertyAssignment) {
               const propertyAssignment = prop as PropertyAssignment;
               const name = propertyAssignment.getName();
               let value = propertyAssignment.getInitializer()!.getText();
-              value = value.replace(/^'|'$/g, '');
+              value = value.replace(/^'|'$/g, ''); // Remove single quotes
               value = pluralize.singular(value);
 
               if (name === 'basePath') {
-                let items = allButReadOnly;
-                if (readonly) { items = readOnly; }
+                let items = readonly ? readOnly : allButReadOnly;
                 let includingMatched = false;
-                for (let i = 0; i < includings.length; i++) {
-                  const inclding = includings[i];
-                  if (value.includes(inclding)) {
+
+                for (let l = 0; l < includings.length; l++) {
+                  const includingRegex = new RegExp(includings[l]);
+                  if (includingRegex.test(value)) {
                     includingMatched = true;
                     break;
                   }
                 }
 
                 let excludingMatched = false;
-                for (let i = 0; i < excludings.length; i++) {
-                  const excluding = excludings[i];
-                  if (value.includes(excluding)) {
+
+                for (let m = 0; m < excludings.length; m++) {
+                  const excludingRegex = new RegExp(excludings[m]);
+                  if (excludingRegex.test(value)) {
                     excludingMatched = true;
                     break;
                   }
@@ -240,10 +252,7 @@ export default class Auth extends Command {
 
                 if (includingMatched) {
                   this.addAuthProperty(project, initializer, items);
-                } else if (
-                  excludings.length &&
-                  !excludingMatched
-                ) {
+                } else if (excludings.length && !excludingMatched) {
                   this.addAuthProperty(project, initializer, items);
                 } else if (
                   readonly &&
@@ -263,8 +272,10 @@ export default class Auth extends Command {
           }
         }
       }
+
       file?.formatText();
     }
+
 
     // fetch and iterate through all controller files to add auth decorators
     const controllerFiles = getFiles(`./src/controllers`);
@@ -281,30 +292,28 @@ export default class Auth extends Command {
 
         let methods = file?.getClasses()[0]?.getMethods() || [];
 
-        for (let i = 0; i < methods.length; i++) {
-          const method = methods[i];
+        for (let j = 0; j < methods.length; j++) {
+          const method = methods[j];
           const text = method.getText();
           if (this.isValidMethod(text)) {
             const decorators = method?.getDecorators();
-            for (let i = 0; i < decorators.length; i++) {
-              const decorator = decorators[i];
+            for (let k = 0; k < decorators.length; k++) {
+              const decorator = decorators[k];
               const text = decorator.getText();
 
               let includingMatched = false;
-              for (let i = 0; i < includings.length; i++) {
-                if (text.includes(include)) {
-                  const include = includings[i];
-                  if (text.includes(include)) {
-                    includingMatched = true;
-                    break;
-                  }
+              for (let l = 0; l < includings.length; l++) {
+                const includingRegex = new RegExp(includings[l]);
+                if (includingRegex.test(text)) {
+                  includingMatched = true;
+                  break;
                 }
               }
 
               let excludingMatched = false;
-              for (let i = 0; i < excludings.length; i++) {
-                const exclude = excludings[i];
-                if (text.includes(exclude)) {
+              for (let m = 0; m < excludings.length; m++) {
+                const excludingRegex = new RegExp(excludings[m]);
+                if (excludingRegex.test(text)) {
                   excludingMatched = true;
                   break;
                 }
@@ -316,7 +325,9 @@ export default class Auth extends Command {
                     this.addAuthDecorator(method);
                   }
                 } else {
-                  this.addAuthDecorator(method);
+                  if (!text.includes('@get') && text.includes(`operation('get')`)) {
+                    this.addAuthDecorator(method);
+                  }
                 }
               }
 
@@ -326,7 +337,9 @@ export default class Auth extends Command {
                     this.addAuthDecorator(method);
                   }
                 } else {
-                  this.addAuthDecorator(method);
+                  if (!text.includes('@get') && !text.includes(`operation('get')`)) {
+                    this.addAuthDecorator(method);
+                  }
                 }
               }
 
@@ -359,13 +372,15 @@ export default class Auth extends Command {
 
     await project.save();
 
-    const buildRestCrud: any = await execute(`cd ./node_modules/@loopback/rest-crud && npm run build`, 'building rest-crud.');
-    if (buildRestCrud.stderr) console.log(chalk.bold(chalk.green(buildRestCrud.stderr)));
-    if (buildRestCrud.stdout) console.log(chalk.bold(chalk.green(buildRestCrud.stdout)));
+    let { stderr, stdout }: any = await execute(`cd ./node_modules/@loopback/rest-crud && npm run build`, 'building rest-crud.');
+    if (stderr) console.log(chalk.bold(chalk.green(stderr)));
+    if (stdout) console.log(chalk.bold(chalk.green(stdout)));
 
-    const build: any = await execute(`npm run build`, 'running build command.');
+    let build: any = await execute(`npm run build`, 'building the app.');
     if (build.stderr) console.log(chalk.bold(chalk.green(build.stderr)));
     if (build.stdout) console.log(chalk.bold(chalk.green(build.stdout)));
+
+    process.exit(0);
   }
 
   private addAuthProperty(

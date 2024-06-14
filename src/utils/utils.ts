@@ -12,7 +12,7 @@ const execPromise = (command: string) => {
 
 export async function execute(command: string, message?: string) {
   if (message) console.log(chalk.blue(message));
-  return await execPromise(command);
+  return execPromise(command);
 }
 
 // Recursive function to get files
