@@ -213,5 +213,47 @@ const patches: Patch = {
             path: '/generators/relation/index.js'
         }
     },
+    specificDSMigration: {
+        addImport: {
+            searchString: `import {<%= project.applicationName %>} from './application';`,
+            replacement: `import {<%= project.applicationName %>} from './application';\nimport { ApplicationConfig } from '@loopback/core';`,
+            path: '/generators/app/templates/src/migrate.template.ts.ejs'
+        },
+        removeLog: {
+            searchString: `console.log('Migrating schemas (%s existing schema)', existingSchema);`,
+            replacement: ``,
+            path: '/generators/app/templates/src/migrate.template.ts.ejs'
+        },
+        declareDS: {
+            searchString: `const existingSchema = args.includes('--rebuild') ? 'drop' : 'alter';`,
+            replacement: `const existingSchema = args.includes('--rebuild') ? 'drop' : 'alter';\nconst datasourceName = args.find(arg => arg.startsWith('datasource='))?.split('=')[1];`,
+            path: '/generators/app/templates/src/migrate.template.ts.ejs'
+        },
+        reAddLog: {
+            searchString: `args.find(arg => arg.startsWith('datasource='))?.split('=')[1];`,
+            replacement: `args.find(arg => arg.startsWith('datasource='))?.split('=')[1];\nconsole.log('Migrating schemas (%s existing schema)', existingSchema);`,
+            path: '/generators/app/templates/src/migrate.template.ts.ejs'
+        },
+        removeMigrationStatement: {
+            searchString: `await app.migrateSchema({existingSchema});`,
+            replacement: ``,
+            path: '/generators/app/templates/src/migrate.template.ts.ejs'
+        },
+        appCreation: {
+            searchString: `const app = new <%= project.applicationName %>();`,
+            replacement: `const config: ApplicationConfig = {};\nconst app = new <%= project.applicationName %>(config);`,
+            path: '/generators/app/templates/src/migrate.template.ts.ejs'
+        },
+        removeProcessExit: {
+            searchString: `process.exit(0);`,
+            replacement: ``,
+            path: '/generators/app/templates/src/migrate.template.ts.ejs'
+        },
+        declareOptionAndElse: {
+            searchString: `await app.boot();`,
+            replacement: `await app.boot();\nlet options = {}; if (datasourceName) {console.log('Migrating specific datasource: %s', datasourceName);try {const repositoryBindings = app.find('repositories.*');const models = [];for (const binding of repositoryBindings) {if (binding.key !== 'repositories.RefreshTokenRepository') {const repo: any = await app.get(binding.key);if (repo.dataSource && repo.dataSource.name === datasourceName) {models.push(repo.entityClass.modelName);}}}if (models.length === 0) {console.warn(\`No models found for datasource \${datasourceName}\`);}options = { existingSchema, models };console.log(\`Migration of datasource \${datasourceName} completed successfully.\`);} catch (err) {console.log(err);console.error(\`Error migrating datasource \${datasourceName}:\`, err);process.exit(1);}} else {console.log('Migrating all datasources');options = { existingSchema };}await app.migrateSchema(options);process.exit(0);`,
+            path: '/generators/app/templates/src/migrate.template.ts.ejs'
+        },
+    }
 }
 export default patches;

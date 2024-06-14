@@ -118,12 +118,6 @@ export default class Auth extends Command {
     if (runBuild.stderr) console.log(chalk.bold(chalk.green(runBuild.stderr)));
     if (runBuild.stdout) console.log(chalk.bold(chalk.green(runBuild.stdout)));
 
-
-    //migration
-    // const runMigration: any = await execute(`npm run migrate`, 'running migration.')
-    // if (runMigration.stderr) console.log(chalk.bold(chalk.green(runMigration.stderr)));
-    // if (runMigration.stdout) console.log(chalk.bold(chalk.green(runMigration.stdout)));
-
     // manipulate application file to include auth
     project.addSourceFilesAtPaths(`${invokedFrom}/src/**/*.ts`);
 
@@ -164,34 +158,6 @@ export default class Auth extends Command {
         `);
     }
     applicationFile?.formatText();
-
-    // update migrate file to enable auth
-    const migrateFilePath = `${invokedFrom}/src/migrate.ts`;
-    const migrateFile = project.getSourceFile(migrateFilePath);
-
-    this.addImport(migrateFile, '{UserServiceBindings}', '@loopback/authentication-jwt');
-
-    const migrateFunction = migrateFile?.getFunctions()[0];
-    let migrationStatementsExist = false;
-    let migrationStatIndex: number = 0;
-
-    migrateFunction?.getStatements()
-      .forEach((statement, index) => {
-        if (statement.getText().includes('USER_CREDENTIALS_REPOSITORY')) {
-          migrationStatementsExist = true;
-        }
-        if (statement.getText().includes('app.boot();')) {
-          migrationStatIndex = index + 1;
-        }
-      });
-
-    if (migrationStatIndex && !migrationStatementsExist) {
-      migrateFunction?.insertStatements(migrationStatIndex, `await Promise.all([
-          ...app.find(UserServiceBindings.USER_REPOSITORY),
-          ...app.find(UserServiceBindings.USER_CREDENTIALS_REPOSITORY),
-      ].map(b => app.get(b.key)));`);
-    }
-    migrateFile?.formatText();
 
     // generate auth controller if not present
     if (!fs.existsSync(`./src/controllers/auth.controller.ts`)) {
