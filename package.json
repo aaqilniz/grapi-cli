@@ -63,7 +63,7 @@
   },
   "devDependencies": {
     "@oclif/prettier-config": "^0.2.1",
-    "@oclif/test": "^3",
+    "@oclif/test": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/chai": "^4",
     "@types/mocha": "^10",
