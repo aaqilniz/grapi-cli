@@ -4,8 +4,6 @@ import fs from 'fs';
 import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk';
 import { Project, SyntaxKind, PropertyAssignment, ObjectLiteralExpression, MethodDeclaration, Decorator, SourceFile, ImportDeclaration } from "ts-morph";
-import { v4 as uuid } from 'uuid';
-import bcrypt from 'bcryptjs';
 import pluralize from 'pluralize';
 
 import { processOptions, execute, getFiles } from '../utils/index.js';
@@ -24,11 +22,7 @@ export default class Auth extends Command {
   public async run(): Promise<void> {
     const parsed = await this.parse(Auth);
     let options = processOptions(parsed.flags);
-    const {
-      users,
-      include,
-      exclude,
-      readonly } = options;
+    const { include, exclude, readonly } = options;
     const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
     if (include && exclude) {
       throw new Error('Cannot have include and exclude at the same time.');
@@ -49,41 +43,6 @@ export default class Auth extends Command {
     const __dirname = path.dirname(__filename); // manually get __dirname
 
     fs.copyFileSync(path.join(__dirname, `../files/auth.json`), `./auth.json`); // default users copied
-
-    // create new users if provided in configs.
-    if (users && users.length) {
-      console.log(chalk.bold(chalk.green('generating users.')));
-      const authUsers: any = {
-        ids: { User: 0, UserCredentials: 0 },
-        models: { User: {}, UserCredentials: {}, }
-      };
-
-      for (let i = 0; i < users.length; i++) {
-        const userId = uuid();
-        const userCredsId = uuid();
-        const userProfile = users[i];
-        const { username, email, password, realm } = userProfile;
-
-        ++authUsers.ids.User;
-        ++authUsers.ids.UserCredentials;
-
-        authUsers.models.User[userId] = {
-          id: userId,
-          username,
-          email,
-          realm,
-          emailVerified: true
-        };
-
-        const hashedPassword = await bcrypt.hash(password, await bcrypt.genSalt());
-        authUsers.models.UserCredentials[userCredsId] = {
-          id: userCredsId,
-          password: hashedPassword,
-          userId,
-        }
-        fs.writeFileSync(path.join('./auth.json'), JSON.stringify({ ...authUsers }), { encoding: 'utf8' })
-      }
-    }
 
     // install deps if not already installed
     let pkgToInstall = '';
