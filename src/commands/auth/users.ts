@@ -19,7 +19,7 @@ export default class Auth extends Command {
   public async run(): Promise<void> {
     const parsed = await this.parse(Auth);
     let options = processOptions(parsed.flags);
-    const { users } = options;
+    const users = options;
 
     // create new users if provided in configs.
     if (users && users.length) {

@@ -4,10 +4,15 @@ export function processOptions(flags: any) {
     const options: any = {};
     if (flags.config) {
         const config = JSON.parse(flags.config);
+        if(Array.isArray(config)) return config;
+        
         Object.keys(config).forEach(key => {
-            if (isJson(config[key])) {
+            if (
+                isJson(config[key]) &&
+                typeof config[key] === 'string'
+            ) {
                 config[key] = JSON.parse(config[key]);
-            }
+            };
             options[key] = config[key];
         });
     } else {

@@ -8,7 +8,7 @@ export default class Model extends Command {
 
   static override description = 'generate model.'
   static override args = {
-    name: Args.string({ description: 'name of the application.', required: true }),
+    name: Args.string({ description: 'name of the model.' }),
   };
 
   static override flags = {

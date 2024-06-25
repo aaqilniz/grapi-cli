@@ -158,7 +158,7 @@ export default class Auth extends Command {
                 let includingMatched = false;
 
                 for (let l = 0; l < includings.length; l++) {
-                  const includingRegex = new RegExp(includings[l]);
+                  const includingRegex = new RegExp(`^${includings[l]}(\/|$)`);
                   if (includingRegex.test(value)) {
                     includingMatched = true;
                     break;
@@ -168,7 +168,7 @@ export default class Auth extends Command {
                 let excludingMatched = false;
 
                 for (let m = 0; m < excludings.length; m++) {
-                  const excludingRegex = new RegExp(excludings[m]);
+                  const excludingRegex = new RegExp(`^${excludings[m]}(\/|$)`);
                   if (excludingRegex.test(value)) {
                     excludingMatched = true;
                     break;
@@ -228,7 +228,7 @@ export default class Auth extends Command {
 
               let includingMatched = false;
               for (let l = 0; l < includings.length; l++) {
-                const includingRegex = new RegExp(includings[l]);
+                const includingRegex = new RegExp(`^${includings[l]}(\/|$)`);
                 if (includingRegex.test(text)) {
                   includingMatched = true;
                   break;
@@ -237,7 +237,7 @@ export default class Auth extends Command {
 
               let excludingMatched = false;
               for (let m = 0; m < excludings.length; m++) {
-                const excludingRegex = new RegExp(excludings[m]);
+                const excludingRegex = new RegExp(`^${excludings[m]}(\/|$)`);
                 if (excludingRegex.test(text)) {
                   excludingMatched = true;
                   break;
@@ -296,10 +296,6 @@ export default class Auth extends Command {
     if (tempFile) project.removeSourceFile(tempFile);
 
     await project.save();
-
-    let { stderr, stdout }: any = await execute(`cd ./node_modules/@loopback/rest-crud && npm run build`, 'building rest-crud.');
-    if (stderr) console.log(chalk.bold(chalk.green(stderr)));
-    if (stdout) console.log(chalk.bold(chalk.green(stdout)));
 
     let build: any = await execute(`npm run build`, 'building the app.');
     if (build.stderr) console.log(chalk.bold(chalk.green(build.stderr)));
