@@ -268,6 +268,13 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             replacement: `if (val.defaultFn) { val.defaultFn = \`'\${val.defaultFn}'\`; }\nif (NON_TS_TYPES.includes(val.tsType)) {`,
             path: '/generators/model/property-definition.js'
         }
+    },
+    addTypeCheckBeforeJsonParsing: {
+        addTypeCheckBeforeJsonParsing: {
+            searchString: 'props[key] = JSON.parse(props[key]);',
+            replacement: `if (typeof props[key] === 'string') {props[key] = JSON.parse(props[key]);}`,
+            path: '/generators/datasource/index.js'
+        }
     }
 }
 export default patches;
