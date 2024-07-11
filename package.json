@@ -67,7 +67,7 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/chai": "^4",
     "@types/mocha": "^10",
-    "@types/node": "^18",
+    "@types/node": "^20",
     "@types/uuid": "^10.0.0",
     "chai": "^5",
     "eslint": "^9",
