@@ -26,17 +26,11 @@ export default class UpdateModel extends Command {
     if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
     if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));
 
-    command = 'npm run build && npm run migrate';
-    executed = await execute(command, 'building the project and migrating the newly created model.');
+    command = `lb4 repository --config '${JSON.stringify(repoConfigs)}' --yes && npm run migrate`;
+    executed = await execute(command, 'generating repo and migrating the newly created model.');
     if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
     if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));
-    console.log(chalk.bold(chalk.green('successfully migrated the newly created model.')))
-
-    command = `lb4 repository --config '${JSON.stringify(repoConfigs)}' --yes`;
-    executed = await execute(command, 'generating repository for newly created model.');
-    if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
-    if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));
-    console.log(chalk.bold(chalk.green('successfully generated repository for newly created model.')))
+    console.log(chalk.bold(chalk.green('successfully generated repo and migrated the newly created model.')))
 
     command = `lb4 rest-crud --config '${JSON.stringify(repoConfigs)}' --yes`;
     executed = await execute(command, 'generating crud apis for newly created model.');
