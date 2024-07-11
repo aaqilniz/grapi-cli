@@ -275,6 +275,18 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             replacement: `if (typeof props[key] === 'string') {props[key] = JSON.parse(props[key]);}`,
             path: '/generators/datasource/index.js'
         }
+    },
+    addEnumValuesToMySQL: {
+        declareEnumString: {
+            searchString: 'templateData.properties[key][\'type\'] = \'String\';',
+            replacement: `const enumItemString = enumItems.toString().replace(/,\s*$/, '');\ntemplateData.properties[key]['type'] = 'String';`,
+            path: '/generators/discover/index.js'
+        },
+        assignUpdatedMySQL: {
+            searchString: '`{enum: [${enumItems.toString()}]}`;',
+            replacement: ' `{enum: [${enumItemString}]}`;const mysqlString = templateData.properties[key][\'mysql\'];templateData.properties[key][\'mysql\'] = mysqlString.replace("\'enum\',",`\'enum\', value: "${enumItemString}",`,);',
+            path: '/generators/discover/index.js'
+        }
     }
 }
 export default patches;
