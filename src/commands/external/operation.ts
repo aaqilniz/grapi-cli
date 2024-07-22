@@ -2,7 +2,7 @@ import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk';
 import fs from 'fs';
 
-import { processOptions, toCamelCase, toPascalCase, toKebabCase, execute } from '../../utils/index.js';
+import { processOptions, toPascalCase, toKebabCase, execute } from '../../utils/index.js';
 import { Project, SyntaxKind, PropertyAssignment, ObjectLiteralExpression, ArrayLiteralExpression, SourceFile, ClassDeclaration, MethodDeclaration, ParameterDeclaration, OptionalKind, ParameterDeclarationStructure } from 'ts-morph';
 import pluralize from 'pluralize';
 
@@ -22,7 +22,7 @@ export default class ExternalOperation extends Command {
     apiFunction: Flags.string({ description: 'api function name.' }),
     name: Flags.string({ description: 'name of the artifacts.' }),
     type: Flags.string({ description: 'type of return data.' }),
-    apiUri: Flags.string({ description: 'uri of the specific api.' }),
+    controller: Flags.string({ description: 'controller under which the API should reside.' }),
   }
 
   public async run(): Promise<void> {
@@ -38,8 +38,8 @@ export default class ExternalOperation extends Command {
         url,
         headers,
         apiFunction,
-        apiUri,
-        type
+        type,
+        controller
       } = options;
       let {
         method,
@@ -48,6 +48,7 @@ export default class ExternalOperation extends Command {
         queryParams,
         name,
       } = options;
+      const apiUri = url.split('v1')[1];
 
       if (!pathParams) pathParams = {};
 
@@ -59,9 +60,9 @@ export default class ExternalOperation extends Command {
       let queryParamList: string[] = [];
       let bodyParamList: string[] = [];
       // let functionName = apiFunction.toLowerCase();
-      let serviceName = toPascalCase(artifactName);
+      let serviceName = toPascalCase(controller);
       let modelName = toPascalCase(artifactName);
-      let controllerName = toPascalCase(artifactName);
+      let controllerName = toPascalCase(controller);
       // let modelName = toPascalCase(apiFunction);
       let description = '';
 
@@ -83,7 +84,7 @@ export default class ExternalOperation extends Command {
           // functionName = `replace${toPascalCase(functionName)}`;
           description = `replace ${toPascalCase(functionName)}.`
           break;
-        case 'delete':
+        case 'del':
           // functionName = `delete${toPascalCase(functionName)}`;
           description = `delete ${toPascalCase(functionName)}`;
           break;
@@ -138,11 +139,11 @@ export default class ExternalOperation extends Command {
       let path = '';
       let functionParams = '';
 
-      queryParamList.forEach((key: string) => { query += `${key}: "{${key}}", `; });
-      if (bodyParamList.length) body = `body: "{body}", `;
-      // bodyParamList.forEach((key: string) => { body += `${key}: "{${key}}", `; });
+      queryParamList.forEach((key: string) => { query += `${key}: '{${key}}', `; });
+      if (bodyParamList.length) body = `body: '{body}', `;
+      // bodyParamList.forEach((key: string) => { body += `${key}: '{${key}}', `; });
 
-      if (pathKey) path = `${pathKey}: "{${pathKey}}"`;
+      if (pathKey) path = `${pathKey}: '{${pathKey}}'`;
 
       queryParamList.forEach((key: string) => { functionParams += `'${key}',`; });
 
@@ -201,6 +202,7 @@ export default class ExternalOperation extends Command {
         });
       });
 
+
       const controllerFilePath = `${invokedFrom}/src/controllers/${toKebabCase(controllerName)}.controller.ts`;
       let controllerFile = project.getSourceFile(controllerFilePath);
       const model = fs.existsSync(`./src/models/${toKebabCase(modelName)}.model.ts`);
@@ -218,9 +220,9 @@ export default class ExternalOperation extends Command {
 
         parameters.push(parameter);
 
-        this.addImport(controllerFile, modelName, '../models');
+        this.addImport(controllerFile, modelName, '../models', true);
         if (bodyParams) {
-          serviceParams = `body: any`;
+          serviceParams = `body: any,`;
         }
 
         bodyParams.forEach((param: any) => {
@@ -246,13 +248,12 @@ export default class ExternalOperation extends Command {
       }
 
       if (pathKey) {
-        if (serviceParams) serviceParams += ',';
         serviceParams += `${pathKey}: ${pathParams[pathKey]}`;
       }
 
-      const controller = fs.existsSync(`./src/controllers/${toKebabCase(controllerName)}.controller.ts`);
-      if (!controller) {
-        let command = `lb4 controller --config='{"controllerType":"BASIC", "name": "${controllerName}"}' --yes`;
+      const existingController = fs.existsSync(`./src/controllers/${toKebabCase(controllerName)}.controller.ts`);
+      if (!existingController) {
+        let command = `lb4 controller --config='{"name": "${controllerName}"}' --yes`;
         let executed: any = await execute(command, 'generating controller.');
         if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
         if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));
@@ -329,18 +330,17 @@ export default class ExternalOperation extends Command {
         if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
         if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));
       }
-
+      
       project.addSourceFilesAtPaths(`${invokedFrom}/src/**/*.ts`);
-
       const serviceFilePath = `${invokedFrom}/src/services/${pluralize(toKebabCase(serviceName))}.service.ts`;
       let serviceFile = project.getSourceFile(serviceFilePath);
       const serviceInterface = serviceFile?.getInterface(serviceName);
       serviceInterface?.addMember(`${apiFunction}(${serviceParams}): Promise<object>;`);
       serviceFile?.formatText();
       serviceFile?.saveSync();
-
       dsFile?.saveSync();
     }
+
   }
 
   private addDecoratorToMethod(
@@ -379,12 +379,14 @@ export default class ExternalOperation extends Command {
       if (replace) {
         existingImport.getNamedImports().forEach((eachImport) => {
           let importText = eachImport.getText();
-          if (!defaultImport.includes(`${importText},`)) defaultImport += `,${importText}`;
+          const pattern = new RegExp(`\\b${importText}\\b`);
+          if (!pattern.test(defaultImport)) {
+            defaultImport += `,${importText}`;
+          }
         });
         existingImport.remove();
         addImportTo?.addImportDeclaration({ defaultImport: `{${defaultImport}}`, moduleSpecifier });
       }
     }
-
   }
 }
