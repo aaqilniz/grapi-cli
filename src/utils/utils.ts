@@ -5,7 +5,6 @@ import { exec } from 'child_process';
 const execPromise = (command: string) => {
   return new Promise((resolve, reject) => {
     exec(command, (error, stdout, stderr) => {
-      console.log(error, stdout, stderr);
       resolve({ error, stdout, stderr });
     });
   });
