@@ -287,6 +287,18 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             replacement: ' `{enum: [${enumItemString}]}`;const mysqlString = templateData.properties[key][\'mysql\'];templateData.properties[key][\'mysql\'] = mysqlString.replace("\'enum\',",`\'enum\', value: "${enumItemString}",`,);',
             path: '/generators/discover/index.js'
         }
+    },
+    iterateContentProperties: {
+        replaceLoop: {
+            searchString: 'for (const m of content) {',
+            replacement: 'for (const eachContent in content) {',
+            path: '/generators/openapi/spec-helper.js'
+        },
+        replaceAssignment: {
+            searchString: 'propSchema = content[m].schema;',
+            replacement: 'propSchema = eachContent.schema;',
+            path: '/generators/openapi/spec-helper.js'
+        }
     }
 }
 export default patches;
