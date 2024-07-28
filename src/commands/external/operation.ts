@@ -2,7 +2,7 @@ import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk';
 import fs from 'fs';
 
-import { processOptions, toPascalCase, toKebabCase, execute } from '../../utils/index.js';
+import { processOptions, toPascalCase, toKebabCase, execute, addImport } from '../../utils/index.js';
 import { Project, SyntaxKind, PropertyAssignment, ObjectLiteralExpression, ArrayLiteralExpression, SourceFile, ClassDeclaration, MethodDeclaration, ParameterDeclaration, OptionalKind, ParameterDeclarationStructure } from 'ts-morph';
 import pluralize from 'pluralize';
 
@@ -220,7 +220,7 @@ export default class ExternalOperation extends Command {
 
         parameters.push(parameter);
 
-        this.addImport(controllerFile, modelName, '../models', true);
+        addImport(controllerFile, modelName, '../models', true);
         if (bodyParams) {
           serviceParams = `body: any,`;
         }
@@ -263,10 +263,10 @@ export default class ExternalOperation extends Command {
 
       controllerFile = project.getSourceFile(controllerFilePath);
       if (controllerFile) {
-        this.addImport(controllerFile, `${(method).toLowerCase()}`, '@loopback/rest', true);
-        this.addImport(controllerFile, `requestBody, getModelSchemaRef, param`, '@loopback/rest', true);
-        this.addImport(controllerFile, 'inject', '@loopback/core');
-        this.addImport(controllerFile, `${serviceName} as ${serviceName}Service`, '../services');
+        addImport(controllerFile, `${(method).toLowerCase()}`, '@loopback/rest', true);
+        addImport(controllerFile, `requestBody, getModelSchemaRef, param`, '@loopback/rest', true);
+        addImport(controllerFile, 'inject', '@loopback/core');
+        addImport(controllerFile, `${serviceName} as ${serviceName}Service`, '../services');
 
         // Find all class declarations within the source file
         const classDeclaration = controllerFile.getClass(`${toPascalCase(controllerName)}Controller`);
@@ -341,52 +341,5 @@ export default class ExternalOperation extends Command {
       dsFile?.saveSync();
     }
 
-  }
-
-  private addDecoratorToMethod(
-    addDecoratorTo: MethodDeclaration,
-    name: string,
-    decoratorArguments: string[],
-  ): void {
-    const authDecorator = addDecoratorTo?.getDecorator(name);
-    if (!authDecorator) {
-      addDecoratorTo?.addDecorator({ name, arguments: decoratorArguments });
-    }
-  }
-
-  private addDecoratorToParameter(
-    addDecoratorTo: ParameterDeclaration,
-    name: string,
-    decoratorArguments: string[],
-  ): void {
-    const authDecorator = addDecoratorTo?.getDecorator(name);
-    if (!authDecorator) {
-      addDecoratorTo?.addDecorator({ name, arguments: decoratorArguments });
-    }
-  }
-
-  private addImport(
-    addImportTo: SourceFile | undefined,
-    defaultImport: string,
-    moduleSpecifier: string,
-    replace: boolean = false
-  ): void {
-    let existingImport = addImportTo?.getImportDeclaration(moduleSpecifier);
-    if (!existingImport) {
-      addImportTo?.addImportDeclaration({ defaultImport: `{${defaultImport}}`, moduleSpecifier });
-    } else {
-      existingImport = addImportTo?.getImportDeclaration(moduleSpecifier)!;
-      if (replace) {
-        existingImport.getNamedImports().forEach((eachImport) => {
-          let importText = eachImport.getText();
-          const pattern = new RegExp(`\\b${importText}\\b`);
-          if (!pattern.test(defaultImport)) {
-            defaultImport += `,${importText}`;
-          }
-        });
-        existingImport.remove();
-        addImportTo?.addImportDeclaration({ defaultImport: `{${defaultImport}}`, moduleSpecifier });
-      }
-    }
   }
 }

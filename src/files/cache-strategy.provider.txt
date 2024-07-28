@@ -1,0 +1,42 @@
+import { inject, Provider, ValueOrPromise } from '@loopback/core';
+import { defineRepositoryClass, Entity, DefaultKeyValueRepository } from '@loopback/repository';
+import { CacheBindings, CacheMetadata, CacheStrategy } from '@aaqilniz/rest-cache';
+import {Cache} from '../models';
+
+export class CacheStrategyProvider implements Provider<CacheStrategy | undefined> {
+  constructor(
+    @inject(CacheBindings.METADATA)
+    private metadata: CacheMetadata,
+    /* datasource-injection */
+  ) { }
+
+  value(): ValueOrPromise<CacheStrategy | undefined> {
+    if (!this.metadata) {
+      return undefined;
+    }
+    
+    class BaseRepo<
+      E extends Entity,
+      IdType,
+      Relations extends object,
+    > extends DefaultKeyValueRepository<Cache> {}
+    const CustomRepo = defineRepositoryClass(Cache, BaseRepo);
+    let customRepo: any;
+
+    /* datasource-check-and-assignment */
+
+    return {
+      check: (path: string) =>
+        customRepo.get(path).catch((err: any) => {
+          console.error(err);
+          return undefined;
+        }),
+      set: async (path: string, result: any) => {
+        const cache = new Cache({ id: result.id, data: result, ttl: this.metadata.ttl });
+        customRepo.set(path, cache, { ttl: this.metadata.ttl }).catch((err: any) => {
+          console.error(err);
+        });
+      },
+    };
+  }
+}

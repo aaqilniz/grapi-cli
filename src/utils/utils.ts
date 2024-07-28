@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import fs from 'fs';
 import { exec } from 'child_process';
+import { MethodDeclaration, ParameterDeclaration, SourceFile } from 'ts-morph';
 
 const execPromise = (command: string) => {
   return new Promise((resolve, reject) => {
@@ -17,6 +18,7 @@ export async function execute(command: string, message?: string) {
 
 // Recursive function to get files
 export function getFiles(dir: string, files: string[] = []) {
+  if (!fs.existsSync(dir)) return [];
   const fileList = fs.readdirSync(dir);
   for (const file of fileList) {
     const name = `${dir}/${file}`;
@@ -58,4 +60,57 @@ export function toCamelCase(str: string) {
       if (+match === 0) return '';
       return index === 0 ? match.toLowerCase() : match.toUpperCase();
     });
+}
+
+export function addDecoratorToMethod(
+  addDecoratorTo: MethodDeclaration,
+  name: string,
+  decoratorArguments: string[],
+): void {
+  const authDecorator = addDecoratorTo?.getDecorator(name);
+  if (!authDecorator) {
+    addDecoratorTo?.addDecorator({ name, arguments: decoratorArguments });
+  }
+}
+
+export function addDecoratorToParameter(
+  addDecoratorTo: ParameterDeclaration,
+  name: string,
+  decoratorArguments: string[],
+): void {
+  const authDecorator = addDecoratorTo?.getDecorator(name);
+  if (!authDecorator) {
+    addDecoratorTo?.addDecorator({ name, arguments: decoratorArguments });
+  }
+}
+
+export function addImport(
+  addImportTo: SourceFile | undefined,
+  defaultImport: string,
+  moduleSpecifier: string,
+  replace: boolean = false
+): void {
+  let existingImport = addImportTo?.getImportDeclaration(moduleSpecifier);
+  if (!existingImport) {
+    addImportTo?.addImportDeclaration({ defaultImport: `{${defaultImport}}`, moduleSpecifier });
+  } else {
+    existingImport = addImportTo?.getImportDeclaration(moduleSpecifier)!;
+    if (replace) {
+      existingImport.getNamedImports().forEach((eachImport) => {
+        let importText = eachImport.getText();
+        const pattern = new RegExp(`\\b${importText}\\b`);
+        if (!pattern.test(defaultImport)) {
+          defaultImport += `,${importText}`;
+        }
+      });
+      existingImport.remove();
+      addImportTo?.addImportDeclaration({ defaultImport: `{${defaultImport}}`, moduleSpecifier });
+    }
+  }
+}
+
+export function isLoopBackApp(packageJson: any) {
+  const { dependencies } = packageJson;
+  if (!dependencies['@loopback/core']) return false;
+  return true;
 }
