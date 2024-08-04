@@ -26,8 +26,8 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             path: '/generators/openapi/index.js'
         },
         passOptions: {
-            searchString: 'prefix: this.options.prefix,',
-            replacement: `\n\tprefix: this.options.prefix,\n\treadonly: this.options.readonly,\n\excludings: this.excludings,\n\includings: this.includings,`,
+            searchString: 'log: this.log,',
+            replacement: `\n\tlog: this.log,\n\treadonly: this.options.readonly,\n\excludings: this.excludings,\n\includings: this.includings,`,
             path: '/generators/openapi/index.js'
         },
         requireOpenapiFilter: {
