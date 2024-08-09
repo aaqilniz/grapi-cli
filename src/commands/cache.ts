@@ -189,7 +189,10 @@ export default class Cache extends Command {
               if (excludings.length && !excludingObjects[value]) {
                 excludingObjects[value] = { initializer };
               }
-              if (includings.length && !includingObjects[value]) {
+              if (!includings.length && !includingObjects[value]) {
+                includingObjects[value] = { initializer };
+              }
+              if (includings.length && !excludings.length) {
                 includingObjects[value] = { initializer };
               }
 
@@ -242,6 +245,7 @@ export default class Cache extends Command {
         this.addCacheProperty(project, initializer, apiMethods, cacheTTL, redisDS);
       }
     });
+    
     Object.keys(includingObjects).forEach(path => {
       const { initializer, including } = includingObjects[path];
       let apiMethods: string[] = [];
@@ -330,6 +334,9 @@ export default class Cache extends Command {
               }
             }
             if (excludeMatched) {
+              this.addCacheDecorator(method, [`'${redisDS}'`, `${cacheTTL || 60 * 1000}`]);
+            }
+            if (!excludings.length && !includings.length) {
               this.addCacheDecorator(method, [`'${redisDS}'`, `${cacheTTL || 60 * 1000}`]);
             }
           });

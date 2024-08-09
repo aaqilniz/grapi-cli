@@ -9,49 +9,6 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             path: '/generators/controller/index.js'
         }
     },
-    limitOpenapi: {
-        addOptions: {
-            searchString: 'return super._setupGenerator();',
-            replacement: `\nthis.option('readonly', { description: g.f('Generate only GET endpoints.'), required: false, type: Boolean, }); this.option('exclude', { description: g.f('Exclude endpoints with provided regex.'), required: false, type: String, }); this.option('include', { description: g.f('Only include endpoints with provided regex.'), required: false, type: String, }); return super._setupGenerator();`,
-            path: '/generators/openapi/index.js'
-        },
-        addPromptsForOptions: {
-            searchString: 'async askForSpecUrlOrPath() {',
-            replacement: `\nasync askForReadonly() {if (this.shouldExit()) return;const prompts = [{name: 'readonly',message: g.f('Generate only GET endpoints.'),when: false,default: false,},];const answers = await this.prompt(prompts);if (answers.readonly) {this.options.readonly = answers.readonly;}}async askForExclude() {if (this.shouldExit()) return;const prompts = [{name: 'exclude',message: g.f('Exclude endpoints with provided regex.'),when: false,default: false,},];const answers = await this.prompt(prompts);if (answers.exclude) {const excludes = answers.exclude.split(',');this.excludings = [];excludes.forEach(exclude => {this.excludings.push(exclude);});}}async askForInclude() {if (this.shouldExit()) return;const prompts = [{name: 'include',message: g.f('Only include endpoints with provided regex.'),when: false,default: false,},];const answers = await this.prompt(prompts);if (answers.include) {const includes = answers.include.split(',');this.includings = [];includes.forEach(include => {this.includings.push(include);});}}\nasync askForSpecUrlOrPath() {`,
-            path: '/generators/openapi/index.js'
-        },
-        addImplementationForLimit: {
-            searchString: 'const result = await loadAndBuildSpec(this.url, {',
-            replacement: `let includings = []; let excludings = []; if (this.options.exclude) { excludings = this.options.exclude.split(','); } if (this.options.include) { includings = this.options.include.split(','); } if (!this.includings) this.includings = []; includings.forEach(including => { if (including.includes(':')) { const splitedInclude = including.split(':'); const temp = {}; if (splitedInclude[0] === '*') { temp[splitedInclude[1]] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']; this.includings.push(temp); } else { temp[splitedInclude[1]] = [splitedInclude[0]]; this.includings.push(temp); } } }); if (!this.excludings) this.excludings = []; excludings.forEach(excluding => { if (excluding.includes(':')) { const splitedExclude = excluding.split(':'); const temp = {}; if (splitedExclude[0] === '*') { temp[splitedExclude[1]] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']; this.excludings.push(temp); } else { temp[splitedExclude[1]] = [splitedExclude[0]]; this.excludings.push(temp);}}});\n\t\t\tconst result = await loadAndBuildSpec(this.url, {`,
-            path: '/generators/openapi/index.js'
-        },
-        passOptions: {
-            searchString: 'log: this.log,',
-            replacement: `\n\tlog: this.log,\n\treadonly: this.options.readonly,\n\excludings: this.excludings,\n\includings: this.includings,`,
-            path: '/generators/openapi/index.js'
-        },
-        requireOpenapiFilter: {
-            searchString: `require('@apidevtools/json-schema-ref-parser');`,
-            replacement: `require('@apidevtools/json-schema-ref-parser');\nconst openapiFilter = require('openapi-filter');`,
-            path: '/generators/openapi/spec-loader.js'
-        },
-        destructLimitOptions: {
-            searchString: `prefix}`,
-            replacement: `readonly, excludings, includings, prefix}`,
-            path: '/generators/openapi/spec-loader.js'
-        },
-        applyFilters: {
-            searchString: `let stringifiedApiSpecs = jsonc.stringify(apiSpec);`,
-            replacement: `let stringifiedApiSpecs = jsonc.stringify(apiSpec);\napiSpec = filterSpec(JSON.parse(stringifiedApiSpecs), readonly, excludings, includings);\n\t\t\tstringifiedApiSpecs=JSON.stringify(apiSpec);`,
-            path: '/generators/openapi/spec-loader.js'
-        },
-        addHelpingMethods: {
-            searchString: `module.exports = {`,
-            replacement: `\nfunction getIndiciesOf(searchStr, str, caseSensitive) {const searchStrLen = searchStr.length;if (searchStrLen === 0) { return []; }; let startIndex = 0, index;const indices = [];if (!caseSensitive) { str = str.toLowerCase(); searchStr = searchStr.toLowerCase();}while ((index = str.indexOf(searchStr, startIndex)) > -1) { indices.push(index); startIndex = index + searchStrLen;}return indices;}\nfunction insertAtIndex(str, substring, index) {return str.slice(0, index) + substring + str.slice(index);}\nfunction applyFilters(specs, options) {const openapiComponent = specs.components;specs = openapiFilter.filter(specs, options);specs.components = openapiComponent;return specs;}\nfunction findIndexes(stringSpecs, regex) {let result;const indices = [];while ((result = regex.exec(stringSpecs))) { indices.push(result.index);}return indices;}\nfunction excludeOrIncludeSpec(specs, filter) {Object.keys(filter).forEach(filterKey => { const regex = new RegExp(filterKey, 'g'); const actions = filter[filterKey]; for (const key in specs.paths) { if (Object.hasOwnProperty.call(specs.paths, key)) { if (findIndexes(key, regex).length) { if (specs.paths[key]) { actions.forEach(action => { action = action.toLowerCase(); if (specs.paths[key][action]) { specs.paths[key][action]['x-filter'] = true; } }); } } } } }); return specs;}\nfunction readonlySpec(specs) {let stringifiedSpecs = JSON.stringify(specs);const excludeOps = ['\"post\":', '\"patch\":', '\"put\":', '\"delete\":'];excludeOps.forEach(operator => { let indices = getIndiciesOf(operator, stringifiedSpecs); let indiciesCount = 0; while (indiciesCount < indices.length) { indices = getIndiciesOf(operator, stringifiedSpecs); const index = indices[indiciesCount]; stringifiedSpecs = insertAtIndex( stringifiedSpecs, '\"x-filter\": true,', index + operator.length + 1, ); indiciesCount++;}});return JSON.parse(stringifiedSpecs);}function filterSpec(specs, readonly, excludings, includings) {const options = { valid: true, info: true, strip: true, flags: ['x-filter'], servers: true, inverse: false,};if (excludings \&\& excludings.length) { excludings.forEach(exclude => { specs = excludeOrIncludeSpec(specs, exclude); }); specs = applyFilters(specs, options);}if (includings \&\& includings.length) { includings.forEach(include => { specs = excludeOrIncludeSpec(specs, include); }); options.inverse = true; specs = applyFilters(specs, options);} if (readonly) { options.inverse = false; specs = applyFilters(readonlySpec(specs), options); } return specs;}\n\nmodule.exports = {`,
-            path: '/generators/openapi/spec-loader.js'
-        },
-
-    },
     supportReadonlyProperties: {
         requireRelationUtil: {
             searchString: `const utils = require('../../lib/utils');`,
@@ -170,6 +127,49 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             replacement: `const jsonc = require('jsonc');\n let apiSpec = await loadSpec(url, {log, validate});\nconst {components, paths} = apiSpec;\nlet stringifiedApiSpecs = jsonc.stringify(apiSpec);\nstringifiedApiSpecs = stringifiedApiSpecs.replaceAll('WithRelations',\`\$\{prefix\}WithRelations\`,);if (paths) {Object.keys(paths).forEach(eachPath => {if (\!eachPath.includes('{id}') \&\& \!eachPath.includes('count')) {const updatedPath =eachPath.slice(0, 0) + '/' + prefix.toLowerCase() + '/' +eachPath.slice(1);stringifiedApiSpecs = stringifiedApiSpecs.replaceAll(eachPath,updatedPath,);}});}if (components) {const {schemas} = components;if (schemas) {Object.keys(schemas).forEach(item => {if (\!item.startsWith('loopback') \&\& \!item.startsWith('New') \&\& \!item.endsWith('Relations') \&\& \!item.endsWith('Partial') \&\& \!item.includes('Through') \&\& \!item.includes('.') \&\& \!item.includes('Ping')) {stringifiedApiSpecs = stringifiedApiSpecs.replaceAll(item,prefix + item,);}if (item.includes('Ping')) {stringifiedApiSpecs = stringifiedApiSpecs.replaceAll('Ping',prefix + 'Ping');}});}}\napiSpec = jsonc.parse(stringifiedApiSpecs);`,
             path: '/generators/openapi/spec-loader.js'
         },
+    },
+    limitOpenapi: {
+        addOptions: {
+            searchString: 'return super._setupGenerator();',
+            replacement: `\nthis.option('readonly', { description: g.f('Generate only GET endpoints.'), required: false, type: Boolean, }); this.option('exclude', { description: g.f('Exclude endpoints with provided regex.'), required: false, type: String, }); this.option('include', { description: g.f('Only include endpoints with provided regex.'), required: false, type: String, }); return super._setupGenerator();`,
+            path: '/generators/openapi/index.js'
+        },
+        addPromptsForOptions: {
+            searchString: 'async askForSpecUrlOrPath() {',
+            replacement: `\nasync askForReadonly() {if (this.shouldExit()) return;const prompts = [{name: 'readonly',message: g.f('Generate only GET endpoints.'),when: false,default: false,},];const answers = await this.prompt(prompts);if (answers.readonly && !this.options.readonly) {this.options.readonly = answers.readonly;}}async askForExclude() {if (this.shouldExit()) return;const prompts = [{name: 'exclude',message: g.f('Exclude endpoints with provided regex.'),when: false,default: false,},];const answers = await this.prompt(prompts);if (answers.exclude && !this.options.exclude) {const excludes = answers.exclude.split(',');this.excludings = [];excludes.forEach(exclude => {this.excludings.push(exclude);});}}async askForInclude() {if (this.shouldExit()) return;const prompts = [{name: 'include',message: g.f('Only include endpoints with provided regex.'),when: false,default: false,},];const answers = await this.prompt(prompts);if (answers.include && !this.options.include) {const includes = answers.include.split(',');this.includings = [];includes.forEach(include => {this.includings.push(include);});}}\nasync askForSpecUrlOrPath() {`,
+            path: '/generators/openapi/index.js'
+        },
+        addImplementationForLimit: {
+            searchString: 'const result = await loadAndBuildSpec(this.url, {',
+            replacement: `let includings = []; let excludings = []; if (this.options.exclude) { excludings = this.options.exclude.split(','); } if (this.options.include) { includings = this.options.include.split(','); } if (!this.includings) this.includings = []; includings.forEach(including => { if (including.includes(':')) { const splitedInclude = including.split(':'); const temp = {}; if (splitedInclude[0] === '*') { temp[splitedInclude[1]] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']; this.includings.push(temp); } else { temp[splitedInclude[1]] = [splitedInclude[0]]; this.includings.push(temp); } } }); if (!this.excludings) this.excludings = []; excludings.forEach(excluding => { if (excluding.includes(':')) { const splitedExclude = excluding.split(':'); const temp = {}; if (splitedExclude[0] === '*') { temp[splitedExclude[1]] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']; this.excludings.push(temp); } else { temp[splitedExclude[1]] = [splitedExclude[0]]; this.excludings.push(temp);}}});\n\t\t\tconst result = await loadAndBuildSpec(this.url, {`,
+            path: '/generators/openapi/index.js'
+        },
+        passOptions: {
+            searchString: 'log: this.log,',
+            replacement: `\n\tlog: this.log,\n\treadonly: this.options.readonly,\n\excludings: this.excludings,\n\includings: this.includings,`,
+            path: '/generators/openapi/index.js'
+        },
+        requireOpenapiFilter: {
+            searchString: `require('@apidevtools/json-schema-ref-parser');`,
+            replacement: `require('@apidevtools/json-schema-ref-parser');\nconst openapiFilter = require('openapi-filter');`,
+            path: '/generators/openapi/spec-loader.js'
+        },
+        destructLimitOptions: {
+            searchString: `prefix}`,
+            replacement: `readonly, excludings, includings, prefix}`,
+            path: '/generators/openapi/spec-loader.js'
+        },
+        applyFilters: {
+            searchString: `let stringifiedApiSpecs = jsonc.stringify(apiSpec);`,
+            replacement: `let stringifiedApiSpecs = jsonc.stringify(apiSpec);\napiSpec = filterSpec(JSON.parse(stringifiedApiSpecs), readonly, excludings, includings);\n\t\t\tstringifiedApiSpecs=JSON.stringify(apiSpec);`,
+            path: '/generators/openapi/spec-loader.js'
+        },
+        addHelpingMethods: {
+            searchString: `module.exports = {`,
+            replacement: `\nfunction getIndiciesOf(searchStr, str, caseSensitive) {const searchStrLen = searchStr.length;if (searchStrLen === 0) { return []; }; let startIndex = 0, index;const indices = [];if (!caseSensitive) { str = str.toLowerCase(); searchStr = searchStr.toLowerCase();}while ((index = str.indexOf(searchStr, startIndex)) > -1) { indices.push(index); startIndex = index + searchStrLen;}return indices;}\nfunction insertAtIndex(str, substring, index) {return str.slice(0, index) + substring + str.slice(index);}\nfunction applyFilters(specs, options) {const openapiComponent = specs.components;specs = openapiFilter.filter(specs, options);specs.components = openapiComponent;return specs;}\nfunction findIndexes(stringSpecs, regex) {let result;const indices = [];while ((result = regex.exec(stringSpecs))) { indices.push(result.index);}return indices;}\nfunction excludeOrIncludeSpec(specs, filter) {Object.keys(filter).forEach(filterKey => { const regex = new RegExp(filterKey, 'g'); const actions = filter[filterKey]; for (const key in specs.paths) { if (Object.hasOwnProperty.call(specs.paths, key)) { if (findIndexes(key, regex).length) { if (specs.paths[key]) { actions.forEach(action => { action = action.toLowerCase(); if (specs.paths[key][action]) { specs.paths[key][action]['x-filter'] = true; } }); } } } } }); return specs;}\nfunction readonlySpec(specs) {let stringifiedSpecs = JSON.stringify(specs);const excludeOps = ['\"post\":', '\"patch\":', '\"put\":', '\"delete\":'];excludeOps.forEach(operator => { let indices = getIndiciesOf(operator, stringifiedSpecs); let indiciesCount = 0; while (indiciesCount < indices.length) { indices = getIndiciesOf(operator, stringifiedSpecs); const index = indices[indiciesCount]; stringifiedSpecs = insertAtIndex( stringifiedSpecs, '\"x-filter\": true,', index + operator.length + 1, ); indiciesCount++;}});return JSON.parse(stringifiedSpecs);}function filterSpec(specs, readonly, excludings, includings) {const options = { valid: true, info: true, strip: true, flags: ['x-filter'], servers: true, inverse: false,};if (excludings \&\& excludings.length) { excludings.forEach(exclude => { specs = excludeOrIncludeSpec(specs, exclude); }); specs = applyFilters(specs, options);}if (includings \&\& includings.length) { includings.forEach(include => { specs = excludeOrIncludeSpec(specs, include); }); options.inverse = true; specs = applyFilters(specs, options);} if (readonly) { options.inverse = false; specs = applyFilters(readonlySpec(specs), options); } return specs;}\n\nmodule.exports = {`,
+            path: '/generators/openapi/spec-loader.js'
+        },
+
     },
     hasManyThroughNonPrimaryKey: {
         defineVariables: {
