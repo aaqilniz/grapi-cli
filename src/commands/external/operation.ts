@@ -140,26 +140,21 @@ export default class ExternalOperation extends Command {
       let functionParams = '';
 
       queryParamList.forEach((key: string) => { query += `${key}: '{${key}}', `; });
-      if (bodyParamList.length) body = `body: '{body}', `;
-      // bodyParamList.forEach((key: string) => { body += `${key}: '{${key}}', `; });
+      // if (bodyParamList.length) body = `body: '{body}', `;
+      bodyParamList.forEach((key: string) => { body += `${key}: '{${key}}', `; });
 
       if (pathKey) path = `${pathKey}: '{${pathKey}}'`;
 
       queryParamList.forEach((key: string) => { functionParams += `'${key}',`; });
 
-      if (
-        method === 'patch' ||
-        method === 'post'
-      ) {
-        functionParams += `'body',`;
-      } else {
+      if (bodyParamList.length) {
         bodyParamList.forEach((key: string) => { functionParams += `'${key}',`; });
       }
       Object.keys(pathParams).forEach((key: string) => { functionParams += `'${key}',`; });
 
       let operation = `{
         template: {
-          ${method ? `method: '${method}',` : ''}
+          method: '${method === 'del' ? 'delete' : method}',
           url: '${url}',
           ${headers ? `options: {headers: ${headers}},` : ''}
           ${query ? `query: {${query}},` : ''}
@@ -221,13 +216,13 @@ export default class ExternalOperation extends Command {
         parameters.push(parameter);
 
         addImport(controllerFile, modelName, '../models', true);
-        if (bodyParams) {
-          serviceParams = `body: any,`;
-        }
 
-        bodyParams.forEach((param: any) => {
-          Object.keys(param).forEach(key => {
-            properties[key] = { type: param[key] }
+        if (!bodyParams) bodyParams = [];
+
+        bodyParams.forEach((bodyParam: any) => {
+          Object.keys(bodyParam).forEach(key => {
+            properties[key] = { type: bodyParam[key] }
+            serviceParams += `${key}: ${bodyParam[key]} | undefined,`;
           });
         });
 
@@ -269,7 +264,7 @@ export default class ExternalOperation extends Command {
         addImport(controllerFile, `${serviceName} as ${serviceName}Service`, '../services');
 
         // Find all class declarations within the source file
-        const classDeclaration = controllerFile.getClass(`${toPascalCase(controllerName)}Controller`);
+        const classDeclaration = controllerFile?.getClass(`${toPascalCase(controllerName)}Controller`);
         const classConstructors = classDeclaration?.getConstructors() || [];
         let apiMethod = classDeclaration?.getMethod(functionName.toLowerCase());
         if (!apiMethod) {
@@ -282,9 +277,18 @@ export default class ExternalOperation extends Command {
             },
           }`;
           let methodParameters = queryParamList.toString();
-          if (body) methodParameters = 'body';
+          if (body) {
+            bodyParamList.forEach(bodyParam => {
+              methodParameters += `body.${bodyParam},`;
+            });
+            // methodParameters = bodyParamList.toString();
+          }
           if (pathKey) {
-            if (methodParameters) { methodParameters += ',' }
+            if (
+              methodParameters &&
+              !methodParameters.endsWith(',')) {
+              methodParameters += ','
+            }
             methodParameters += `${pathKey}`;
           }
 
@@ -330,7 +334,7 @@ export default class ExternalOperation extends Command {
         if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
         if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));
       }
-      
+
       project.addSourceFilesAtPaths(`${invokedFrom}/src/**/*.ts`);
       const serviceFilePath = `${invokedFrom}/src/services/${pluralize(toKebabCase(serviceName))}.service.ts`;
       let serviceFile = project.getSourceFile(serviceFilePath);
