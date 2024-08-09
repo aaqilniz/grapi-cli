@@ -9,88 +9,88 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             path: '/generators/controller/index.js'
         }
     },
-    supportReadonlyProperties: {
-        requireRelationUtil: {
-            searchString: `const utils = require('../../lib/utils');`,
-            replacement: `const utils = require('../../lib/utils');\nconst relationUtils = require('../relation/utils.generator');`,
-            path: '/generators/controller/index.js'
-        },
-        implementReadonly: {
-            searchString: `const source = this.templatePath(path.join('src', 'controllers', template));`,
-            replacement: `\n if(this.artifactInfo.controllerType === ControllerGenerator.REST) { this.artifactInfo.exclude = [];if (this.artifactInfo.idOmitted) {this.artifactInfo.exclude.push(this.artifactInfo.id);}const project = new relationUtils.AstLoopBackProject();const fileName = path.resolve(this.artifactInfo.modelDir,utils.getModelFileName(this.artifactInfo.modelName),);const modelFile = project.addSourceFileAtPath(fileName);const modelClass = modelFile.getClassOrThrow(this.artifactInfo.modelName);for (const classProperty of modelClass.getInstanceProperties()) { for (const decorator of classProperty.getDecorators()) { \nfor (const decoratorArg of decorator.getArguments()) { \nif (decoratorArg.getProperty) { const readOnlyProperty = decoratorArg.getProperty('readOnly'); \nif (readOnlyProperty) {const readOnlyValue = readOnlyProperty.getInitializerOrThrow().getText();\nif (readOnlyValue === '1' || readOnlyValue === 'true') {this.artifactInfo.exclude.push(classProperty.getName());}}}}}}} const source = this.templatePath(path.join('src', 'controllers', template));`,
-            path: '/generators/controller/index.js'
-        },
-        updateControllerTemplate: {
-            searchString: `<%if (idOmitted) {%>exclude: ['<%= id %>'],<% } %>`,
-            replacement: `<%if (exclude.length) {%>exclude: [<% exclude.forEach(function(item,index){ %>'<%= item %>', <% }) %>],<% } %>`,
-            path: '/generators/controller/templates/src/controllers/controller-rest-template.ts.ejs'
-        },
-        updateControllerTemplate1: {
-            searchString: `<%= modelVariableName %>: <% if (!idOmitted) { -%><%= modelName %><% } else { -%>Omit<<%= modelName %>, '<%= id %>'><% } -%>,`,
-            replacement: `<%= modelVariableName %>: <% if (!exclude.length) { -%><%= modelName %><% } else { -%>Omit<<%= modelName %>, '<%= exclude %>'><% } -%>,`,
-            path: '/generators/controller/templates/src/controllers/controller-rest-template.ts.ejs'
-        },
-        updateHasMany: {
-            searchString: 'const source = this.templatePath(CONTROLLER_TEMPLATE_PATH_HAS_MANY);',
-            replacement: `const project = new relationUtils.AstLoopBackProject();const sourceFile = relationUtils.addFileToProject(project,this.artifactInfo.modelDir,options.sourceModel,);this.artifactInfo.exclude = [this.artifactInfo.targetModelPrimaryKey];const sourceClass = relationUtils.getClassObj(sourceFile,options.sourceModel,);for (const classProperty of sourceClass.getInstanceProperties()) {for (const decorator of classProperty.getDecorators()) {for (const decoratorArg of decorator.getArguments()) {if (decoratorArg.getProperty) {const readOnlyProperty = decoratorArg.getProperty('readOnly');if (readOnlyProperty) {const readOnlyValue = readOnlyProperty.getInitializerOrThrow().getText();if (readOnlyValue === '1' || readOnlyValue === 'true') { this.artifactInfo.exclude.push(classProperty.getName());}}}}}} const source = this.templatePath(CONTROLLER_TEMPLATE_PATH_HAS_MANY);`,
-            path: '/generators/relation/has-many-relation.generator.js'
-        },
-        updateHasManyThrough: {
-            searchString: 'const source = this.templatePath(CONTROLLER_TEMPLATE_PATH_HAS_MANY_THROUGH);',
-            replacement: `const project = new relationUtils.AstLoopBackProject();const sourceFile = relationUtils.addFileToProject(project,this.artifactInfo.modelDir,options.sourceModel,);this.artifactInfo.exclude = [this.artifactInfo.targetModelPrimaryKey];const sourceClass = relationUtils.getClassObj(sourceFile,options.sourceModel,);for (const classProperty of sourceClass.getInstanceProperties()) {for (const decorator of classProperty.getDecorators()) {for (const decoratorArg of decorator.getArguments()) {if (decoratorArg.getProperty) {const readOnlyProperty = decoratorArg.getProperty('readOnly');if (readOnlyProperty) {const readOnlyValue = readOnlyProperty.getInitializerOrThrow().getText();if (readOnlyValue === '1' || readOnlyValue === 'true') {this.artifactInfo.exclude.push(classProperty.getName());}}}}}} \n const source = this.templatePath(CONTROLLER_TEMPLATE_PATH_HAS_MANY_THROUGH);`,
-            path: '/generators/relation/has-many-through-relation.generator.js'
-        },
-        updateHasOne: {
-            searchString: `utils.toFileName(this.artifactInfo.name) + '.controller.ts';`,
-            replacement: `utils.toFileName(this.artifactInfo.name) + '.controller.ts';const project = new relationUtils.AstLoopBackProject();const sourceFile = relationUtils.addFileToProject(project,this.artifactInfo.modelDir,options.sourceModel,);this.artifactInfo.exclude = [this.artifactInfo.targetModelPrimaryKey];const sourceClass = relationUtils.getClassObj(sourceFile,options.sourceModel,);for (const classProperty of sourceClass.getInstanceProperties()) {for (const decorator of classProperty.getDecorators()) {for (const decoratorArg of decorator.getArguments()) {if (decoratorArg.getProperty) {const readOnlyProperty = decoratorArg.getProperty('readOnly');if (readOnlyProperty) {const readOnlyValue = readOnlyProperty.getInitializerOrThrow().getText();if (readOnlyValue === '1' || readOnlyValue === 'true') {this.artifactInfo.exclude.push(classProperty.getName());}}}}}}`,
-            path: '/generators/relation/has-one-relation.generator.js'
-        },
-        updateHasOne1: {
-            searchString: `const imports = relationUtils.getRequiredImports(targetModel, relationType);`,
-            replacement: `const imports = relationUtils.getRequiredImports(targetModel, relationType, sourceModel, );`,
-            path: '/generators/relation/has-one-relation.generator.js'
-        },
-        updateHasOne2: {
-            searchString: `dstRepositoryClassName,`,
-            replacement: `dstRepositoryClassName,this.artifactInfo.srcModelClass,`,
-            path: '/generators/relation/has-one-relation.generator.js'
-        },
-        updateHasManyThroughTemplate: {
-            searchString: `exclude: ['<%= targetModelPrimaryKey %>'],`,
-            replacement: `exclude: [<% exclude.forEach(function(item,index){ %>'<%= item %>', <% }) %>],`,
-            path: '/generators/relation/templates/controller-relation-template-has-many-through.ts.ejs'
-        },
-        updateHasManyTemplate: {
-            searchString: `exclude: ['<%= targetModelPrimaryKey %>'],`,
-            replacement: `exclude: [<% exclude.forEach(function(item,index){ %>'<%= item %>', <% }) %>],`,
-            path: '/generators/relation/templates/controller-relation-template-has-many.ts.ejs'
-        },
-        updateHasManyThroughTemplate1: {
-            searchString: `}) <%= targetModelRequestBody %>: Omit<<%= targetModelClassName %>, '<%= targetModelPrimaryKey %>'>,`,
-            replacement: `exclude: [<% exclude.forEach(function(item,index){ %>'<%= item %>', <% }) %>],`,
-            path: '/generators/relation/templates/controller-relation-template-has-many-through.ts.ejs'
-        },
-        updateHasManyTemplate1: {
-            searchString: `}) <%= targetModelRequestBody %>: Omit<<%= targetModelClassName %>, '<%= targetModelPrimaryKey %>'>,`,
-            replacement: `exclude: [<% exclude.forEach(function(item,index){ %>'<%= item %>', <% }) %>],`,
-            path: '/generators/relation/templates/controller-relation-template-has-many.ts.ejs'
-        },
-        updateHasOneTemplate: {
-            searchString: '<%= sourceModelClassName %>,',
-            replacement: `<%if (sourceModelClassName != targetModelClassName) { %><%= sourceModelClassName %>,<% } %>`,
-            path: '/generators/relation/templates/controller-relation-template-has-one.ts.ejs'
-        },
-        updateHasOneTemplate1: {
-            searchString: `exclude: ['<%= targetModelPrimaryKey %>'],`,
-            replacement: `exclude: [<% exclude.forEach(function(item,index){ %>'<%= item %>', <% }) %>],`,
-            path: '/generators/relation/templates/controller-relation-template-has-one.ts.ejs'
-        },
-        updateHasOneTemplate2: {
-            searchString: `}) <%= targetModelRequestBody %>: Omit<<%= targetModelClassName %>, '<%= targetModelPrimaryKey %>'>,`,
-            replacement: `}) <%= targetModelRequestBody %>: Omit<<%= targetModelClassName %>, '<%= exclude %>'>,`,
-            path: '/generators/relation/templates/controller-relation-template-has-one.ts.ejs'
-        }
-    },
+    // supportReadonlyProperties: {
+    //     requireRelationUtil: {
+    //         searchString: `const utils = require('../../lib/utils');`,
+    //         replacement: `const utils = require('../../lib/utils');\nconst relationUtils = require('../relation/utils.generator');`,
+    //         path: '/generators/controller/index.js'
+    //     },
+    //     implementReadonly: {
+    //         searchString: `const source = this.templatePath(path.join('src', 'controllers', template));`,
+    //         replacement: `\n if(this.artifactInfo.controllerType === ControllerGenerator.REST) { this.artifactInfo.exclude = [];if (this.artifactInfo.idOmitted) {this.artifactInfo.exclude.push(this.artifactInfo.id);}const project = new relationUtils.AstLoopBackProject();const fileName = path.resolve(this.artifactInfo.modelDir,utils.getModelFileName(this.artifactInfo.modelName),);const modelFile = project.addSourceFileAtPath(fileName);const modelClass = modelFile.getClassOrThrow(this.artifactInfo.modelName);for (const classProperty of modelClass.getInstanceProperties()) { for (const decorator of classProperty.getDecorators()) { \nfor (const decoratorArg of decorator.getArguments()) { \nif (decoratorArg.getProperty) { const readOnlyProperty = decoratorArg.getProperty('readOnly'); \nif (readOnlyProperty) {const readOnlyValue = readOnlyProperty.getInitializerOrThrow().getText();\nif (readOnlyValue === '1' || readOnlyValue === 'true') {this.artifactInfo.exclude.push(classProperty.getName());}}}}}}} const source = this.templatePath(path.join('src', 'controllers', template));`,
+    //         path: '/generators/controller/index.js'
+    //     },
+    //     updateControllerTemplate: {
+    //         searchString: `<%if (idOmitted) {%>exclude: ['<%= id %>'],<% } %>`,
+    //         replacement: `<%if (exclude.length) {%>exclude: [<% exclude.forEach(function(item,index){ %>'<%= item %>', <% }) %>],<% } %>`,
+    //         path: '/generators/controller/templates/src/controllers/controller-rest-template.ts.ejs'
+    //     },
+    //     updateControllerTemplate1: {
+    //         searchString: `<%= modelVariableName %>: <% if (!idOmitted) { -%><%= modelName %><% } else { -%>Omit<<%= modelName %>, '<%= id %>'><% } -%>,`,
+    //         replacement: `<%= modelVariableName %>: <% if (!exclude.length) { -%><%= modelName %><% } else { -%>Omit<<%= modelName %>, '<%= exclude %>'><% } -%>,`,
+    //         path: '/generators/controller/templates/src/controllers/controller-rest-template.ts.ejs'
+    //     },
+    //     updateHasMany: {
+    //         searchString: 'const source = this.templatePath(CONTROLLER_TEMPLATE_PATH_HAS_MANY);',
+    //         replacement: `const project = new relationUtils.AstLoopBackProject();const sourceFile = relationUtils.addFileToProject(project,this.artifactInfo.modelDir,options.sourceModel,);this.artifactInfo.exclude = [this.artifactInfo.targetModelPrimaryKey];const sourceClass = relationUtils.getClassObj(sourceFile,options.sourceModel,);for (const classProperty of sourceClass.getInstanceProperties()) {for (const decorator of classProperty.getDecorators()) {for (const decoratorArg of decorator.getArguments()) {if (decoratorArg.getProperty) {const readOnlyProperty = decoratorArg.getProperty('readOnly');if (readOnlyProperty) {const readOnlyValue = readOnlyProperty.getInitializerOrThrow().getText();if (readOnlyValue === '1' || readOnlyValue === 'true') { this.artifactInfo.exclude.push(classProperty.getName());}}}}}} const source = this.templatePath(CONTROLLER_TEMPLATE_PATH_HAS_MANY);`,
+    //         path: '/generators/relation/has-many-relation.generator.js'
+    //     },
+    //     updateHasManyThrough: {
+    //         searchString: 'const source = this.templatePath(CONTROLLER_TEMPLATE_PATH_HAS_MANY_THROUGH);',
+    //         replacement: `const project = new relationUtils.AstLoopBackProject();const sourceFile = relationUtils.addFileToProject(project,this.artifactInfo.modelDir,options.sourceModel,);this.artifactInfo.exclude = [this.artifactInfo.targetModelPrimaryKey];const sourceClass = relationUtils.getClassObj(sourceFile,options.sourceModel,);for (const classProperty of sourceClass.getInstanceProperties()) {for (const decorator of classProperty.getDecorators()) {for (const decoratorArg of decorator.getArguments()) {if (decoratorArg.getProperty) {const readOnlyProperty = decoratorArg.getProperty('readOnly');if (readOnlyProperty) {const readOnlyValue = readOnlyProperty.getInitializerOrThrow().getText();if (readOnlyValue === '1' || readOnlyValue === 'true') {this.artifactInfo.exclude.push(classProperty.getName());}}}}}} \n const source = this.templatePath(CONTROLLER_TEMPLATE_PATH_HAS_MANY_THROUGH);`,
+    //         path: '/generators/relation/has-many-through-relation.generator.js'
+    //     },
+    //     updateHasOne: {
+    //         searchString: `utils.toFileName(this.artifactInfo.name) + '.controller.ts';`,
+    //         replacement: `utils.toFileName(this.artifactInfo.name) + '.controller.ts';const project = new relationUtils.AstLoopBackProject();const sourceFile = relationUtils.addFileToProject(project,this.artifactInfo.modelDir,options.sourceModel,);this.artifactInfo.exclude = [this.artifactInfo.targetModelPrimaryKey];const sourceClass = relationUtils.getClassObj(sourceFile,options.sourceModel,);for (const classProperty of sourceClass.getInstanceProperties()) {for (const decorator of classProperty.getDecorators()) {for (const decoratorArg of decorator.getArguments()) {if (decoratorArg.getProperty) {const readOnlyProperty = decoratorArg.getProperty('readOnly');if (readOnlyProperty) {const readOnlyValue = readOnlyProperty.getInitializerOrThrow().getText();if (readOnlyValue === '1' || readOnlyValue === 'true') {this.artifactInfo.exclude.push(classProperty.getName());}}}}}}`,
+    //         path: '/generators/relation/has-one-relation.generator.js'
+    //     },
+    //     updateHasOne1: {
+    //         searchString: `const imports = relationUtils.getRequiredImports(targetModel, relationType);`,
+    //         replacement: `const imports = relationUtils.getRequiredImports(targetModel, relationType, sourceModel, );`,
+    //         path: '/generators/relation/has-one-relation.generator.js'
+    //     },
+    //     updateHasOne2: {
+    //         searchString: `dstRepositoryClassName,`,
+    //         replacement: `dstRepositoryClassName,this.artifactInfo.srcModelClass,`,
+    //         path: '/generators/relation/has-one-relation.generator.js'
+    //     },
+    //     updateHasManyThroughTemplate: {
+    //         searchString: `exclude: ['<%= targetModelPrimaryKey %>'],`,
+    //         replacement: `exclude: [<% exclude.forEach(function(item,index){ %>'<%= item %>', <% }) %>],`,
+    //         path: '/generators/relation/templates/controller-relation-template-has-many-through.ts.ejs'
+    //     },
+    //     updateHasManyTemplate: {
+    //         searchString: `exclude: ['<%= targetModelPrimaryKey %>'],`,
+    //         replacement: `exclude: [<% exclude.forEach(function(item,index){ %>'<%= item %>', <% }) %>],`,
+    //         path: '/generators/relation/templates/controller-relation-template-has-many.ts.ejs'
+    //     },
+    //     updateHasManyThroughTemplate1: {
+    //         searchString: `}) <%= targetModelRequestBody %>: Omit<<%= targetModelClassName %>, '<%= targetModelPrimaryKey %>'>,`,
+    //         replacement: `exclude: [<% exclude.forEach(function(item,index){ %>'<%= item %>', <% }) %>],`,
+    //         path: '/generators/relation/templates/controller-relation-template-has-many-through.ts.ejs'
+    //     },
+    //     updateHasManyTemplate1: {
+    //         searchString: `}) <%= targetModelRequestBody %>: Omit<<%= targetModelClassName %>, '<%= targetModelPrimaryKey %>'>,`,
+    //         replacement: `exclude: [<% exclude.forEach(function(item,index){ %>'<%= item %>', <% }) %>],`,
+    //         path: '/generators/relation/templates/controller-relation-template-has-many.ts.ejs'
+    //     },
+    //     updateHasOneTemplate: {
+    //         searchString: '<%= sourceModelClassName %>,',
+    //         replacement: `<%if (sourceModelClassName != targetModelClassName) { %><%= sourceModelClassName %>,<% } %>`,
+    //         path: '/generators/relation/templates/controller-relation-template-has-one.ts.ejs'
+    //     },
+    //     updateHasOneTemplate1: {
+    //         searchString: `exclude: ['<%= targetModelPrimaryKey %>'],`,
+    //         replacement: `exclude: [<% exclude.forEach(function(item,index){ %>'<%= item %>', <% }) %>],`,
+    //         path: '/generators/relation/templates/controller-relation-template-has-one.ts.ejs'
+    //     },
+    //     updateHasOneTemplate2: {
+    //         searchString: `}) <%= targetModelRequestBody %>: Omit<<%= targetModelClassName %>, '<%= targetModelPrimaryKey %>'>,`,
+    //         replacement: `}) <%= targetModelRequestBody %>: Omit<<%= targetModelClassName %>, '<%= exclude %>'>,`,
+    //         path: '/generators/relation/templates/controller-relation-template-has-one.ts.ejs'
+    //     }
+    // },
     addPrefix: {
         addOption: {
             searchString: 'return super._setupGenerator();',
