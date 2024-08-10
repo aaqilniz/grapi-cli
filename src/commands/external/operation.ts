@@ -336,7 +336,7 @@ export default class ExternalOperation extends Command {
       }
 
       project.addSourceFilesAtPaths(`${invokedFrom}/src/**/*.ts`);
-      const serviceFilePath = `${invokedFrom}/src/services/${pluralize(toKebabCase(serviceName))}.service.ts`;
+      const serviceFilePath = `${invokedFrom}/src/services/${toKebabCase(serviceName)}.service.ts`;
       let serviceFile = project.getSourceFile(serviceFilePath);
       const serviceInterface = serviceFile?.getInterface(serviceName);
       serviceInterface?.addMember(`${apiFunction}(${serviceParams}): Promise<object>;`);
