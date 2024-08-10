@@ -41,7 +41,6 @@ export default class ExternalOperation extends Command {
         apiFunction,
         type,
         controller,
-        apiUri
       } = options;
       let {
         method,
@@ -49,7 +48,12 @@ export default class ExternalOperation extends Command {
         bodyParams,
         queryParams,
         name,
+        apiUri,
+        spliter
       } = options;
+
+      if (!spliter && !apiUri) spliter = 'v1';
+      if (spliter) apiUri = url.split(spliter)[1];
 
       if (!pathParams) pathParams = {};
 
