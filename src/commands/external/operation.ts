@@ -21,6 +21,7 @@ export default class ExternalOperation extends Command {
     query: Flags.string({ description: 'Stringified JSON Object for query parameters.' }),
     apiFunction: Flags.string({ description: 'api function name.' }),
     name: Flags.string({ description: 'name of the artifacts.' }),
+    apiUri: Flags.string({ description: 'uri of the controller.' }),
     type: Flags.string({ description: 'type of return data.' }),
     controller: Flags.string({ description: 'controller under which the API should reside.' }),
   }
@@ -39,7 +40,8 @@ export default class ExternalOperation extends Command {
         headers,
         apiFunction,
         type,
-        controller
+        controller,
+        apiUri
       } = options;
       let {
         method,
@@ -48,7 +50,6 @@ export default class ExternalOperation extends Command {
         queryParams,
         name,
       } = options;
-      const apiUri = url.split('v1')[1];
 
       if (!pathParams) pathParams = {};
 
