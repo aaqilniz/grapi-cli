@@ -299,6 +299,13 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             replacement: 'propSchema = eachContent.schema;',
             path: '/generators/openapi/spec-helper.js'
         }
-    }
+    },
+    removeDuplicationInHasOneTemplate: {
+        assignType: {
+            searchString: '<%= targetModelClassName %>,',
+            replacement: '',
+            path: '/generators/relation/templates/controller-relation-template-has-one.ts.ejs',
+        }
+    },
 }
 export default patches;
