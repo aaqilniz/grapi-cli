@@ -305,13 +305,6 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             searchString: '<%= targetModelClassName %>,',
             replacement: '',
             path: '/generators/relation/templates/controller-relation-template-has-one.ts.ejs',
-        },
-        addSingle: {
-            searchString: '<%= sourceModelClassName %>,',
-            replacement: `<%= sourceModelClassName %>,
-            <%= targetModelClassName %>,
-            `,
-            path: '/generators/relation/templates/controller-relation-template-has-one.ts.ejs',
         }
     },
     hasOneRelationWithSameTable: {
