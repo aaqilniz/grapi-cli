@@ -16,13 +16,13 @@ export default class Auth extends Command {
     config: Flags.string({ char: 'c', description: 'Config JSON object' }),
     include: Flags.string({ char: 'i', description: 'include auth to the apis.' }),
     exclude: Flags.string({ char: 'e', description: 'exclude auth to the apis.' }),
-    readonly: Flags.string({ char: 'r', description: 'auth to readonly apis.' }),
+    writeonly: Flags.string({ char: 'r', description: 'auth to writeonly apis.' }),
   }
 
   public async run(): Promise<void> {
     const parsed = await this.parse(Auth);
     let options = processOptions(parsed.flags);
-    const { include, exclude, readonly } = options;
+    const { include, exclude, writeonly } = options;
     const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
     if (include && exclude) {
       throw new Error('Cannot have include and exclude at the same time.');
@@ -127,8 +127,7 @@ export default class Auth extends Command {
     // fetch and iterate through all model-endpoints files to add auth options
     const modelEndpointFiles = getFiles(`./src/model-endpoints`);
     const all = ['post', 'patch', 'patchById', 'putById', 'deleteById', 'get', 'getById', 'count'];
-    const allButReadOnly = ['post', 'patch', 'patchById', 'putById', 'deleteById'];
-    const readOnly = ['get', 'getById', 'count'];
+    const writeOnly = ['post', 'patch', 'patchById', 'putById', 'deleteById'];
 
     for (let i = 0; i < modelEndpointFiles.length; i++) {
       const filePath = modelEndpointFiles[i];
@@ -154,7 +153,7 @@ export default class Auth extends Command {
               value = pluralize.singular(value);
 
               if (name === 'basePath') {
-                let items = readonly ? readOnly : allButReadOnly;
+                let items = writeonly ? writeOnly : all;
                 let includingMatched = false;
 
                 for (let l = 0; l < includings.length; l++) {
@@ -180,13 +179,13 @@ export default class Auth extends Command {
                 } else if (excludings.length && !excludingMatched) {
                   this.addAuthProperty(project, initializer, items);
                 } else if (
-                  readonly &&
+                  writeonly &&
                   includings.length === 0 &&
                   excludings.length === 0
                 ) {
-                  this.addAuthProperty(project, initializer, readOnly);
+                  this.addAuthProperty(project, initializer, writeOnly);
                 } else if (
-                  !readonly &&
+                  !writeonly &&
                   includings.length === 0 &&
                   excludings.length === 0
                 ) {
@@ -245,35 +244,21 @@ export default class Auth extends Command {
               }
 
               if (includingMatched) {
-                if (readonly) {
-                  if (text.includes('@get') || text.includes(`operation('get')`)) {
-                    this.addAuthDecorator(method);
-                  }
-                } else {
+                if (writeonly) {
                   if (!text.includes('@get') && text.includes(`operation('get')`)) {
                     this.addAuthDecorator(method);
                   }
+                } else {
+                  this.addAuthDecorator(method);
                 }
               }
 
               if (excludings.length && !excludingMatched) {
-                if (readonly) {
-                  if (text.includes('@get') || text.includes(`operation('get')`)) {
-                    this.addAuthDecorator(method);
-                  }
-                } else {
+                if (writeonly) {
                   if (!text.includes('@get') && !text.includes(`operation('get')`)) {
                     this.addAuthDecorator(method);
                   }
-                }
-              }
-
-              if (
-                excludings.length === 0 &&
-                includings.length === 0 &&
-                readonly
-              ) {
-                if (text.includes('@get') || text.includes(`operation('get')`)) {
+                } else {
                   this.addAuthDecorator(method);
                 }
               }
@@ -281,7 +266,17 @@ export default class Auth extends Command {
               if (
                 excludings.length === 0 &&
                 includings.length === 0 &&
-                !readonly
+                writeonly
+              ) {
+                if (!text.includes('@get') || !text.includes(`operation('get')`)) {
+                  this.addAuthDecorator(method);
+                }
+              }
+
+              if (
+                excludings.length === 0 &&
+                includings.length === 0 &&
+                !writeonly
               ) {
                 this.addAuthDecorator(method);
               }
