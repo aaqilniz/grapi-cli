@@ -8,5 +8,6 @@ export type AppGeneratorFlags = {
     mocha: string,
     loopbackBuild: string,
     vscode: string,
-    docker: string
+    docker: string,
+    [x: string]: string | boolean
 }

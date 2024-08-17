@@ -1,7 +1,8 @@
 import { Args, Command, Flags } from '@oclif/core'
 import chalk from 'chalk';
-import { AppGeneratorFlags } from '../types/app.types.js';
+import { input, confirm } from '@inquirer/prompts';
 
+import { AppGeneratorFlags } from '../types/app.types.js';
 import { processOptions, execute, standardFlags } from '../utils/index.js';
 
 export default class App extends Command {
@@ -31,6 +32,16 @@ export default class App extends Command {
     let options: AppGeneratorFlags = processOptions(parsed.flags);
     if (!options.name && parsed.args.name) {
       options.name = parsed.args.name;
+    }
+    if (options['generate-config']) {
+      const name = await input({
+        message: 'Please enter app name',
+        required: true
+      });
+      const eslint = await input({
+        message: 'eslint?',
+        default: 'false'
+      });
     }
     let configs = '';
     if (Object.keys(options).length) {
