@@ -1,9 +1,16 @@
 import chalk from 'chalk';
-import fs from 'fs';
+import {
+  existsSync,
+  readFileSync,
+  writeFileSync,
+  statSync,
+  readdirSync
+} from 'fs';
 import { exec } from 'child_process';
 import { MethodDeclaration, ParameterDeclaration, SourceFile } from 'ts-morph';
+import { Patch } from '../types/patch.types.js';
 
-const execPromise = (command: string) => {
+const execPromise = (command: string): Promise<ExecutionResponse> => {
   return new Promise((resolve, reject) => {
     exec(command, (error, stdout, stderr) => {
       resolve({ error, stdout, stderr });
@@ -11,18 +18,66 @@ const execPromise = (command: string) => {
   });
 }
 
-export async function execute(command: string, message?: string) {
+
+export type ExecutionResponse = {
+  error: any,
+  stdout: string,
+  stderr: string,
+};
+
+export async function execute(command: string, message?: string): Promise<ExecutionResponse> {
   if (message) console.log(chalk.blue(message));
   return execPromise(command);
 }
 
+export function applyPatches(patches: Patch, path: string): void {
+  try {
+    Object.keys((patches)).forEach(patchKey => {
+      const patch = patches[patchKey];
+      Object.keys(patch).forEach(subPatchKey => {
+        const { path: subPath, replacement, searchString } = patch[subPatchKey];
+        const filePath = `${path}${subPath}`;
+        const data = readFileSync(filePath, 'utf8');
+        let replace = false;
+        if (data) {
+          if (replacement === '') replace = true;
+          if (
+            replacement !== '' &&
+            !data.includes(replacement)
+          ) {
+            replace = true;
+          }
+          if (replace) {
+            const updatedContent = data.replace(searchString, replacement);
+            if (!updatedContent) throw new Error('failed to update the content.');
+            writeFileSync(filePath, updatedContent, 'utf8');
+            console.log('file updated successfully.');
+          }
+        } else {
+          throw new Error('no content found.');
+        }
+      });
+    });
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getNpmGlobalDir(): Promise<string> {
+  const response: ExecutionResponse = await execute(`npm list -g`);
+  if (!response.stdout) return '';
+  const lines = response.stdout.split('\n');
+  const subdirectory = lines[0].trim();
+  return `${subdirectory}/node_modules/@loopback/cli`;
+}
+
 // Recursive function to get files
 export function getFiles(dir: string, files: string[] = []) {
-  if (!fs.existsSync(dir)) return [];
-  const fileList = fs.readdirSync(dir);
+  if (!existsSync(dir)) return [];
+  const fileList = readdirSync(dir);
   for (const file of fileList) {
     const name = `${dir}/${file}`;
-    if (fs.statSync(name).isDirectory()) {
+    if (statSync(name).isDirectory()) {
       getFiles(name, files);
     } else {
       files.push(name);
