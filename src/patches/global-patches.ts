@@ -1,4 +1,7 @@
 import { Patch } from '../types/index.js';
+import { existsSync } from 'fs';
+import { applyPatches, getNpmGlobalDir } from '../utils/utils.js';
+import { applyPrePatches } from './pre-patches.js';
 
 const patches: Patch = {
     controllerTypeAssignment: {
@@ -319,5 +322,11 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             path: '/generators/relation/has-one-relation.generator.js',
         },
     },
-}
-export default patches;
+};
+
+(async () => {
+    const cliPath = await getNpmGlobalDir();
+    if (!existsSync(cliPath)) throw new Error('Loopback\'s CLI is not installed.');
+    applyPatches(patches, cliPath);
+    applyPrePatches();
+})();
