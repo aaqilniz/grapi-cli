@@ -394,7 +394,7 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
         },
         forRestCrudGenerator: {
             searchString: 'if (_.isEmpty(this.artifactInfo.modelNameList)) {',
-            replacement: `if (_.isEmpty(this.artifactInfo.modelNameList)) {\nif(\!this.artifactInfo.config \&\& this.options['generate-configs']) {delete this.artifactInfo['generate-configs'];const configs = { ...this.artifactInfo };configs.url = this.url;this.log(JSON.stringify(configs));process.exit(0)}`,
+            replacement: `if(\!this.artifactInfo.config \&\& this.options['generate-configs']) {delete this.artifactInfo['generate-configs'];const configs = { ...this.artifactInfo };configs.url = this.url;this.log(JSON.stringify(configs));process.exit(0)}\nif (_.isEmpty(this.artifactInfo.modelNameList)) {`,
             path: '/generators/rest-crud/index.js',
         },
         forServiceGenerator: {
