@@ -1,7 +1,7 @@
 import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk';
 
-import { processOptions, execute } from '../utils/index.js';
+import { processOptions, execute, prompt } from '../utils/index.js';
 
 export default class Fuzzy extends Command {
 

@@ -322,6 +322,98 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             path: '/generators/relation/has-one-relation.generator.js',
         },
     },
+    supportAllOptionInRepoGenerator: {
+        checkForAllOption: {
+            searchString: 'if (this.options.model) {',
+            replacement: 'if(this.options.all){this.artifactInfo.modelNameList = modelList;}\nif (this.options.model) {',
+            path: '/generators/repository/index.js',
+        },
+    },
+    setAllTrueIfAllModelSelected: {
+        checkForAllOption: {
+            searchString: 'debug(`props after model list prompt: ${inspect(props)}`);',
+            replacement: 'if (this.artifactInfo.modelNameList.length === modelList.length) {this.artifactInfo.all = true;} else {this.options.model = this.artifactInfo.modelNameList.toString();}\ndebug(`props after model list prompt: ${inspect(props)}`);',
+            path: '/generators/repository/index.js',
+        },
+    },
+    supportMultiModelsInRepoGenerator: {
+        addSplitingModelsByComma: {
+            searchString: 'this.options.model = utils.toClassName(this.options.model);',
+            replacement: 'let models = this.options.model.split(\',\');models = models.map(model => utils.toClassName(model));const modelNameList = [];this.options.model = models.toString();models.forEach(model => {if (modelList \&\& modelList.length > 0 \&\& modelList.includes(model)) {modelNameList.push(model);} else {modelList = [];}});Object.assign(this.artifactInfo, { modelNameList });',
+            path: '/generators/repository/index.js',
+        },
+        removeSingleModelImplementation: {
+            searchString: `if\\s*\\(\\s*modelList\\s*&&\\s*modelList\\.length\\s*>\\s*0\\s*&&\\s*modelList\\.includes\\(\\s*this\\.options\\.model\\s*\\)\\s*\\)\\s*\\{\\s*Object\\.assign\\(\\s*this\\.artifactInfo,\\s*\\{modelNameList:\\s*\\[this\\.options\\.model\\]\\}\\);\\s*\\}\\s*else\\s*\\{\\s*modelList\\s*=\\s*\\[\\];\\s*\\}`,
+            replacement: '',
+            path: '/generators/repository/index.js',
+            isRegex: true
+        },
+    },
+    fixDiscoveryWithMissingModels: {
+        ignoreUndefinedModel: {
+            searchString: 'const modelInfo = this.discoveringModels[i];',
+            replacement: `const modelInfo = this.discoveringModels[i];\nif (\!modelInfo) continue;`,
+            path: '/generators/discover/index.js',
+        },
+    },
+    generateConfigs: {
+        forAppGenerator: {
+            searchString: 'if (this.shouldExit()) return result;',
+            replacement: `if (this.shouldExit()) return result;\nif(\!this.projectInfo.config \&\& this.options['generate-configs']) {delete this.projectInfo['generate-configs'];const configs = { ...this.projectInfo };delete configs.projectType;delete configs.dependencies;this.log(JSON.stringify(configs));process.exit(0)}`,
+            path: '/generators/app/index.js',
+        },
+        forControllerGenerator: {
+            searchString: '// renames the file',
+            replacement: `if(\!this.artifactInfo.config \&\& this.options['generate-configs']) {delete this.artifactInfo['generate-configs'];const configs = { ...this.artifactInfo };this.log(JSON.stringify(configs));process.exit(0)}`,
+            path: '/generators/controller/index.js',
+        },
+        forDatasourceGenerator: {
+            searchString: '// From LB3',
+            replacement: `if(\!this.artifactInfo.config \&\& this.options['generate-configs']) {delete this.artifactInfo['generate-configs'];const configs = { ...this.artifactInfo };this.log(JSON.stringify(configs));process.exit(0)}`,
+            path: '/generators/datasource/index.js',
+        },
+        forDiscoverGenerator: {
+            searchString: '// Exit if needed',
+            replacement: `if (\!this.artifactInfo.config \&\& this.options['generate-configs']) {delete this.artifactInfo['generate-configs'];const configs = { ...this.artifactInfo };if (configs.modelDefinitions.length === this.modelChoices.length) {delete configs.modelDefinitions;configs.all = true;} else {configs.modelDefinitions.forEach(({ name }) => {if (\!configs.models) configs.models = '';configs.models += \`\${name},\`;});configs.models = configs.models.substring(0, configs.models.length - 1);delete configs.modelDefinitions;}delete configs.dataSource;configs.schema = this.options.schema;this.log(configs);this.log(JSON.stringify(configs));process.exit(0);}`,
+            path: '/generators/discover/index.js',
+        },
+        forInterceptorGenerator: {
+            searchString: '// Setting up data for templates',
+            replacement: `if(\!this.artifactInfo.config \&\& this.options['generate-configs']) {delete this.artifactInfo['generate-configs'];const configs = { ...this.artifactInfo };this.log(JSON.stringify(configs));process.exit(0)}`,
+            path: '/generators/interceptor/index.js',
+        },
+        forModelGenerator: {
+            searchString: 'debug(\'scaffolding\');',
+            replacement: `if(\!this.artifactInfo.config \&\& this.options['generate-configs']) {delete this.artifactInfo['generate-configs'];const configs = { ...this.artifactInfo };this.log(JSON.stringify(configs));process.exit(0)}\ndebug('scaffolding');`,
+            path: '/generators/model/index.js',
+        },
+        forOpenapiGenerator: {
+            searchString: 'this._generateModels();',
+            replacement: `if(\!this.artifactInfo.config \&\& this.options['generate-configs']) {delete this.artifactInfo['generate-configs'];const configs = { ...this.artifactInfo };configs.url = this.url;this.log(JSON.stringify(configs));process.exit(0)}\nthis._generateModels();`,
+            path: '/generators/openapi/index.js',
+        },
+        forRestCrudGenerator: {
+            searchString: 'if (_.isEmpty(this.artifactInfo.modelNameList)) {',
+            replacement: `if (_.isEmpty(this.artifactInfo.modelNameList)) {\nif(\!this.artifactInfo.config \&\& this.options['generate-configs']) {delete this.artifactInfo['generate-configs'];const configs = { ...this.artifactInfo };configs.url = this.url;this.log(JSON.stringify(configs));process.exit(0)}`,
+            path: '/generators/rest-crud/index.js',
+        },
+        forServiceGenerator: {
+            searchString: '// Setting up data for templates',
+            replacement: 'if(\!this.artifactInfo.config \&\& this.options[\'generate-configs\']) {delete this.artifactInfo[\'generate-configs\'];const configs = {};configs.name = this.artifactInfo.name;configs.serviceType = this.artifactInfo.serviceType;configs.datasource = this.artifactInfo.datasource;this.log(JSON.stringify(configs));process.exit(0);}',
+            path: '/generators/service/index.js',
+        },
+        forRepositoryGenerator: {
+            searchString: 'this.artifactInfo.isRepositoryBaseBuiltin = BASE_REPOSITORIES.includes(',
+            replacement: 'if (\!this.artifactInfo.config && this.options[\'generate-configs\']) {delete this.artifactInfo[\'generate-configs\'];const configs = {};configs.datasource = this.artifactInfo.dataSourceName;configs.model = this.options.model;configs.id = this.options.idProperty;configs.all = this.artifactInfo.all;configs.repositoryBaseClass = this.artifactInfo.repositoryBaseClass;this.log(JSON.stringify(configs));process.exit(0);}\nthis.artifactInfo.isRepositoryBaseBuiltin = BASE_REPOSITORIES.includes(',
+            path: '/generators/repository/index.js',
+        },
+        forRelationGenerator: {
+            searchString: 'let relationGenerator;',
+            replacement: 'if (\!this.artifactInfo.config \&\& this.options[\'generate-configs\']) {delete this.artifactInfo[\'generate-configs\'];const configs = {};configs.relationName = this.artifactInfo.relationName;configs.sourceModel = this.artifactInfo.sourceModel;configs.destinationModel = this.artifactInfo.destinationModel;configs.throughModel = this.artifactInfo.throughModel;configs.foreignKeyName = this.artifactInfo.foreignKeyName;configs.sourceModelPrimaryKey = this.artifactInfo.sourceModelPrimaryKey;configs.destinationModelPrimaryKey = this.artifactInfo.destinationModelPrimaryKey;configs.sourceKeyOnThrough = this.artifactInfo.sourceKeyOnThrough;configs.sourceModelPrimaryKeyType = this.artifactInfo.sourceModelPrimaryKeyType;configs.targetKeyOnThrough = this.artifactInfo.targetKeyOnThrough;configs.destinationModelPrimaryKeyType = this.artifactInfo.destinationModelPrimaryKeyType;configs.relationName = this.artifactInfo.relationName;configs.relationType = this.artifactInfo.relationType;configs.registerInclusionResolver = this.artifactInfo.registerInclusionResolver;this.log(JSON.stringify(configs));process.exit(0);}\nlet relationGenerator;',
+            path: '/generators/relation/index.js',
+        },
+    },
+
 };
 
 (async () => {

@@ -1,7 +1,7 @@
 import { Args, Command } from '@oclif/core'
 import chalk from 'chalk';
 
-import { processOptions, execute, standardFlags } from '../utils/index.js';
+import { processOptions, execute, standardFlags, prompt } from '../utils/index.js';
 
 export default class Example extends Command {
   static override description = 'download examples.';
@@ -15,6 +15,7 @@ export default class Example extends Command {
 
   public async run(): Promise<void> {
     const parsed = await this.parse(Example);
+    if (!parsed.flags.config) return prompt('example', parsed.flags);
     let options = processOptions(parsed.flags);
     let configs = '';
     if (Object.keys(options).length) {

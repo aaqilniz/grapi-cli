@@ -3,7 +3,8 @@ export type Patch = {
         [x: string]: {
             searchString: string,
             replacement: string,
-            path: string
+            path: string,
+            isRegex?: boolean
         }
     }
 }
