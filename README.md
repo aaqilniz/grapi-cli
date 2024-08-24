@@ -14,7 +14,7 @@ $ npm install -g grapi-cli
 $ grapi-cli COMMAND
 running command...
 $ grapi-cli (--version)
-grapi-cli/0.0.25 linux-x64 node-v18.17.1
+grapi-cli/0.0.37 linux-x64 node-v18.17.1
 $ grapi-cli --help [COMMAND]
 USAGE
   $ grapi-cli COMMAND
@@ -71,9 +71,9 @@ generate application.
 
 ```
 USAGE
-  $ grapi-cli app [NAME] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--name <value>]
-    [--description <value>] [--outdir <value>] [--eslint] [--prettier] [--mocha] [--loopbackBuild] [--vscode] [--docker]
-    [--repositories] [--services] [--apiconnect]
+  $ grapi-cli app [NAME] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--generate-configs]
+    [--name <value>] [--description <value>] [--outdir <value>] [--eslint] [--prettier] [--mocha] [--loopbackBuild]
+    [--vscode] [--docker] [--repositories] [--services] [--apiconnect]
 
 ARGUMENTS
   NAME  name of the application.
@@ -86,6 +86,7 @@ FLAGS
       --description=<value>  Description of the application.
       --docker               Generate Dockerfile and add npm scripts to build/run the project in a docker container.
       --eslint               Add ESLint to LoopBack4 application project.
+      --generate-configs     return configs based on answers from the prompt.
       --loopbackBuild        Add @loopback/build module’s script set to LoopBack4 application project.
       --mocha                Add Mocha to LoopBack4 application project.
       --name=<value>         Application class name.
@@ -101,7 +102,7 @@ DESCRIPTION
   generate application.
 ```
 
-_See code: [src/commands/app.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/app.ts)_
+_See code: [src/commands/app.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/app.ts)_
 
 ## `grapi-cli auth`
 
@@ -121,7 +122,7 @@ DESCRIPTION
   adding auth to loopback 4 application.
 ```
 
-_See code: [src/commands/auth.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/auth.ts)_
+_See code: [src/commands/auth.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/auth.ts)_
 
 ## `grapi-cli auth:users`
 
@@ -139,7 +140,7 @@ DESCRIPTION
   adding auth to loopback 4 application.
 ```
 
-_See code: [src/commands/auth/users.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/auth/users.ts)_
+_See code: [src/commands/auth/users.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/auth/users.ts)_
 
 ## `grapi-cli cache`
 
@@ -147,8 +148,8 @@ creating cache for endpoints
 
 ```
 USAGE
-  $ grapi-cli cache [-c <value>] [--redisDS <value>] [--TTL <value>] [--prefix <value>] [--exclude <value>]
-    [--include <value>]
+  $ grapi-cli cache [-c <value>] [--redisDS <value>] [--cacheTTL <value>] [--prefix <value>] [--exclude
+    <value>] [--include <value>]
 
 FLAGS
   -c, --config=<value>    Config JSON object
@@ -162,7 +163,7 @@ DESCRIPTION
   creating cache for endpoints
 ```
 
-_See code: [src/commands/cache.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/cache.ts)_
+_See code: [src/commands/cache.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/cache.ts)_
 
 ## `grapi-cli controller [NAME]`
 
@@ -170,7 +171,8 @@ generate controllers
 
 ```
 USAGE
-  $ grapi-cli controller [NAME] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--Type REST|BASIC]
+  $ grapi-cli controller [NAME] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--generate-configs]
+    [--controllerType REST|BASIC]
 
 ARGUMENTS
   NAME  name of controller.
@@ -182,6 +184,7 @@ FLAGS
       --controllerType=<option>  Type of the controller. Valid types are BASIC and REST. BASIC corresponds to an empty
                                  controller, whereas REST corresponds to REST controller with CRUD methods.
                                  <options: REST|BASIC>
+      --generate-configs         return configs based on answers from the prompt.
       --skip-cache               Do not remember prompt answers. Default is false.
       --skip-install             Do not automatically install dependencies. Default is false.
 
@@ -189,7 +192,7 @@ DESCRIPTION
   generate controllers
 ```
 
-_See code: [src/commands/controller.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/controller.ts)_
+_See code: [src/commands/controller.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/controller.ts)_
 
 ## `grapi-cli copyright`
 
@@ -197,8 +200,8 @@ add/update copyright
 
 ```
 USAGE
-  $ grapi-cli copyright [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--owner <value>] [--license
-    <value>] [--gitOnly <value>] [--updateLicense <value>] [--exclude <value>]
+  $ grapi-cli copyright [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--generate-configs] [--owner
+    <value>] [--license <value>] [--gitOnly <value>] [--updateLicense <value>] [--exclude <value>]
 
 FLAGS
   -c, --config=<value>         Config JSON object
@@ -206,6 +209,7 @@ FLAGS
   -y, --yes                    Skip all confirmation prompts with default or provided value.
       --exclude=<value>        One or more glob patterns with , delimiter to exclude files that match the patterns from
                                being updated.
+      --generate-configs       return configs based on answers from the prompt.
       --gitOnly=<value>        A flag to control if only git tracked files are updated. Default to true.
       --license=<value>        The name of the license, such as MIT.
       --owner=<value>          The owner of the copyright, such as IBM Corp. and LoopBack contributors.
@@ -218,7 +222,7 @@ DESCRIPTION
   add/update copyright
 ```
 
-_See code: [src/commands/copyright.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/copyright.ts)_
+_See code: [src/commands/copyright.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/copyright.ts)_
 
 ## `grapi-cli datasource [NAME]`
 
@@ -226,7 +230,8 @@ generate datasource.
 
 ```
 USAGE
-  $ grapi-cli datasource [NAME] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--connector <value>]
+  $ grapi-cli datasource [NAME] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--generate-configs]
+    [--connector <value>]
 
 ARGUMENTS
   NAME  name of the datasource.
@@ -236,6 +241,7 @@ FLAGS
   -h, --help               Print the generator’s options and usage.
   -y, --yes                Skip all confirmation prompts with default or provided value.
       --connector=<value>  Name of datasource connector.
+      --generate-configs   return configs based on answers from the prompt.
       --skip-cache         Do not remember prompt answers. Default is false.
       --skip-install       Do not automatically install dependencies. Default is false.
 
@@ -243,7 +249,7 @@ DESCRIPTION
   generate datasource.
 ```
 
-_See code: [src/commands/datasource.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/datasource.ts)_
+_See code: [src/commands/datasource.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/datasource.ts)_
 
 ## `grapi-cli discover [URL]`
 
@@ -251,9 +257,9 @@ discover models.
 
 ```
 USAGE
-  $ grapi-cli discover [URL] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--dataSource <value>]
-    [--views] [--relations] [--all] [--outDir <value>] [--schema <value>] [--models <value>] [--optionalId]
-    [--connectorDiscoveryOptions <value>]
+  $ grapi-cli discover [URL] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--generate-configs]
+    [--dataSource <value>] [--views] [--relations] [--all] [--outDir <value>] [--schema <value>] [--models <value>]
+    [--optionalId] [--connectorDiscoveryOptions <value>]
 
 ARGUMENTS
   URL  URL or file path of the OpenAPI spec. Type: String. Required: false.
@@ -265,6 +271,7 @@ FLAGS
       --all                                Skips the model prompt and discovers all of them.
       --connectorDiscoveryOptions=<value>  Pass the options to the connectors.
       --dataSource=<value>                 Put a valid datasource name here to skip the datasource prompt.
+      --generate-configs                   return configs based on answers from the prompt.
       --models=<value>                     Specify the models to be generated e.g:–models=table1,table2.
       --optionalId                         Specify if the Id property of generated models will be marked as not
                                            required.
@@ -280,7 +287,7 @@ DESCRIPTION
   discover models.
 ```
 
-_See code: [src/commands/discover.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/discover.ts)_
+_See code: [src/commands/discover.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/discover.ts)_
 
 ## `grapi-cli example [EXAMPLE-NAME]`
 
@@ -289,23 +296,25 @@ download examples.
 ```
 USAGE
   $ grapi-cli example [EXAMPLE-NAME] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install]
+    [--generate-configs]
 
 ARGUMENTS
   EXAMPLE-NAME  Optional name of the example to clone. If provided, the tool will skip the example-name prompt and run
                 in a non-interactive mode.
 
 FLAGS
-  -c, --config=<value>  Config JSON object
-  -h, --help            Print the generator’s options and usage.
-  -y, --yes             Skip all confirmation prompts with default or provided value.
-      --skip-cache      Do not remember prompt answers. Default is false.
-      --skip-install    Do not automatically install dependencies. Default is false.
+  -c, --config=<value>    Config JSON object
+  -h, --help              Print the generator’s options and usage.
+  -y, --yes               Skip all confirmation prompts with default or provided value.
+      --generate-configs  return configs based on answers from the prompt.
+      --skip-cache        Do not remember prompt answers. Default is false.
+      --skip-install      Do not automatically install dependencies. Default is false.
 
 DESCRIPTION
   download examples.
 ```
 
-_See code: [src/commands/example.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/example.ts)_
+_See code: [src/commands/example.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/example.ts)_
 
 ## `grapi-cli extension [NAME]`
 
@@ -313,8 +322,8 @@ generate extension.
 
 ```
 USAGE
-  $ grapi-cli extension [NAME] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--description <value>]
-    [--outDir <value>] [--eslint] [--prettier] [--mocha] [--loopbackBuild] [--vscode]
+  $ grapi-cli extension [NAME] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--generate-configs]
+    [--description <value>] [--outDir <value>] [--eslint] [--prettier] [--mocha] [--loopbackBuild] [--vscode]
 
 ARGUMENTS
   NAME  Optional name of the extension given as an argument to the command.
@@ -325,6 +334,7 @@ FLAGS
   -y, --yes                  Skip all confirmation prompts with default or provided value.
       --description=<value>  project root directory for the extension.
       --eslint               Add ESLint to LoopBack4 extension project.
+      --generate-configs     return configs based on answers from the prompt.
       --loopbackBuild        Add @loopback/build module’s script set to LoopBack4 extension project.
       --mocha                Add Mocha to LoopBack4 extension projectAdd @loopback/build module’s script set to
                              LoopBack4 extension project.
@@ -338,7 +348,7 @@ DESCRIPTION
   generate extension.
 ```
 
-_See code: [src/commands/extension.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/extension.ts)_
+_See code: [src/commands/extension.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/extension.ts)_
 
 ## `grapi-cli external:operation`
 
@@ -369,7 +379,7 @@ DESCRIPTION
   adding auth to loopback 4 application.
 ```
 
-_See code: [src/commands/external/operation.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/external/operation.ts)_
+_See code: [src/commands/external/operation.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/external/operation.ts)_
 
 ## `grapi-cli fuzzy`
 
@@ -377,8 +387,8 @@ generate fuzzy endpoints for lb4 based controllers
 
 ```
 USAGE
-  $ grapi-cli fuzzy [-c <value>] [-- <value>] [--centralFuzzy <value>] [--datasource <value>] [--appName
-    <value>] [--exclude <value>] [--include <value>]
+  $ grapi-cli fuzzy [-c <value>] [--fuzzy <value>] [--centralFuzzy <value>] [--datasource <value>]
+    [--appName <value>] [--exclude <value>] [--include <value>]
 
 FLAGS
   -c, --config=<value>        Config JSON object
@@ -393,7 +403,7 @@ DESCRIPTION
   generate fuzzy endpoints for lb4 based controllers
 ```
 
-_See code: [src/commands/fuzzy.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/fuzzy.ts)_
+_See code: [src/commands/fuzzy.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/fuzzy.ts)_
 
 ## `grapi-cli help [COMMAND]`
 
@@ -421,24 +431,26 @@ import lb3 models.
 
 ```
 USAGE
-  $ grapi-cli import-lb3-models [LB3APP] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--outDir <value>]
+  $ grapi-cli import-lb3-models [LB3APP] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--generate-configs]
+    [--outDir <value>]
 
 ARGUMENTS
   LB3APP  Path to the directory containing your LoopBack 3.x application.
 
 FLAGS
-  -c, --config=<value>  Config JSON object
-  -h, --help            Print the generator’s options and usage.
-  -y, --yes             Skip all confirmation prompts with default or provided value.
-      --outDir=<value>  [default: src/models] Directory where to write the generated source file. Default: src/models.
-      --skip-cache      Do not remember prompt answers. Default is false.
-      --skip-install    Do not automatically install dependencies. Default is false.
+  -c, --config=<value>    Config JSON object
+  -h, --help              Print the generator’s options and usage.
+  -y, --yes               Skip all confirmation prompts with default or provided value.
+      --generate-configs  return configs based on answers from the prompt.
+      --outDir=<value>    [default: src/models] Directory where to write the generated source file. Default: src/models.
+      --skip-cache        Do not remember prompt answers. Default is false.
+      --skip-install      Do not automatically install dependencies. Default is false.
 
 DESCRIPTION
   import lb3 models.
 ```
 
-_See code: [src/commands/import-lb3-models.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/import-lb3-models.ts)_
+_See code: [src/commands/import-lb3-models.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/import-lb3-models.ts)_
 
 ## `grapi-cli interceptor NAME`
 
@@ -446,29 +458,30 @@ generate interceptor.
 
 ```
 USAGE
-  $ grapi-cli interceptor NAME [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--global] [--no-global]
-    [--group <value>]
+  $ grapi-cli interceptor NAME [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--generate-configs]
+    [--global] [--no-global] [--group <value>]
 
 ARGUMENTS
   NAME  Required name of the observer to create as an argument to the command.
 
 FLAGS
-  -c, --config=<value>  Config JSON object
-  -h, --help            Print the generator’s options and usage.
-  -y, --yes             Skip all confirmation prompts with default or provided value.
-      --global          Optional flag to indicate a global interceptor (default to true). Use --no-global to set it to
-                        false.
-      --group=<value>   Optional name of the interceptor group to sort the execution of global interceptors by group.
-                        This option is only supported for global interceptors.
-      --no-global       set global to false
-      --skip-cache      Do not remember prompt answers. Default is false.
-      --skip-install    Do not automatically install dependencies. Default is false.
+  -c, --config=<value>    Config JSON object
+  -h, --help              Print the generator’s options and usage.
+  -y, --yes               Skip all confirmation prompts with default or provided value.
+      --generate-configs  return configs based on answers from the prompt.
+      --global            Optional flag to indicate a global interceptor (default to true). Use --no-global to set it to
+                          false.
+      --group=<value>     Optional name of the interceptor group to sort the execution of global interceptors by group.
+                          This option is only supported for global interceptors.
+      --no-global         set global to false
+      --skip-cache        Do not remember prompt answers. Default is false.
+      --skip-install      Do not automatically install dependencies. Default is false.
 
 DESCRIPTION
   generate interceptor.
 ```
 
-_See code: [src/commands/interceptor.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/interceptor.ts)_
+_See code: [src/commands/interceptor.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/interceptor.ts)_
 
 ## `grapi-cli model [NAME]`
 
@@ -476,8 +489,8 @@ generate model.
 
 ```
 USAGE
-  $ grapi-cli model [NAME] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--base <value>]
-    [--dataSource <value>] [--table <value>] [--schema <value>]
+  $ grapi-cli model [NAME] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--generate-configs]
+    [--base <value>] [--dataSource <value>] [--table <value>] [--schema <value>]
 
 ARGUMENTS
   NAME  name of the model.
@@ -489,6 +502,7 @@ FLAGS
       --base=<value>        a valid model already created in src/models or any of the core based class models Entity or
                             Model. Your new model will extend this selected base model class
       --dataSource=<value>  The name of the dataSource which contains this model and suppots model discovery
+      --generate-configs    return configs based on answers from the prompt.
       --schema=<value>      If discovering a model from a dataSource, specify the schema which contains it
       --skip-cache          Do not remember prompt answers. Default is false.
       --skip-install        Do not automatically install dependencies. Default is false.
@@ -498,7 +512,7 @@ DESCRIPTION
   generate model.
 ```
 
-_See code: [src/commands/model.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/model.ts)_
+_See code: [src/commands/model.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/model.ts)_
 
 ## `grapi-cli model:remove`
 
@@ -516,7 +530,7 @@ DESCRIPTION
   enable adding property to loopoback 4 models
 ```
 
-_See code: [src/commands/model/remove.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/model/remove.ts)_
+_See code: [src/commands/model/remove.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/model/remove.ts)_
 
 ## `grapi-cli observer NAME`
 
@@ -524,24 +538,26 @@ generate observer.
 
 ```
 USAGE
-  $ grapi-cli observer NAME [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--group <value>]
+  $ grapi-cli observer NAME [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--generate-configs]
+    [--group <value>]
 
 ARGUMENTS
   NAME  Required name of the observer to create as an argument to the command.
 
 FLAGS
-  -c, --config=<value>  Config JSON object
-  -h, --help            Print the generator’s options and usage.
-  -y, --yes             Skip all confirmation prompts with default or provided value.
-      --group=<value>   Optional name of the observer group to sort the execution of observers by group.
-      --skip-cache      Do not remember prompt answers. Default is false.
-      --skip-install    Do not automatically install dependencies. Default is false.
+  -c, --config=<value>    Config JSON object
+  -h, --help              Print the generator’s options and usage.
+  -y, --yes               Skip all confirmation prompts with default or provided value.
+      --generate-configs  return configs based on answers from the prompt.
+      --group=<value>     Optional name of the observer group to sort the execution of observers by group.
+      --skip-cache        Do not remember prompt answers. Default is false.
+      --skip-install      Do not automatically install dependencies. Default is false.
 
 DESCRIPTION
   generate observer.
 ```
 
-_See code: [src/commands/observer.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/observer.ts)_
+_See code: [src/commands/observer.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/observer.ts)_
 
 ## `grapi-cli openapi [URL]`
 
@@ -549,8 +565,8 @@ generate openapi based apis.
 
 ```
 USAGE
-  $ grapi-cli openapi [URL] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--url <value>]
-    [--validate] [--promote-anonymous-schemas] [--client] [--datasource <value>] [--positional]
+  $ grapi-cli openapi [URL] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--generate-configs]
+    [--url <value>] [--validate] [--promote-anonymous-schemas] [--client] [--datasource <value>] [--positional]
 
 ARGUMENTS
   URL  URL or file path of the OpenAPI spec. Type: String. Required: false.
@@ -562,6 +578,7 @@ FLAGS
       --client                     Generate client-side service proxies and controllers with implementation for the
                                    OpenAPI spec.
       --datasource=<value>         A valid datasource name.
+      --generate-configs           return configs based on answers from the prompt.
       --positional                 A flag to control if service methods use positional parameters or an object with
                                    named properties.
       --promote-anonymous-schemas  Promote anonymous schemas as models classes.
@@ -574,7 +591,7 @@ DESCRIPTION
   generate openapi based apis.
 ```
 
-_See code: [src/commands/openapi.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/openapi.ts)_
+_See code: [src/commands/openapi.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/openapi.ts)_
 
 ## `grapi-cli plugins`
 
@@ -877,7 +894,7 @@ DESCRIPTION
   execute post ds patches.
 ```
 
-_See code: [src/commands/post-ds-patches.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/post-ds-patches.ts)_
+_See code: [src/commands/post-ds-patches.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/post-ds-patches.ts)_
 
 ## `grapi-cli post-patches`
 
@@ -891,7 +908,7 @@ DESCRIPTION
   execute post patches.
 ```
 
-_See code: [src/commands/post-patches.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/post-patches.ts)_
+_See code: [src/commands/post-patches.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/post-patches.ts)_
 
 ## `grapi-cli pre-relation-patches`
 
@@ -905,7 +922,7 @@ DESCRIPTION
   execute pre relation patches.
 ```
 
-_See code: [src/commands/pre-relation-patches.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/pre-relation-patches.ts)_
+_See code: [src/commands/pre-relation-patches.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/pre-relation-patches.ts)_
 
 ## `grapi-cli property:add`
 
@@ -924,7 +941,7 @@ DESCRIPTION
   enable adding property to loopoback 4 models
 ```
 
-_See code: [src/commands/property/add.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/property/add.ts)_
+_See code: [src/commands/property/add.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/property/add.ts)_
 
 ## `grapi-cli property:remove`
 
@@ -943,7 +960,7 @@ DESCRIPTION
   enable adding property to loopoback 4 models
 ```
 
-_See code: [src/commands/property/remove.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/property/remove.ts)_
+_See code: [src/commands/property/remove.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/property/remove.ts)_
 
 ## `grapi-cli relation`
 
@@ -951,10 +968,11 @@ generate relations.
 
 ```
 USAGE
-  $ grapi-cli relation [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--Type <value>] [--sourceModel
-    <value>] [--destinationModel <value>] [--throughModel <value>] [--sourceModelPrimaryKey <value>]
-    [--sourceModelPrimaryKeyType <value>] [--destinationModelPrimaryKey <value>] [--destinationModelPrimaryKeyType
-    <value>] [--foreignKeyName <value>] [--Name <value>] [--sourceKeyOnThrough <value>] [--targetKeyOnThrough <value>]
+  $ grapi-cli relation [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--generate-configs]
+    [--relationType <value>] [--sourceModel <value>] [--destinationModel <value>] [--throughModel <value>]
+    [--sourceModelPrimaryKey <value>] [--sourceModelPrimaryKeyType <value>] [--destinationModelPrimaryKey <value>]
+    [--destinationModelPrimaryKeyType <value>] [--foreignKeyName <value>] [--relationName <value>] [--sourceKeyOnThrough
+    <value>] [--targetKeyOnThrough <value>]
 
 FLAGS
   -c, --config=<value>                          Config JSON object
@@ -965,6 +983,7 @@ FLAGS
       --destinationModelPrimaryKeyType=<value>  The type of the primary key of the destination model.
       --foreignKeyName=<value>                  Destination/Source model foreign key name for HasMany,HasOne/BelongsTo
                                                 relation, respectively.
+      --generate-configs                        return configs based on answers from the prompt.
       --relationName=<value>                    Relation name.
       --relationType=<value>                    Relation type.
       --skip-cache                              Do not remember prompt answers. Default is false.
@@ -982,7 +1001,7 @@ DESCRIPTION
   generate relations.
 ```
 
-_See code: [src/commands/relation.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/relation.ts)_
+_See code: [src/commands/relation.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/relation.ts)_
 
 ## `grapi-cli repository [NAME]`
 
@@ -990,8 +1009,8 @@ generate repositories.
 
 ```
 USAGE
-  $ grapi-cli repository [NAME] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--datasource <value>]
-    [--model <value>] [--id <value>] [--BaseClass <value>]
+  $ grapi-cli repository [NAME] [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--generate-configs]
+    [--datasource <value>] [--model <value>] [--id <value>] [--repositoryBaseClass <value>]
 
 ARGUMENTS
   NAME  name of the repository.
@@ -1001,6 +1020,7 @@ FLAGS
   -h, --help                         Print the generator’s options and usage.
   -y, --yes                          Skip all confirmation prompts with default or provided value.
       --datasource=<value>           name of a valid datasource already created in src/datasources.
+      --generate-configs             return configs based on answers from the prompt.
       --id=<value>                   name of the property serving as ID in the selected model. If you supply this value,
                                      the CLI will not try to infer this value from the selected model file.
       --model=<value>                name of a valid model already created in src/models.
@@ -1013,7 +1033,7 @@ DESCRIPTION
   generate repositories.
 ```
 
-_See code: [src/commands/repository.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/repository.ts)_
+_See code: [src/commands/repository.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/repository.ts)_
 
 ## `grapi-cli rest-crud`
 
@@ -1021,8 +1041,8 @@ generate rest crud apis.
 
 ```
 USAGE
-  $ grapi-cli rest-crud [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--datasource <value>] [--model
-    <value>] [--basePath <value>] [--readonly <value>]
+  $ grapi-cli rest-crud [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--generate-configs]
+    [--datasource <value>] [--model <value>] [--basePath <value>] [--readonly <value>]
 
 FLAGS
   -c, --config=<value>      Config JSON object
@@ -1030,6 +1050,7 @@ FLAGS
   -y, --yes                 Skip all confirmation prompts with default or provided value.
       --basePath=<value>    base path of the model endpoint.
       --datasource=<value>  name of a valid datasource already created in src/datasources.
+      --generate-configs    return configs based on answers from the prompt.
       --model=<value>       name of a valid model already created in src/models.
       --readonly=<value>    create readonly APIs e.g find and count.
       --skip-cache          Do not remember prompt answers. Default is false.
@@ -1039,7 +1060,7 @@ DESCRIPTION
   generate rest crud apis.
 ```
 
-_See code: [src/commands/rest-crud.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/rest-crud.ts)_
+_See code: [src/commands/rest-crud.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/rest-crud.ts)_
 
 ## `grapi-cli service NAME`
 
@@ -1047,8 +1068,8 @@ generate a service.
 
 ```
 USAGE
-  $ grapi-cli service NAME [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--type <value>]
-    [--datasource <value>]
+  $ grapi-cli service NAME [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--generate-configs]
+    [--type <value>] [--datasource <value>]
 
 ARGUMENTS
   NAME  name of the service.
@@ -1058,6 +1079,7 @@ FLAGS
   -h, --help                Print the generator’s options and usage.
   -y, --yes                 Skip all confirmation prompts with default or provided value.
       --datasource=<value>  name of a valid REST or SOAP datasource already created in src/datasources.
+      --generate-configs    return configs based on answers from the prompt.
       --skip-cache          Do not remember prompt answers. Default is false.
       --skip-install        Do not automatically install dependencies. Default is false.
       --type=<value>        service type: proxy, class, or provider.
@@ -1066,7 +1088,7 @@ DESCRIPTION
   generate a service.
 ```
 
-_See code: [src/commands/service.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/service.ts)_
+_See code: [src/commands/service.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/service.ts)_
 
 ## `grapi-cli sql-controller`
 
@@ -1089,7 +1111,7 @@ DESCRIPTION
   describe the command here
 ```
 
-_See code: [src/commands/sql-controller.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/sql-controller.ts)_
+_See code: [src/commands/sql-controller.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/sql-controller.ts)_
 
 ## `grapi-cli update`
 
@@ -1097,22 +1119,24 @@ update application dependencies.
 
 ```
 USAGE
-  $ grapi-cli update [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--semver <value>]
+  $ grapi-cli update [-c <value>] [-y] [-h] [--skip-cache] [--skip-install] [--generate-configs] [--semver
+    <value>]
 
 FLAGS
-  -c, --config=<value>  Config JSON object
-  -h, --help            Print the generator’s options and usage.
-  -y, --yes             Skip all confirmation prompts with default or provided value.
-      --semver=<value>  Use semver semantics to check version compatibility for project dependencies of LoopBack
-                        modules.
-      --skip-cache      Do not remember prompt answers. Default is false.
-      --skip-install    Do not automatically install dependencies. Default is false.
+  -c, --config=<value>    Config JSON object
+  -h, --help              Print the generator’s options and usage.
+  -y, --yes               Skip all confirmation prompts with default or provided value.
+      --generate-configs  return configs based on answers from the prompt.
+      --semver=<value>    Use semver semantics to check version compatibility for project dependencies of LoopBack
+                          modules.
+      --skip-cache        Do not remember prompt answers. Default is false.
+      --skip-install      Do not automatically install dependencies. Default is false.
 
 DESCRIPTION
   update application dependencies.
 ```
 
-_See code: [src/commands/update.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/update.ts)_
 
 ## `grapi-cli update:model`
 
@@ -1133,5 +1157,5 @@ DESCRIPTION
   enable updating loopoback 4 models
 ```
 
-_See code: [src/commands/update/model.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.25/src/commands/update/model.ts)_
+_See code: [src/commands/update/model.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.37/src/commands/update/model.ts)_
 <!-- commandsstop -->

@@ -5,8 +5,16 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url';
 
-import { processOptions, execute, getFiles, addDecoratorToMethod, isLoopBackApp, toKebabCase, addImport, toPascalCase } from '../utils/index.js';
-import pluralize from 'pluralize';
+import {
+  processOptions,
+  execute,
+  getFiles,
+  addDecoratorToMethod,
+  isLoopBackApp,
+  toKebabCase,
+  addImport,
+  toPascalCase,
+} from '../utils/index.js';
 
 export default class Cache extends Command {
 
@@ -245,7 +253,7 @@ export default class Cache extends Command {
         this.addCacheProperty(project, initializer, apiMethods, cacheTTL, redisDS);
       }
     });
-    
+
     Object.keys(includingObjects).forEach(path => {
       const { initializer, including } = includingObjects[path];
       let apiMethods: string[] = [];

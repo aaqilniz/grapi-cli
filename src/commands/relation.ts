@@ -1,7 +1,7 @@
 import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk';
 
-import { processOptions, execute, standardFlags } from '../utils/index.js';
+import { processOptions, execute, standardFlags, prompt } from '../utils/index.js';
 
 export default class Relation extends Command {
   static override description = 'generate relations.';
@@ -24,12 +24,13 @@ export default class Relation extends Command {
 
   public async run(): Promise<void> {
     const parsed = await this.parse(Relation);
+    if (!parsed.flags.config) return prompt('relation', parsed.flags);
     let options = processOptions(parsed.flags);
     let configs = '';
     if (Object.keys(options).length) {
-      configs = `--config='${JSON.stringify(options)}' `;
+      configs = ` --config='${JSON.stringify(options)}' `;
     }
-    const command = `lb4 relation ${configs}--yes`;
+    const command = `lb4 relation${configs}--yes`;
     const executed: any = await execute(command, 'generating relation.');
     if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
     if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));

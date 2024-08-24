@@ -2,7 +2,7 @@ import { Args, Command, Flags } from '@oclif/core'
 import chalk from 'chalk';
 import { AppGeneratorFlags } from '../types/app.types.js';
 
-import { processOptions, execute, standardFlags } from '../utils/index.js';
+import { processOptions, execute, standardFlags, prompt } from '../utils/index.js';
 
 export default class App extends Command {
   static override description = 'generate application.'
@@ -28,6 +28,8 @@ export default class App extends Command {
 
   public async run(): Promise<void> {
     const parsed = await this.parse(App);
+    if (!parsed.flags.config) return prompt('app', parsed.flags, parsed.args);
+
     let options: AppGeneratorFlags = processOptions(parsed.flags);
     if (!options.name && parsed.args.name) {
       options.name = parsed.args.name;

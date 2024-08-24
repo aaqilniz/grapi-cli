@@ -6,7 +6,7 @@ import {
   statSync,
   readdirSync
 } from 'fs';
-import { exec } from 'child_process';
+import { exec, SpawnOptions, spawn } from 'child_process';
 import { MethodDeclaration, ParameterDeclaration, SourceFile } from 'ts-morph';
 import { Patch } from '../types/patch.types.js';
 
@@ -35,7 +35,7 @@ export function applyPatches(patches: Patch, path: string): void {
     Object.keys((patches)).forEach(patchKey => {
       const patch = patches[patchKey];
       Object.keys(patch).forEach(subPatchKey => {
-        const { path: subPath, replacement, searchString } = patch[subPatchKey];
+        const { path: subPath, replacement, searchString, isRegex } = patch[subPatchKey];
         const filePath = `${path}${subPath}`;
         const data = readFileSync(filePath, 'utf8');
         let replace = false;
@@ -48,7 +48,8 @@ export function applyPatches(patches: Patch, path: string): void {
             replace = true;
           }
           if (replace) {
-            const updatedContent = data.replace(searchString, replacement);
+            const updatedContent = data
+              .replace(isRegex ? new RegExp(searchString) : searchString, replacement);
             if (!updatedContent) throw new Error('failed to update the content.');
             writeFileSync(filePath, updatedContent, 'utf8');
             console.log('file updated successfully.');
@@ -168,4 +169,42 @@ export function isLoopBackApp(packageJson: any) {
   const { dependencies } = packageJson;
   if (!dependencies['@loopback/core']) return false;
   return true;
+}
+
+export function prompt(command: string, flags: any, args?: any) {
+  let flagString = '', argString = '';
+
+  if (args && Object.keys(args).length) {
+    Object.keys(args).forEach(key => { argString += `${args[key]} `; });
+    argString = argString.slice(0, -1);
+  }
+  if (flags && Object.keys(flags).length) {
+    Object.keys(flags).forEach(key => {
+      const flag = flags[key];
+      flagString += `--${key}=${flag} `;
+    });
+    flagString = flagString.slice(0, -1);
+  }
+
+
+  const options: SpawnOptions = {
+    stdio: 'inherit',  // Inherit standard I/O streams from the parent process
+    shell: true,       // Run the command in a shell
+  };
+  let completeCommand = `lb4 ${command}${argString ? ` ${argString}` : ''}${flagString ? ` ${flagString}` : ''}`;
+  console.log(completeCommand);
+
+  const lb4 = spawn(`lb4 ${command}${argString ? ` ${argString}` : ''}${flagString ? ` ${flagString}` : ''}`, [], options);
+
+  lb4.on('error', (err: Error) => {
+    console.error(`Error starting lb4 command: ${err.message}`);
+  });
+
+  lb4.on('close', (code: number | null) => {
+    if (code !== null) {
+      console.log(`lb4 command exited with code ${code}`);
+    } else {
+      console.log(`lb4 command was terminated`);
+    }
+  });
 }

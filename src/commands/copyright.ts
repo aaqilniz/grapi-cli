@@ -1,7 +1,7 @@
 import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk';
 
-import { processOptions, execute, standardFlags } from '../utils/index.js';
+import { processOptions, execute, standardFlags, prompt } from '../utils/index.js';
 
 export default class Copyright extends Command {
   static override description = 'add/update copyright'
@@ -17,6 +17,7 @@ export default class Copyright extends Command {
 
   public async run(): Promise<void> {
     const parsed = await this.parse(Copyright);
+    if (!parsed.flags.config) return prompt('copyright', parsed.flags);
     let options = processOptions(parsed.flags);
     let configs = '';
     if (Object.keys(options).length) {
