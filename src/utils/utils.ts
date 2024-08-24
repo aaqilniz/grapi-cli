@@ -192,7 +192,6 @@ export function prompt(command: string, flags: any, args?: any) {
     shell: true,       // Run the command in a shell
   };
   let completeCommand = `lb4 ${command}${argString ? ` ${argString}` : ''}${flagString ? ` ${flagString}` : ''}`;
-  console.log(completeCommand);
 
   const lb4 = spawn(`lb4 ${command}${argString ? ` ${argString}` : ''}${flagString ? ` ${flagString}` : ''}`, [], options);
 

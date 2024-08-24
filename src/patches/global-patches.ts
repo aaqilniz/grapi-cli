@@ -374,7 +374,7 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
         },
         forDiscoverGenerator: {
             searchString: '// Exit if needed',
-            replacement: `if (\!this.artifactInfo.config \&\& this.options['generate-configs']) {delete this.artifactInfo['generate-configs'];const configs = { ...this.artifactInfo };if (configs.modelDefinitions.length === this.modelChoices.length) {delete configs.modelDefinitions;configs.all = true;} else {configs.modelDefinitions.forEach(({ name }) => {if (\!configs.models) configs.models = '';configs.models += \`\${name},\`;});configs.models = configs.models.substring(0, configs.models.length - 1);delete configs.modelDefinitions;}delete configs.dataSource;configs.schema = this.options.schema;this.log(configs);this.log(JSON.stringify(configs));process.exit(0);}`,
+            replacement: `if (\!this.artifactInfo.config \&\& this.options['generate-configs']) {delete this.artifactInfo['generate-configs'];const configs = { ...this.artifactInfo };if (configs.modelDefinitions.length === this.modelChoices.length) {delete configs.modelDefinitions;configs.all = true;} else {configs.modelDefinitions.forEach(({ name }) => {if (\!configs.models) configs.models = '';configs.models += \`\${name},\`;});configs.models = configs.models.substring(0, configs.models.length - 1);delete configs.modelDefinitions;}delete configs.dataSource;configs.schema = this.options.schema;this.log(JSON.stringify(configs));process.exit(0);}`,
             path: '/generators/discover/index.js',
         },
         forInterceptorGenerator: {
