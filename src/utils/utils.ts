@@ -35,7 +35,13 @@ export function applyPatches(patches: Patch, path: string): void {
     Object.keys((patches)).forEach(patchKey => {
       const patch = patches[patchKey];
       Object.keys(patch).forEach(subPatchKey => {
-        const { path: subPath, replacement, searchString, isRegex } = patch[subPatchKey];
+        const {
+          path: subPath,
+          replacement,
+          isRegex,
+          replaceAll,
+        } = patch[subPatchKey];
+        let { searchString, } = patch[subPatchKey];
         const filePath = `${path}${subPath}`;
         const data = readFileSync(filePath, 'utf8');
         let replace = false;
@@ -48,8 +54,8 @@ export function applyPatches(patches: Patch, path: string): void {
             replace = true;
           }
           if (replace) {
-            const updatedContent = data
-              .replace(isRegex ? new RegExp(searchString) : searchString, replacement);
+            searchString = isRegex ? new RegExp(searchString) : searchString
+            const updatedContent = data[replaceAll ? 'replaceAll' : 'replace'](searchString, replacement);
             if (!updatedContent) throw new Error('failed to update the content.');
             writeFileSync(filePath, updatedContent, 'utf8');
             console.log('file updated successfully.');

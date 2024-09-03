@@ -2,6 +2,7 @@ import { Args, Command, Flags } from '@oclif/core'
 import chalk from 'chalk';
 
 import { processOptions, execute, standardFlags, prompt } from '../utils/index.js';
+import { applyPostDSPatches } from '../patches/post-ds-patches.js';
 
 
 export default class Datasource extends Command {
