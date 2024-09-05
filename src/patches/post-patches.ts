@@ -25,4 +25,73 @@ export const patches: Patch = {
             path: '/@loopback/repository-json-schema/dist/build-schema.js',
         },
     },
+    addAuthDecorator: {
+        addRequireStatement: {
+            searchString: 'require("assert"));',
+            replacement: `require("assert"));\nconst authentication_1 = require("@loopback/authentication");`,
+            path: '/@loopback/rest-crud/dist/crud-rest.controller.js',
+        },
+        addConditionalDecoratorGet: {
+            searchString: '(0, rest_1.get)(\'/\', {',
+            replacement: `authenticatedMethod(options.auth ? options.auth.get : false),\n(0, rest_1.get)('/', {`,
+            path: '/@loopback/rest-crud/dist/crud-rest.controller.js',
+        },
+        addConditionalDecoratorCount: {
+            searchString: '(0, rest_1.get)(\'/count\', {',
+            replacement: `authenticatedMethod(options.auth ? options.auth.count : false),\n(0, rest_1.get)('/count', {`,
+            path: '/@loopback/rest-crud/dist/crud-rest.controller.js',
+        },
+        addConditionalDecoratorPost: {
+            searchString: '(0, rest_1.post)(\'/\', {',
+            replacement: `authenticatedMethod(options.auth ? options.auth.post : false),\n(0, rest_1.post)('/', {`,
+            path: '/@loopback/rest-crud/dist/crud-rest.controller.js',
+        },
+        addConditionalDecoratorPatch: {
+            searchString: '(0, rest_1.patch)(\'/\', {',
+            replacement: `authenticatedMethod(options.auth ? options.auth.patch : false),\n(0, rest_1.patch)('/', {`,
+            path: '/@loopback/rest-crud/dist/crud-rest.controller.js',
+        },
+        addConditionalDecoratorPatchById: {
+            searchString: '(0, rest_1.patch)(\'/{id}\', {',
+            replacement: `authenticatedMethod(options.auth ? options.auth.patchById : false),\n(0, rest_1.patch)('/{id}', {`,
+            path: '/@loopback/rest-crud/dist/crud-rest.controller.js',
+        },
+        addConditionalDecoratorPutById: {
+            searchString: '(0, rest_1.put)(\'/{id}\', {',
+            replacement: `authenticatedMethod(options.auth ? options.auth.patchById : false),\n(0, rest_1.patch)('/{id}', {`,
+            path: '/@loopback/rest-crud/dist/crud-rest.controller.js',
+        },
+        addConditionalDecoratorDeleteById: {
+            searchString: '(0, rest_1.del)(\'/{id}\', {',
+            replacement: `authenticatedMethod(options.auth ? options.auth.deleteById : false),\n(0, rest_1.del)('/{id}', {`,
+            path: '/@loopback/rest-crud/dist/crud-rest.controller.js',
+        },
+        addConditionalDecoratorMethod: {
+            searchString: '})(response || (response = {}));',
+            replacement: `})(response || (response = {}));\nfunction authenticatedMethod(applyAuth) { return applyAuth ? (0, authentication_1.authenticate)('jwt') : (target, key, descriptor) => { }; }`,
+            path: '/@loopback/rest-crud/dist/crud-rest.controller.js',
+        },
+    },
+    enableAuthByUsername: {
+        updateErrorMessage: {
+            searchString: 'Invalid email or password.',
+            replacement: `Invalid username/email or password.`,
+            path: '/@loopback/authentication-jwt/dist/services/user.service.js',
+        },
+        addUsernameValidation: {
+            searchString: 'Invalid username/email or password.\'',
+            replacement: `Invalid username/email or password.';\nif (\!credentials.email \&\& \!credentials.username) {throw new rest_1.HttpErrors.Unauthorized('please provide either username or email.');}const whereFilter = {};if (credentials.email){whereFilter.email = credentials.email;}if (credentials.username) {whereFilter.username = credentials.username;}`,
+            path: '/@loopback/authentication-jwt/dist/services/user.service.js',
+        },
+        addWhereFilter: {
+            searchString: '{ email: credentials.email }',
+            replacement: `whereFilter`,
+            path: '/@loopback/authentication-jwt/dist/services/user.service.js',
+        },
+        addUsernameAndMakeEmailOptional: {
+            searchString: 'email: string;',
+            replacement: `email?: string;username?: string;`,
+            path: '/@loopback/authentication-jwt/dist/services/user.service.d.ts',
+        },
+    },
 };
