@@ -43,25 +43,27 @@ export function applyPatches(patches: Patch, path: string): void {
         } = patch[subPatchKey];
         let { searchString, } = patch[subPatchKey];
         const filePath = `${path}${subPath}`;
-        const data = readFileSync(filePath, 'utf8');
-        let replace = false;
-        if (data) {
-          if (replacement === '') replace = true;
-          if (
-            replacement !== '' &&
-            !data.includes(replacement)
-          ) {
-            replace = true;
+        if (existsSync(filePath)) {
+          const data = readFileSync(filePath, 'utf8');
+          let replace = false;
+          if (data) {
+            if (replacement === '') replace = true;
+            if (
+              replacement !== '' &&
+              !data.includes(replacement)
+            ) {
+              replace = true;
+            }
+            if (replace) {
+              searchString = isRegex ? new RegExp(searchString) : searchString
+              const updatedContent = data[replaceAll ? 'replaceAll' : 'replace'](searchString, replacement);
+              if (!updatedContent) throw new Error('failed to update the content.');
+              writeFileSync(filePath, updatedContent, 'utf8');
+              console.log('file updated successfully.');
+            }
+          } else {
+            throw new Error('no content found.');
           }
-          if (replace) {
-            searchString = isRegex ? new RegExp(searchString) : searchString
-            const updatedContent = data[replaceAll ? 'replaceAll' : 'replace'](searchString, replacement);
-            if (!updatedContent) throw new Error('failed to update the content.');
-            writeFileSync(filePath, updatedContent, 'utf8');
-            console.log('file updated successfully.');
-          }
-        } else {
-          throw new Error('no content found.');
         }
       });
     });
