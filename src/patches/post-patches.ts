@@ -94,4 +94,11 @@ export const patches: Patch = {
             path: '/@loopback/authentication-jwt/dist/services/user.service.d.ts',
         },
     },
+    baseUrlToServersField: {
+        retrieveBaseUrl: {
+            searchString: 'client = await SwaggerClient(req);',
+            replacement: `let baseURL, baseURLObject;if (req.spec.openapi) {try {baseURLObject = new URL(self.settings.spec); baseURL = \`\${baseURLObject.protocol}//\${baseURLObject.host}\`;} catch (error) {debug('Not a valid URL: %s', error);}}if (baseURL) {if (\!req.spec.servers || \!req.spec.servers.length) {req.spec.servers = [{url: baseURL}];} else {req.spec.servers.forEach(function({url}, index) {try {new URL(url);} catch (error) {if (url.startsWith('//')) {url = \`\${baseURLObject.protocol}:\${url}\`;} else {url = url === '/' ? baseURL : baseURL + url;}} req.spec.servers[index].url = url;});}}\nclient = await SwaggerClient(req);`,
+            path: '/loopback-connector-openapi/lib/openapi-connector.js',
+        },
+    },
 };
