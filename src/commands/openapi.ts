@@ -54,7 +54,7 @@ export default class Openapi extends Command {
     // generate cache artifacts
     if (cache) {
       cache.redisDS = redisDS.name;
-      if (redisDS.prefix) { cache.prefix = redisDS.prefix; }
+      if (options.prefix) { cache.prefix = options.prefix; }
       await Cache.run([`--config=${JSON.stringify(cache)}`]);
       console.log(chalk.bold(chalk.blue('generated cache generator')));
     }
