@@ -31,7 +31,7 @@ export default class Cache extends Command {
 
   public async run(): Promise<void> {
     const parsed = await this.parse(Cache);
-
+    
     let options = processOptions(parsed.flags);
     let { exclude, include } = options;
 
