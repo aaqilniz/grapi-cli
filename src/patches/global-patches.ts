@@ -195,6 +195,12 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             replacement: `let keyTo = '';let customReferenceKeyFrom = '';let customReferenceKeyTo = '';`,
             path: '/generators/relation/has-many-through-relation.generator.js'
         },
+        passKeysToGetHasManyThrough: {
+            searchString: `getHasManyThrough(`,
+            replacement: `getHasManyThrough(customSourceModelKey,customTargetModelKey,`,
+            path: '/generators/relation/has-many-through-relation.generator.js',
+            replaceAll: true
+        },
         constructKey: {
             searchString: 'const relationDecorator = [',
             replacement: `if (customSourceModelKey) { customReferenceKeyFrom = \`customReferenceKeyFrom:'\$\{customSourceModelKey\}',\`; } if (customTargetModelKey) { customReferenceKeyTo = \`customReferenceKeyTo:'\$\{customTargetModelKey\}',\`; }; const relationDecorator = [`,
