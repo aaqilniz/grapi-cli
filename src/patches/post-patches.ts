@@ -148,4 +148,11 @@ export const patches: Patch = {
             path: '/@loopback/rest/dist/writer.js',
         },
     },
+    stringifyAfter: {
+        addAssignment: {
+            searchString: 'after,',
+            replacement: `after: JSON.stringify(after),`,
+            path: '/@sourceloop/audit-log/dist/mixins/audit.mixin.js',
+        },
+    },
 };
