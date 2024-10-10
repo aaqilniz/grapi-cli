@@ -4,5 +4,5 @@ import { applyPatches } from '../utils/utils.js';
 export const patches: Patch = {};
 
 export function applyPreRelationPatches(): void {
-    applyPatches(patches, './node_modules');
+    applyPatches(patches);
 }

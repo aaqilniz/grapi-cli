@@ -13,12 +13,12 @@ export const patches: Patch = {
               else 0
             end as "generated"
             \` +`,
-            path: '/loopback-connector-mysql/lib/discovery.js',
+            path: './node_modules/loopback-connector-mysql/lib/discovery.js',
             replaceAll: true
         },
     },
 };
 
 export function applyPostDSPatches(): void {
-    applyPatches(patches, './node_modules');
+    applyPatches(patches);
 }

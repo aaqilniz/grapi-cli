@@ -7,6 +7,6 @@ export default class PreRelationPatches extends Command {
   static override description = 'execute pre relation patches.'
 
   public async run(): Promise<void> {
-    applyPatches(patches, './node_modules');
+    applyPatches(patches);
   }
 }

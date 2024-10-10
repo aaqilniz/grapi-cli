@@ -28,7 +28,7 @@ export default class Audit extends Command {
     }
     let argument = '';
     if (parsed.args.name) { argument = ` ${parsed.args.name}`; }
-    const command = `lb4 datasource${argument}${configs}--yes`;
+    const command = `lb4 datasource${argument}${configs}--yes && npm run build`;
 
     const auditDS = fs.existsSync(`./src/datasources/${ds}.datasource.ts`);
     if (!auditDS) {

@@ -30,19 +30,22 @@ export async function execute(command: string, message?: string): Promise<Execut
   return execPromise(command);
 }
 
-export function applyPatches(patches: Patch, path: string): void {
+export function applyPatches(patches: Patch, path?: string): void {
   try {
     Object.keys((patches)).forEach(patchKey => {
       const patch = patches[patchKey];
       Object.keys(patch).forEach(subPatchKey => {
+        let { path: filePath } = patch[subPatchKey];
+
         const {
-          path: subPath,
           replacement,
           isRegex,
           replaceAll,
         } = patch[subPatchKey];
+
+        if (path) { filePath = path }
+
         let { searchString, } = patch[subPatchKey];
-        const filePath = `${path}${subPath}`;
         if (existsSync(filePath)) {
           const data = readFileSync(filePath, 'utf8');
           let replace = false;

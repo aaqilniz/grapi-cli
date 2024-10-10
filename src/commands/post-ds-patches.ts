@@ -7,7 +7,7 @@ export default class PostDsPatches extends Command {
   static override description = 'execute post ds patches.'
 
   public async run(): Promise<void> {
-    applyPatches(patches, './node_modules');
+    applyPatches(patches);
   }
 
 }

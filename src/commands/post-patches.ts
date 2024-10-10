@@ -7,6 +7,6 @@ export default class PostPatches extends Command {
   static override description = 'execute post patches.'
 
   public async run(): Promise<void> {
-    applyPatches(patches, './node_modules');
+    applyPatches(patches);
   }
 }
