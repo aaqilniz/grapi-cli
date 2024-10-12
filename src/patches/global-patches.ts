@@ -428,3 +428,11 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
     applyPatches(patches, cliPath);
     applyPrePatches();
 })();
+
+export const globalPatches = async () => {
+    const cliPath = await getNpmGlobalDir();
+    if (!existsSync(cliPath))
+        throw new Error('Loopback\'s CLI is not installed.');
+    applyPatches(patches, cliPath);
+    applyPrePatches();
+}

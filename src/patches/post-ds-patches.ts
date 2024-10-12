@@ -13,7 +13,7 @@ export const patches: Patch = {
               else 0
             end as "generated"
             \` +`,
-            path: './node_modules/loopback-connector-mysql/lib/discovery.js',
+            path: '/node_modules/loopback-connector-mysql/lib/discovery.js',
             replaceAll: true
         },
     },
