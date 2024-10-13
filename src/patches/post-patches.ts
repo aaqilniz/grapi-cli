@@ -169,4 +169,16 @@ export const patches: Patch = {
             path: './src/model-endpoints/audit-log.rest-config.ts',
         },
     },
+    addIndexesInOpenapiSpecs: {
+        propertyLevelIndex: {
+            searchString: 'const wrappedType = stringTypeToWrapper(propertyType);',
+            replacement: `if (meta.index) { result['x-index'] = meta.index; }\nconst wrappedType = stringTypeToWrapper(propertyType);`,
+            path: './node_modules/@loopback/repository-json-schema/dist/build-schema.js',
+        },
+        modelLevelIndex: {
+            searchString: 'function includeReferencedSchema(name, schema) {',
+            replacement: `if (meta.settings && meta.settings.indexes) { result['x-indexes'] = meta.settings.indexes; }\nfunction includeReferencedSchema(name, schema) {`,
+            path: './node_modules/@loopback/repository-json-schema/dist/build-schema.js',
+        },
+    },
 };
