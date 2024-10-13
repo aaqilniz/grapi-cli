@@ -155,6 +155,13 @@ export const patches: Patch = {
             path: './node_modules/@sourceloop/audit-log/dist/mixins/audit.mixin.js',
         },
     },
+    stringifyBefore: {
+        addAssignment: {
+            searchString: 'before,',
+            replacement: `before: JSON.stringify(before),`,
+            path: './node_modules/@sourceloop/audit-log/dist/mixins/audit.mixin.js',
+        },
+    },
     makeAuditAPIsReadonly: {
         replaceFalseToTrue: {
             searchString: 'readonly: false',
