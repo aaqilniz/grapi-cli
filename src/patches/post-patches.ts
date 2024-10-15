@@ -156,6 +156,11 @@ export const patches: Patch = {
         },
     },
     stringifyBefore: {
+        addWhiteSpaceToFirstOccurance: { // to prevent unintended change
+            searchString: 'before,',
+            replacement: `before ,`,
+            path: './node_modules/@sourceloop/audit-log/dist/mixins/audit.mixin.js',
+        },
         addAssignment: {
             searchString: 'before,',
             replacement: `before: JSON.stringify(before),`,
