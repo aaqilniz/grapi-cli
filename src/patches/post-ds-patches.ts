@@ -17,6 +17,43 @@ export const patches: Patch = {
             replaceAll: true
         },
     },
+    fetchIndexInfo: {
+        constructObject: {
+            searchString: 'schema.properties[propName] = {',
+            replacement: `const propertyDetails = {`,
+            path: './node_modules/loopback-datasource-juggler/lib/datasource.js',
+        },
+        assignIndexProperty: {
+            searchString: 'if (pks[item.columnName]) {',
+            replacement: `if (item.indexType === 'BTREE' && item.indexName !== 'PRIMARY' && !item.isForeignKey ) { propertyDetails.index = {unique: true} };`,
+            path: './node_modules/loopback-datasource-juggler/lib/datasource.js',
+        },
+        reassignPKs: {
+            searchString: 'schema.properties[propName].id = pks[item.columnName];',
+            replacement: `propertyDetails[propName].id = pks[item.columnName];`,
+            path: './node_modules/loopback-datasource-juggler/lib/datasource.js',
+        },
+        removeIfStatement: {
+            searchString: 'if (uniqueKeys.includes(propName)) {',
+            replacement: ``,
+            path: './node_modules/loopback-datasource-juggler/lib/datasource.js',
+        },
+        addNewIfStatement: {
+            searchString: 'schema.properties[propName][\'index\'] = {unique: true};',
+            replacement: `if (uniqueKeys.includes(propName) && propertyDetails[propName]['index'] === undefined) { propertyDetails[propName]['index'] = {unique: true};`,
+            path: './node_modules/loopback-datasource-juggler/lib/datasource.js',
+        },
+        assignNewProperty: {
+            searchString: 'const dbSpecific = schema.properties[propName][dbType] = {',
+            replacement: `schema.properties[propName] = propertyDetails;\nconst dbSpecific = schema.properties[propName][dbType] = {`,
+            path: './node_modules/loopback-datasource-juggler/lib/datasource.js',
+        },
+        updateQuery: {
+            searchString: 'const dbSpecific = schema.properties[propName][dbType] = {',
+            replacement: `schema.properties[propName] = propertyDetails;\nconst dbSpecific = schema.properties[propName][dbType] = {`,
+            path: './node_modules/loopback-datasource-juggler/lib/datasource.js',
+        },
+    },
 };
 
 export function applyPostDSPatches(): void {
