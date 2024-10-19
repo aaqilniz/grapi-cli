@@ -27,7 +27,6 @@
   "scripts": {
     "build": "shx rm -rf dist && tsc -b && cp -r ./src/files ./dist/files",
     "lint": "eslint . --ext .ts",
-    "prepack": "oclif manifest && oclif readme",
     "postpack": "shx rm -f oclif.manifest.json",
     "test": "mocha --forbid-only \"test/**/*.test.ts\"",
     "posttest": "npm run lint",

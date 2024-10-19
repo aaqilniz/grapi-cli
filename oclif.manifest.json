@@ -1,0 +1,2361 @@
+{
+  "commands": {
+    "app": {
+      "aliases": [],
+      "args": {
+        "name": {
+          "description": "name of the application.",
+          "name": "name"
+        }
+      },
+      "description": "generate application.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "name": {
+          "description": "Application class name.",
+          "name": "name",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "description": {
+          "description": "Description of the application.",
+          "name": "description",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "outdir": {
+          "description": "Project root directory for the application.",
+          "name": "outdir",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "eslint": {
+          "description": "Add ESLint to LoopBack4 application project.",
+          "name": "eslint",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "prettier": {
+          "description": "Add Prettier to LoopBack4 application project.",
+          "name": "prettier",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "mocha": {
+          "description": "Add Mocha to LoopBack4 application project.",
+          "name": "mocha",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "loopbackBuild": {
+          "description": "Add @loopback/build module’s script set to LoopBack4 application project.",
+          "name": "loopbackBuild",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "vscode": {
+          "description": "Add VSCode config files to LoopBack4 application project",
+          "name": "vscode",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "docker": {
+          "description": "Generate Dockerfile and add npm scripts to build/run the project in a docker container.",
+          "name": "docker",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "repositories": {
+          "description": "include repository imports and RepositoryMixin.",
+          "name": "repositories",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "services": {
+          "description": "include service-proxy imports and ServiceMixin.",
+          "name": "services",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "apiconnect": {
+          "description": "Include ApiConnectComponent.",
+          "name": "apiconnect",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "app",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "app.js"
+      ]
+    },
+    "audit": {
+      "aliases": [],
+      "args": {
+        "name": {
+          "description": "name of the datasource.",
+          "name": "name"
+        }
+      },
+      "description": "generate audit artifacts.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "connector": {
+          "description": "Name of datasource connector.",
+          "name": "connector",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "audit",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "audit.js"
+      ]
+    },
+    "auth": {
+      "aliases": [],
+      "args": {},
+      "description": "adding auth to loopback 4 application.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "include": {
+          "char": "i",
+          "description": "include auth to the apis.",
+          "name": "include",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "exclude": {
+          "char": "e",
+          "description": "exclude auth to the apis.",
+          "name": "exclude",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "writeonly": {
+          "char": "r",
+          "description": "auth to writeonly apis.",
+          "name": "writeonly",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "auth",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "auth.js"
+      ]
+    },
+    "cache": {
+      "aliases": [],
+      "args": {},
+      "description": "creating cache for endpoints",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "redisDS": {
+          "description": "redisDS",
+          "name": "redisDS",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "cacheTTL": {
+          "description": "cacheTTL",
+          "name": "cacheTTL",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "prefix": {
+          "description": "prefix to append to endpoints.",
+          "name": "prefix",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "exclude": {
+          "description": "exclude controllers",
+          "name": "exclude",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "include": {
+          "description": "include controllers",
+          "name": "include",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "cache",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "cache.js"
+      ]
+    },
+    "controller": {
+      "aliases": [],
+      "args": {
+        "name": {
+          "description": "name of controller.",
+          "name": "name"
+        }
+      },
+      "description": "generate controllers",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "controllerType": {
+          "description": " Type of the controller. Valid types are BASIC and REST. BASIC corresponds to an empty controller, whereas REST corresponds to REST controller with CRUD methods.",
+          "name": "controllerType",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "REST",
+            "BASIC"
+          ],
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "controller",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "controller.js"
+      ]
+    },
+    "copyright": {
+      "aliases": [],
+      "args": {},
+      "description": "add/update copyright",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "owner": {
+          "description": "The owner of the copyright, such as IBM Corp. and LoopBack contributors.",
+          "name": "owner",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "license": {
+          "description": "The name of the license, such as MIT.",
+          "name": "license",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "gitOnly": {
+          "description": " A flag to control if only git tracked files are updated. Default to true.",
+          "name": "gitOnly",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "updateLicense": {
+          "description": "A flag to control if package.json and LICENSE files should be updated to reflect the selected license id.",
+          "name": "updateLicense",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "exclude": {
+          "description": "One or more glob patterns with , delimiter to exclude files that match the patterns from being updated.",
+          "name": "exclude",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "copyright",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "copyright.js"
+      ]
+    },
+    "datasource": {
+      "aliases": [],
+      "args": {
+        "name": {
+          "description": "name of the datasource.",
+          "name": "name"
+        }
+      },
+      "description": "generate datasource.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "connector": {
+          "description": "Name of datasource connector.",
+          "name": "connector",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "datasource",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "datasource.js"
+      ]
+    },
+    "discover": {
+      "aliases": [],
+      "args": {
+        "url": {
+          "description": "URL or file path of the OpenAPI spec. Type: String. Required: false.",
+          "name": "url"
+        }
+      },
+      "description": "discover models.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "dataSource": {
+          "description": "Put a valid datasource name here to skip the datasource prompt.",
+          "name": "dataSource",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "views": {
+          "description": "Choose whether to discover views.",
+          "name": "views",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "relations": {
+          "description": "Choose whether to create relations.",
+          "name": "relations",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "all": {
+          "description": "Skips the model prompt and discovers all of them.",
+          "name": "all",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "outDir": {
+          "description": "Specify the directory into which the model.model.ts files will be placed. Default is src/models.",
+          "name": "outDir",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "schema": {
+          "description": "Specify the schema which the datasource will find the models to discover.",
+          "name": "schema",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "models": {
+          "description": "Specify the models to be generated e.g:–models=table1,table2.",
+          "name": "models",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "optionalId": {
+          "description": "Specify if the Id property of generated models will be marked as not required.",
+          "name": "optionalId",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "connectorDiscoveryOptions": {
+          "description": "Pass the options to the connectors.",
+          "name": "connectorDiscoveryOptions",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "discover",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "discover.js"
+      ]
+    },
+    "example": {
+      "aliases": [],
+      "args": {
+        "example-name": {
+          "description": "Optional name of the example to clone. If provided, the tool will skip the example-name prompt and run in a non-interactive mode.",
+          "name": "example-name"
+        }
+      },
+      "description": "download examples.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "example",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "example.js"
+      ]
+    },
+    "extension": {
+      "aliases": [],
+      "args": {
+        "name": {
+          "description": "Optional name of the extension given as an argument to the command.",
+          "name": "name"
+        }
+      },
+      "description": "generate extension.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "description": {
+          "description": "project root directory for the extension.",
+          "name": "description",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "outDir": {
+          "description": "Project root directory for the extension.",
+          "name": "outDir",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "eslint": {
+          "description": "Add ESLint to LoopBack4 extension project.",
+          "name": "eslint",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "prettier": {
+          "description": "Add Prettier to LoopBack4 extension project.",
+          "name": "prettier",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "mocha": {
+          "description": "Add Mocha to LoopBack4 extension projectAdd @loopback/build module’s script set to LoopBack4 extension project.",
+          "name": "mocha",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "loopbackBuild": {
+          "description": "Add @loopback/build module’s script set to LoopBack4 extension project.",
+          "name": "loopbackBuild",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "vscode": {
+          "description": "Add VSCode config files to LoopBack4 application project.",
+          "name": "vscode",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "extension",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "extension.js"
+      ]
+    },
+    "fuzzy": {
+      "aliases": [],
+      "args": {},
+      "description": "generate fuzzy endpoints for lb4 based controllers",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "fuzzy": {
+          "description": "fuzzy",
+          "name": "fuzzy",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "centralFuzzy": {
+          "description": "central Fuzzy",
+          "name": "centralFuzzy",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "datasource": {
+          "description": "datasource name",
+          "name": "datasource",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "appName": {
+          "description": "name of the application",
+          "name": "appName",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "exclude": {
+          "description": "exclude controllers",
+          "name": "exclude",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "include": {
+          "description": "include controllers",
+          "name": "include",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "fuzzy",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "fuzzy.js"
+      ]
+    },
+    "import-lb3-models": {
+      "aliases": [],
+      "args": {
+        "lb3app": {
+          "description": "Path to the directory containing your LoopBack 3.x application.",
+          "name": "lb3app"
+        }
+      },
+      "description": "import lb3 models.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "outDir": {
+          "description": "Directory where to write the generated source file. Default: src/models.",
+          "name": "outDir",
+          "default": "src/models",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "import-lb3-models",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "import-lb3-models.js"
+      ]
+    },
+    "interceptor": {
+      "aliases": [],
+      "args": {
+        "name": {
+          "description": "Required name of the observer to create as an argument to the command.",
+          "name": "name",
+          "required": true
+        }
+      },
+      "description": "generate interceptor.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "global": {
+          "description": "Optional flag to indicate a global interceptor (default to true). Use --no-global to set it to false.",
+          "name": "global",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "no-global": {
+          "description": "set global to false",
+          "name": "no-global",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "group": {
+          "description": "Optional name of the interceptor group to sort the execution of global interceptors by group. This option is only supported for global interceptors.",
+          "name": "group",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "interceptor",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "interceptor.js"
+      ]
+    },
+    "model": {
+      "aliases": [],
+      "args": {
+        "name": {
+          "description": "name of the model.",
+          "name": "name"
+        }
+      },
+      "description": "generate model.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "base": {
+          "description": "a valid model already created in src/models or any of the core based class models Entity or Model. Your new model will extend this selected base model class",
+          "name": "base",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "dataSource": {
+          "description": "The name of the dataSource which contains this model and suppots model discovery",
+          "name": "dataSource",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "table": {
+          "description": "If discovering a model from a dataSource, specify the name of its table/view",
+          "name": "table",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "schema": {
+          "description": "If discovering a model from a dataSource, specify the schema which contains it",
+          "name": "schema",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "model",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "model.js"
+      ]
+    },
+    "observer": {
+      "aliases": [],
+      "args": {
+        "name": {
+          "description": "Required name of the observer to create as an argument to the command.",
+          "name": "name",
+          "required": true
+        }
+      },
+      "description": "generate observer.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "group": {
+          "description": "Optional name of the observer group to sort the execution of observers by group.",
+          "name": "group",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "observer",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "observer.js"
+      ]
+    },
+    "openapi": {
+      "aliases": [],
+      "args": {
+        "url": {
+          "description": "URL or file path of the OpenAPI spec. Type: String. Required: false.",
+          "name": "url"
+        }
+      },
+      "description": "generate openapi based apis.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "url": {
+          "description": "URL or file path of the OpenAPI spec.",
+          "name": "url",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "validate": {
+          "description": "Validate the OpenAPI spec.",
+          "name": "validate",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "promote-anonymous-schemas": {
+          "description": "Promote anonymous schemas as models classes.",
+          "name": "promote-anonymous-schemas",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "client": {
+          "description": "Generate client-side service proxies and controllers with implementation for the OpenAPI spec.",
+          "name": "client",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "datasource": {
+          "description": "A valid datasource name.",
+          "name": "datasource",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "redisDS": {
+          "description": "Stringified object of redis DS configs.",
+          "name": "redisDS",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "cache": {
+          "description": "Stringified object of cache configs.",
+          "name": "cache",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "positional": {
+          "description": "A flag to control if service methods use positional parameters or an object with named properties.",
+          "name": "positional",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "openapi",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "openapi.js"
+      ]
+    },
+    "patch": {
+      "aliases": [],
+      "args": {},
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "patch",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "patch.js"
+      ]
+    },
+    "post-ds-patches": {
+      "aliases": [],
+      "args": {},
+      "description": "execute post ds patches.",
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "post-ds-patches",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "post-ds-patches.js"
+      ]
+    },
+    "post-patches": {
+      "aliases": [],
+      "args": {},
+      "description": "execute post patches.",
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "post-patches",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "post-patches.js"
+      ]
+    },
+    "pre-relation-patches": {
+      "aliases": [],
+      "args": {},
+      "description": "execute pre relation patches.",
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "pre-relation-patches",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "pre-relation-patches.js"
+      ]
+    },
+    "relation": {
+      "aliases": [],
+      "args": {},
+      "description": "generate relations.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "relationType": {
+          "description": "Relation type.",
+          "name": "relationType",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "sourceModel": {
+          "description": "Source model.",
+          "name": "sourceModel",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "destinationModel": {
+          "description": "Destination model.",
+          "name": "destinationModel",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "throughModel": {
+          "description": "Through model. For HasManyThrough relation only.",
+          "name": "throughModel",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "sourceModelPrimaryKey": {
+          "description": "The name of the primary key of the source model.",
+          "name": "sourceModelPrimaryKey",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "sourceModelPrimaryKeyType": {
+          "description": "The type of the primary key of the source model.",
+          "name": "sourceModelPrimaryKeyType",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "destinationModelPrimaryKey": {
+          "description": "The name of the primary key of the destination model.",
+          "name": "destinationModelPrimaryKey",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "destinationModelPrimaryKeyType": {
+          "description": "The type of the primary key of the destination model.",
+          "name": "destinationModelPrimaryKeyType",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "foreignKeyName": {
+          "description": "Destination/Source model foreign key name for HasMany,HasOne/BelongsTo relation, respectively.",
+          "name": "foreignKeyName",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "relationName": {
+          "description": "Relation name.",
+          "name": "relationName",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "sourceKeyOnThrough": {
+          "description": "Foreign key that references the source model on the through model. For HasManyThrough relation only.",
+          "name": "sourceKeyOnThrough",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "targetKeyOnThrough": {
+          "description": "Foreign key that references the target model on the through model. For HasManyThrough relation only.",
+          "name": "targetKeyOnThrough",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "relation",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "relation.js"
+      ]
+    },
+    "repository": {
+      "aliases": [],
+      "args": {
+        "name": {
+          "description": "name of the repository.",
+          "name": "name"
+        }
+      },
+      "description": "generate repositories.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "datasource": {
+          "description": "name of a valid datasource already created in src/datasources.",
+          "name": "datasource",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "model": {
+          "description": "name of a valid model already created in src/models.",
+          "name": "model",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "id": {
+          "description": "name of the property serving as ID in the selected model. If you supply this value, the CLI will not try to infer this value from the selected model file.",
+          "name": "id",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "repositoryBaseClass": {
+          "description": "(Default: DefaultCrudRepository) name of the base class the repository will inherit. If no value was supplied, DefaultCrudRepository will be used.",
+          "name": "repositoryBaseClass",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "repository",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "repository.js"
+      ]
+    },
+    "rest-crud": {
+      "aliases": [],
+      "args": {},
+      "description": "generate rest crud apis.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "datasource": {
+          "description": "name of a valid datasource already created in src/datasources.",
+          "name": "datasource",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "model": {
+          "description": "name of a valid model already created in src/models.",
+          "name": "model",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "basePath": {
+          "description": "base path of the model endpoint.",
+          "name": "basePath",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "readonly": {
+          "description": "create readonly APIs e.g find and count.",
+          "name": "readonly",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "rest-crud",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "rest-crud.js"
+      ]
+    },
+    "service": {
+      "aliases": [],
+      "args": {
+        "name": {
+          "description": "name of the service.",
+          "name": "name",
+          "required": true
+        }
+      },
+      "description": "generate a service.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "type": {
+          "description": "service type: proxy, class, or provider.",
+          "name": "type",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "datasource": {
+          "description": "name of a valid REST or SOAP datasource already created in src/datasources.",
+          "name": "datasource",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "service",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "service.js"
+      ]
+    },
+    "sql-controller": {
+      "aliases": [],
+      "args": {},
+      "description": "describe the command here",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "query": {
+          "description": "sql query to generate controller for",
+          "name": "query",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "path": {
+          "description": "path for endpoint",
+          "name": "path",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "repoName": {
+          "description": "repository name",
+          "name": "repoName",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "appName": {
+          "description": "name of the application",
+          "name": "appName",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "controllerName": {
+          "description": "name of the generated controller",
+          "name": "controllerName",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "sql-controller",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "sql-controller.js"
+      ]
+    },
+    "update": {
+      "aliases": [],
+      "args": {},
+      "description": "update application dependencies.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Skip all confirmation prompts with default or provided value.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Print the generator’s options and usage.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-cache": {
+          "description": "Do not remember prompt answers. Default is false.",
+          "name": "skip-cache",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-install": {
+          "description": "Do not automatically install dependencies. Default is false.",
+          "name": "skip-install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "generate-configs": {
+          "description": "return configs based on answers from the prompt.",
+          "name": "generate-configs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "semver": {
+          "description": "Use semver semantics to check version compatibility for project dependencies of LoopBack modules.",
+          "name": "semver",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "update",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "update.js"
+      ]
+    },
+    "auth:users": {
+      "aliases": [],
+      "args": {},
+      "description": "adding auth to loopback 4 application.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "users": {
+          "char": "i",
+          "description": "users list.",
+          "name": "users",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "auth:users",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "auth",
+        "users.js"
+      ]
+    },
+    "model:remove": {
+      "aliases": [],
+      "args": {},
+      "description": "enable adding property to loopoback 4 models",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "model": {
+          "char": "n",
+          "description": "name of the model to remove.",
+          "name": "model",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "model:remove",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "model",
+        "remove.js"
+      ]
+    },
+    "property:add": {
+      "aliases": [],
+      "args": {},
+      "description": "enable adding property to loopoback 4 models",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "model": {
+          "char": "n",
+          "description": "name of the argument",
+          "name": "model",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "properties": {
+          "char": "t",
+          "description": "JSON object of properties to add",
+          "name": "properties",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "property:add",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "property",
+        "add.js"
+      ]
+    },
+    "property:remove": {
+      "aliases": [],
+      "args": {},
+      "description": "enable adding property to loopoback 4 models",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "model": {
+          "char": "n",
+          "description": "name of the argument",
+          "name": "model",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "property": {
+          "char": "t",
+          "description": "name of the property to remove.",
+          "name": "property",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "property:remove",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "property",
+        "remove.js"
+      ]
+    },
+    "external:operation": {
+      "aliases": [],
+      "args": {},
+      "description": "adding auth to loopback 4 application.",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "ds": {
+          "description": "datasource name to attach APIs to.",
+          "name": "ds",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "method": {
+          "description": "api method type.",
+          "name": "method",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "bodyParams": {
+          "description": "Stringified JSON Object for request body.",
+          "name": "bodyParams",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "pathParams": {
+          "description": "Stringified JSON Object for path parameter.",
+          "name": "pathParams",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "url": {
+          "description": "url of the external api.",
+          "name": "url",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "headers": {
+          "description": "Stringified JSON Object for headers.",
+          "name": "headers",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "query": {
+          "description": "Stringified JSON Object for query parameters.",
+          "name": "query",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "apiFunction": {
+          "description": "api function name.",
+          "name": "apiFunction",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "name": {
+          "description": "name of the artifacts.",
+          "name": "name",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "apiUri": {
+          "description": "uri of the controller.",
+          "name": "apiUri",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "type": {
+          "description": "type of return data.",
+          "name": "type",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "controller": {
+          "description": "controller under which the API should reside.",
+          "name": "controller",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "external:operation",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "external",
+        "operation.js"
+      ]
+    },
+    "update:model": {
+      "aliases": [],
+      "args": {},
+      "description": "enable updating loopoback 4 models",
+      "flags": {
+        "config": {
+          "char": "c",
+          "description": "Config JSON object",
+          "name": "config",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "name": {
+          "char": "n",
+          "description": "name of the model",
+          "name": "name",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "datasource": {
+          "description": "name of the datasource",
+          "name": "datasource",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "base": {
+          "description": "base of the model.",
+          "name": "base",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "properties": {
+          "description": "stringigied object of model properties.",
+          "name": "properties",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "update:model",
+      "pluginAlias": "grapi-cli",
+      "pluginName": "grapi-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "update",
+        "model.js"
+      ]
+    }
+  },
+  "version": "0.0.60"
+}

@@ -43,6 +43,7 @@ USAGE
 * [`grapi-cli model:remove`](#grapi-cli-modelremove)
 * [`grapi-cli observer NAME`](#grapi-cli-observer-name)
 * [`grapi-cli openapi [URL]`](#grapi-cli-openapi-url)
+* [`grapi-cli patch`](#grapi-cli-patch)
 * [`grapi-cli plugins`](#grapi-cli-plugins)
 * [`grapi-cli plugins:add PLUGIN`](#grapi-cli-pluginsadd-plugin)
 * [`grapi-cli plugins:inspect PLUGIN...`](#grapi-cli-pluginsinspect-plugin)
@@ -623,6 +624,15 @@ DESCRIPTION
 ```
 
 _See code: [src/commands/openapi.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.60/src/commands/openapi.ts)_
+
+## `grapi-cli patch`
+
+```
+USAGE
+  $ grapi-cli patch
+```
+
+_See code: [src/commands/patch.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.60/src/commands/patch.ts)_
 
 ## `grapi-cli plugins`
 
