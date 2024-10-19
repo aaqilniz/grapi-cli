@@ -1,0 +1,22 @@
+diff --git a/node_modules/@loopback/repository-json-schema/dist/build-schema.js b/node_modules/@loopback/repository-json-schema/dist/build-schema.js
+index e148019..ee7e844 100644
+--- a/node_modules/@loopback/repository-json-schema/dist/build-schema.js
++++ b/node_modules/@loopback/repository-json-schema/dist/build-schema.js
+@@ -160,6 +160,7 @@ exports.isArrayType = isArrayType;
+  * @param meta
+  */
+ function metaToJsonProperty(meta) {
++    
+     const propDef = {};
+     let result;
+     let propertyType = meta.type;
+@@ -213,6 +214,9 @@ function metaToJsonProperty(meta) {
+     if (meta.jsonSchema) {
+         Object.assign(propDef, meta.jsonSchema);
+     }
++    if (meta.index) {
++        result['x-index'] = meta.index;
++    }
+     return result;
+ }
+ exports.metaToJsonProperty = metaToJsonProperty;
