@@ -1,6 +1,6 @@
 {
   "name": "grapi-cli",
-  "version": "0.0.61",
+  "version": "0.0.64",
   "description": "a cli tool to generate loopback 4 applications with extra features like caching & fuzzy search",
   "keywords": [
     "lb4",
@@ -22,10 +22,12 @@
   "files": [
     "/bin",
     "/dist",
-    "/oclif.manifest.json"
+    "/oclif.manifest.json",
+    "/files",
+    "/patches"
   ],
   "scripts": {
-    "build": "shx rm -rf dist && tsc -b && cp -r ./src/files ./dist/files ./dist/patches",
+    "build": "shx rm -rf dist && tsc -b && cp -r ./src/files ./dist/files && cp -r ./src/patches ./dist/patches",
     "lint": "eslint . --ext .ts",
     "prepack": "oclif manifest && oclif readme",
     "postpack": "shx rm -f oclif.manifest.json",

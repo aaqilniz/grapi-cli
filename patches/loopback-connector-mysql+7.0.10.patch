@@ -117,22 +117,3 @@ index f5b4d43..0d206ba 100644
      }
      if (options.orderBy) {
        sql += ' ORDER BY ' + options.orderBy;
-diff --git a/node_modules/loopback-connector-mysql/lib/migration.js b/node_modules/loopback-connector-mysql/lib/migration.js
-index 6e69174..e36b431 100644
---- a/node_modules/loopback-connector-mysql/lib/migration.js
-+++ b/node_modules/loopback-connector-mysql/lib/migration.js
-@@ -764,10 +764,14 @@ function mixinMigration(MySQL, mysql) {
-     const colLength = columnMetadata && columnMetadata.dataLength || prop.length || prop.limit;
-     const colPrecision = columnMetadata && columnMetadata.dataPrecision;
-     const colScale = columnMetadata && columnMetadata.dataScale;
-+    const colValue = columnMetadata && columnMetadata.value;
-+
-     // info on setting column specific properties
-     // i.e dataLength, dataPrecision, dataScale
-     // https://loopback.io/doc/en/lb3/Model-definition-JSON-file.html
-     if (colType) {
-+      // if (colValue) return colType + '(' + colValue + ')';
-+      if (colLength) return colType + '(' + colLength + ')';
-       if (colLength) return colType + '(' + colLength + ')';
-       if (colPrecision && colScale) return colType + '(' + colPrecision + ',' + colScale + ')';
-       if (colPrecision) return colType + '(' + colPrecision + ')';
