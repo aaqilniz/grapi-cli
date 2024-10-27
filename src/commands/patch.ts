@@ -14,6 +14,7 @@ export default class Patch extends Command {
     pkg.scripts['postinstall'] = 'patch-package';
     pkg.dependencies['loopback-connector-mysql'] = '7.0.10';
     pkg.dependencies['loopback-datasource-juggler'] = '5.0.12';
+    pkg.dependencies['@loopback/rest-crud'] = '0.18.5';
     await fs.writeFile(pkgPath, JSON.stringify(pkg, null, 2));
   }
 }

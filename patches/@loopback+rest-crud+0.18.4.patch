@@ -1,0 +1,96 @@
+diff --git a/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js b/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
+index 0393439..3ae93d3 100644
+--- a/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
++++ b/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
+@@ -34,6 +34,16 @@ const assert_1 = tslib_1.__importDefault(require("assert"));
+  * @param options Configuration options, e.g. `{basePath: '/products'}`.
+  */
+ function defineCrudRestController(modelCtor, options) {
++    // remove hidden properties
++    for (const propertyKey in modelCtor.definition.properties) {
++        if (Object.prototype.hasOwnProperty.call(modelCtor.definition.properties, propertyKey)) {
++            const property = modelCtor.definition.properties[propertyKey];
++            if (property.hidden) {
++                // delete modelCtor.definition.properties[propertyKey];
++            }
++
++        }
++    }
+     const modelName = modelCtor.name;
+     const idPathParam = {
+         name: 'id',
+@@ -58,6 +68,7 @@ function defineCrudRestController(modelCtor, options) {
+         (0, rest_1.get)('/', {
+             ...response.array(200, `Array of ${modelName} instances`, modelCtor, {
+                 includeRelations: true,
++                exclude: modelCtor.getHiddenProperties(),
+             }),
+         }),
+         tslib_1.__param(0, rest_1.param.filter(modelCtor)),
+@@ -69,6 +80,7 @@ function defineCrudRestController(modelCtor, options) {
+         (0, rest_1.get)('/{id}', {
+             ...response.model(200, `${modelName} instance`, modelCtor, {
+                 includeRelations: true,
++                exclude: modelCtor.getHiddenProperties(),
+             }),
+         }),
+         tslib_1.__param(0, (0, rest_1.param)(idPathParam)),
+@@ -97,21 +109,21 @@ function defineCrudRestController(modelCtor, options) {
+         }
+         async create(data) {
+             return this.repository.create(
+-            // FIXME(bajtos) Improve repository API to support this use case
+-            // with no explicit type-casts required
+-            data);
++                // FIXME(bajtos) Improve repository API to support this use case
++                // with no explicit type-casts required
++                data);
+         }
+         async updateAll(data, where) {
+             return this.repository.updateAll(
+-            // FIXME(bajtos) Improve repository API to support this use case
+-            // with no explicit type-casts required
+-            data, where);
++                // FIXME(bajtos) Improve repository API to support this use case
++                // with no explicit type-casts required
++                data, where);
+         }
+         async updateById(id, data) {
+             await this.repository.updateById(id,
+-            // FIXME(bajtos) Improve repository API to support this use case
+-            // with no explicit type-casts required
+-            data);
++                // FIXME(bajtos) Improve repository API to support this use case
++                // with no explicit type-casts required
++                data);
+         }
+         async replaceById(id, data) {
+             await this.repository.replaceById(id, data);
+@@ -213,6 +225,9 @@ function body(modelCtor, options) {
+ // as a decorator that contributes OpenAPI metadata in a way that allows
+ // `@post` to merge the responses with the metadata provided at operation level
+ function response(statusCode, description, payload) {
++    if (payload.schema.definitions) {
++        // console.log(payload.schema.definitions['Gruppe']);
++    }
+     return {
+         responses: {
+             [`${statusCode}`]: {
+@@ -226,6 +241,17 @@ function response(statusCode, description, payload) {
+ }
+ (function (response) {
+     function model(statusCode, description, modelCtor, options) {
++        // const { definitions } = ((0, rest_1.getModelSchemaRef)(modelCtor, options))
++        // if (definitions['Gruppe']) {
++            //     console.log(definitions);
++            //     console.log('---------------');
++            // }
++        // const { definition } = modelCtor;
++        // if (definition.name.includes('Gruppe')) {
++        //     console.log(definition);
++        // }
++
++
+         return response(statusCode, description, {
+             schema: (0, rest_1.getModelSchemaRef)(modelCtor, options),
+         });

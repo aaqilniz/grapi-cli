@@ -1,0 +1,34 @@
+diff --git a/node_modules/@loopback/repository/dist/model.js b/node_modules/@loopback/repository/dist/model.js
+index cf5ab96..85af7ff 100644
+--- a/node_modules/@loopback/repository/dist/model.js
++++ b/node_modules/@loopback/repository/dist/model.js
+@@ -284,6 +284,20 @@ class Entity extends Model {
+     static getIdProperties() {
+         return this.definition.idProperties();
+     }
++    static getExcludeProperties() {
++        const { properties } = this.definition;
++        const idProps = Object.keys(properties).filter(prop => {
++            if (properties[prop].id && properties[prop].generated) {
++                return properties[prop].id;
++            }
++        });
++        return idProps;
++    }
++    static getHiddenProperties() {
++        const { settings } = this.definition;
++        return settings.hiddenProperties || [];
++    }
++
+     /**
+      * Get the identity value for a given entity instance or entity data object.
+      *
+@@ -372,7 +386,7 @@ function rejectNavigationalPropertiesInData(modelClass, data) {
+         if (relName in props) {
+             msg +=
+                 ' The error might be invoked by belongsTo relations, please make' +
+-                    ' sure the relation name is not the same as the property name.';
++                ' sure the relation name is not the same as the property name.';
+         }
+         throw new Error(msg);
+     }
