@@ -10,12 +10,12 @@ export default class PropertyMarkHidden extends Command {
   static override flags = {
     config: Flags.string({ char: 'c', description: 'Config JSON object' }),
     model: Flags.string({ char: 'n', description: 'name of the model' }),
-    property: Flags.string({ char: 't', description: 'name of the property to remove.' }),
+    properties: Flags.string({ char: 't', description: 'array of property names to mark hidden.' }),
   }
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(PropertyMarkHidden);
-    const { property, model } = processOptions(flags);
+    const { properties, model } = processOptions(flags);
 
     const project = new Project({});
     const invokedFrom = process.cwd();
@@ -33,23 +33,26 @@ export default class PropertyMarkHidden extends Command {
       throw new Error(`the ${model} model doesn't exist.`);
     }
     const modelClass = modelClasses[0];
-    const classProperty = modelClass.getProperty(property);
-    if (!classProperty) {
-      throw new Error(`the ${property} property doesn't exists.`);
-    }
-    const decorator = classProperty.getDecorator('property');
-    const decoratorArgument = decorator?.getArguments()[0];
-    
-    if (decoratorArgument && decoratorArgument.getKind() === SyntaxKind.ObjectLiteralExpression) {
-      const objectLiteral = decoratorArgument.asKindOrThrow(SyntaxKind.ObjectLiteralExpression);
-      const hiddenProperty = objectLiteral.getProperty('hidden');
-      if (!hiddenProperty) {
-        objectLiteral.addPropertyAssignment({
-          name: 'hidden',
-          initializer: 'true'
-        });
+    for (let i = 0; i < properties.length; i++) {
+      const property = properties[i];
+      const classProperty = modelClass.getProperty(property);
+      if (!classProperty) {
+        throw new Error(`the ${property} property doesn't exists.`);
+      }
+      const decorator = classProperty.getDecorator('property');
+      const decoratorArgument = decorator?.getArguments()[0];
+      if (decoratorArgument && decoratorArgument.getKind() === SyntaxKind.ObjectLiteralExpression) {
+        const objectLiteral = decoratorArgument.asKindOrThrow(SyntaxKind.ObjectLiteralExpression);
+        const hiddenProperty = objectLiteral.getProperty('hidden');
+        if (!hiddenProperty) {
+          objectLiteral.addPropertyAssignment({
+            name: 'hidden',
+            initializer: 'true'
+          });
+        }
       }
     }
+    
     modelFile.formatText();
     modelFile.saveSync();
     project.save();

@@ -358,13 +358,6 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             isRegex: true
         },
     },
-    fixDiscoveryWithMissingModels: {
-        ignoreUndefinedModel: {
-            searchString: 'const modelInfo = this.discoveringModels[i];',
-            replacement: `const modelInfo = this.discoveringModels[i];\nif (\!modelInfo) continue;`,
-            path: `${cliPath}/generators/discover/index.js`,
-        },
-    },
     generateConfigs: {
         forAppGenerator: {
             searchString: 'if (this.shouldExit()) return result;',
@@ -420,6 +413,47 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             searchString: 'let relationGenerator;',
             replacement: 'if (\!this.artifactInfo.config \&\& this.options[\'generate-configs\']) {delete this.artifactInfo[\'generate-configs\'];const configs = {};configs.relationName = this.artifactInfo.relationName;configs.sourceModel = this.artifactInfo.sourceModel;configs.destinationModel = this.artifactInfo.destinationModel;configs.throughModel = this.artifactInfo.throughModel;configs.foreignKeyName = this.artifactInfo.foreignKeyName;configs.sourceModelPrimaryKey = this.artifactInfo.sourceModelPrimaryKey;configs.destinationModelPrimaryKey = this.artifactInfo.destinationModelPrimaryKey;configs.sourceKeyOnThrough = this.artifactInfo.sourceKeyOnThrough;configs.sourceModelPrimaryKeyType = this.artifactInfo.sourceModelPrimaryKeyType;configs.targetKeyOnThrough = this.artifactInfo.targetKeyOnThrough;configs.destinationModelPrimaryKeyType = this.artifactInfo.destinationModelPrimaryKeyType;configs.relationName = this.artifactInfo.relationName;configs.relationType = this.artifactInfo.relationType;configs.registerInclusionResolver = this.artifactInfo.registerInclusionResolver;this.log(JSON.stringify(configs));process.exit(0);}\nlet relationGenerator;',
             path: `${cliPath}/generators/relation/index.js`,
+        },
+    },
+    checkInstalledDependencyCorrectly: {
+        datasource: {
+            searchString: 'const deps = pkgJson.dependencies || {};',
+            replacement: `const deps = pkgJson.get('dependencies') || {};`,
+            path: `${cliPath}/generators/datasource/index.js`,
+        },
+        openapi: {
+            searchString: 'const deps = pkgJson.dependencies || {};',
+            replacement: `const deps = pkgJson.get('dependencies') || {};`,
+            path: `${cliPath}/generators/openapi/index.js`,
+        },
+        restCrud: {
+            searchString: 'const deps = pkgJson.dependencies || {};',
+            replacement: `const deps = pkgJson.get('dependencies') || {};`,
+            path: `${cliPath}/generators/rest-crud/index.js`,
+        },
+        service: {
+            searchString: 'const deps = pkgJson.dependencies || {};',
+            replacement: `const deps = pkgJson.get('dependencies') || {};`,
+            path: `${cliPath}/generators/service/index.js`,
+        },
+    },
+    checkTypeBeforeParsing: {
+        updateIfCondition: {
+            searchString: 'if (this.options.connectorDiscoveryOptions)',
+            replacement: `if (this.options.connectorDiscoveryOptions && typeof this.options.connectorDiscoveryOptions === 'string')`,
+            path: `${cliPath}/generators/discover/index.js`,
+        },
+        addElseClause: {
+            searchString: 'debug(`Discovering: ${modelInfo.name}...`);',
+            replacement: `else { discoveryOptions = this.options.connectorDiscoveryOptions; }`,
+            path: `${cliPath}/generators/discover/index.js`,
+        },
+    },
+    fixDiscoveryWithMissingModels: {
+        ignoreUndefinedModel: {
+            searchString: 'const modelInfo = this.discoveringModels[i];',
+            replacement: `const modelInfo = this.discoveringModels[i];\nif (\!modelInfo) continue;`,
+            path: `${cliPath}/generators/discover/index.js`,
         },
     },
 

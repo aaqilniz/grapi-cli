@@ -101,53 +101,53 @@ export const patches: Patch = {
             path: './node_modules/loopback-connector-openapi/lib/openapi-connector.js',
         },
     },
-    supportGroupBy: {
-        addBuildGroupByQuery: {
-            searchString: 'SQLConnector.prototype.buildFields =',
-            replacement: `SQLConnector.prototype.buildGroupBy = function(groupBy) { const groupByColumns = Object.keys(groupBy); return 'GROUP BY ' + groupByColumns.join(','); };\nSQLConnector.prototype.buildFields =`,
-            path: './node_modules/loopback-connector/lib/sql.js',
-        },
-        addExtraQuery: {
-            searchString: `let selectStmt = new ParameterizedSQL('SELECT ' +`,
-            replacement: `let extraSelect = '';  if (filter.sum) { extraSelect = \`SUM(\${filter.sum}) as sumOf\${filter.sum}, \`; } if (filter.count) { extraSelect += \`COUNT(\${filter.count}) as countOf\${filter.count}, \`; } if (filter.avg) { extraSelect += \`AVG(\${filter.avg}) as avgOf\${filter.avg}, \`; } if (filter.min) { extraSelect += \`MIN(\${filter.min}) as minOf\${filter.min}, \`; } if (filter.max) { extraSelect += \`MAX(\${filter.max}) as maxOf\${filter.max}, \`;}\nlet selectStmt = new ParameterizedSQL('SELECT ' + extraSelect + `,
-            path: './node_modules/loopback-connector/lib/sql.js',
-        },
-        applyBuildGroupBy: {
-            searchString: `if (filter.order) {`,
-            replacement: `if (filter.groupBy) {selectStmt.merge(this.buildGroupBy(filter.groupBy));}\nif (filter.order) {`,
-            path: './node_modules/loopback-connector/lib/sql.js',
-        },
-        addAgregateOps: {
-            searchString: `return self.fromRow(model, obj);`,
-            replacement: `const object = self.fromRow(model, obj); if (obj\[\`sumOf\${filter.sum}\`\]) { object\[\`sumOf\${filter.sum}\`\] = obj\[\`sumOf\${filter.sum}\`\]; } if (obj\[\`countOf\${filter.count}\`\]) { object\[\`countOf\${filter.count}\`\] = obj\[\`countOf\${filter.count}\`\]; } if (obj\[\`avgOf\${filter.avg}\`\]) { object\[\`avgOf\${filter.avg}\`\] = obj\[\`avgOf\${filter.avg}\`\]; } if (obj\[\`minOf\${filter.min}\`\]) { object\[\`minOf\${filter.min}\`\] = obj\[\`minOf\${filter.min}\`\]; } if (obj\[\`maxOf\${filter.max}\`\]) { object\[\`maxOf\${filter.max}\`\] = obj\[\`maxOf\${filter.max}\`\];} return object;`,
-            path: './node_modules/loopback-connector/lib/sql.js',
-        },
-        addData: {
-            searchString: `callback(null, obj);`,
-            replacement: `const keys = Object.keys(data);\nkeys.forEach(key => { if ( key.includes('sumOf') || key.includes('countOf') || key.includes('avgOf') || key.includes('minOf') || key.includes('maxOf') ) { obj.__data[key] = data[key]; } });\ncallback(null, obj);`,
-            path: './node_modules/loopback-datasource-juggler/lib/dao.js',
-        },
-        exportGroupBy: {
-            searchString: `exports.applyParentProperty = applyParentProperty;`,
-            replacement: `exports.applyParentProperty = applyParentProperty;\nexports.groupBy = groupBy;`,
-            path: './node_modules/loopback-datasource-juggler/lib/utils.js',
-        },
-        createGroupByUtil: {
-            searchString: `function applyParentProperty(element, parent) {`,
-            replacement: `function groupBy(items, key) {return items.reduce((result, item) => ({...result,[item[key]]: [...(result[item[key]] || []),item,],}),{},);}\nfunction applyParentProperty(element, parent) {`,
-            path: './node_modules/loopback-datasource-juggler/lib/utils.js',
-        },
-        addAggregateToFilterSchema: {
-            searchString: `const properties = {`,
-            replacement: `const properties = {\nsum: { type: 'string', examples: [\"column1\"], },  min: { type: 'string', examples: [\"column1\"], }, max: { type: 'string', examples: [\"column1\"], }, avg: { type: 'string', examples: [\"column1\"], }, count: { type: 'string', examples: [\"column1\"], },`,
-            path: './node_modules/@loopback/repository-json-schema/dist/filter-json-schema.js',
-        },
-        addToWriter: {
-            searchString: `result = JSON.stringify(result);`,
-            replacement: `let customResult = result;let org = {};if (result && typeof result === 'object') {if (Array.isArray(result)) {customResult = [];result.forEach((item) => {org = {};if (typeof item === 'object') {Object.keys(item).forEach(key => {org[key] = item[key];});customResult.push(org);} else {customResult.push(item);}});} else {org = {};Object.keys(result).forEach(key => {org[key] = result[key];});customResult = org;}}\nresult = JSON.stringify(customResult);`,
-            path: './node_modules/@loopback/rest/dist/writer.js',
-        },
-    },
+    // supportGroupBy: {
+    //     addBuildGroupByQuery: {
+    //         searchString: 'SQLConnector.prototype.buildFields =',
+    //         replacement: `SQLConnector.prototype.buildGroupBy = function(groupBy) { const groupByColumns = Object.keys(groupBy); return 'GROUP BY ' + groupByColumns.join(','); };\nSQLConnector.prototype.buildFields =`,
+    //         path: './node_modules/loopback-connector/lib/sql.js',
+    //     },
+    //     addExtraQuery: {
+    //         searchString: `let selectStmt = new ParameterizedSQL('SELECT ' +`,
+    //         replacement: `let extraSelect = '';  if (filter.sum) { extraSelect = \`SUM(\${filter.sum}) as sumOf\${filter.sum}, \`; } if (filter.count) { extraSelect += \`COUNT(\${filter.count}) as countOf\${filter.count}, \`; } if (filter.avg) { extraSelect += \`AVG(\${filter.avg}) as avgOf\${filter.avg}, \`; } if (filter.min) { extraSelect += \`MIN(\${filter.min}) as minOf\${filter.min}, \`; } if (filter.max) { extraSelect += \`MAX(\${filter.max}) as maxOf\${filter.max}, \`;}\nlet selectStmt = new ParameterizedSQL('SELECT ' + extraSelect + `,
+    //         path: './node_modules/loopback-connector/lib/sql.js',
+    //     },
+    //     applyBuildGroupBy: {
+    //         searchString: `if (filter.order) {`,
+    //         replacement: `if (filter.groupBy) {selectStmt.merge(this.buildGroupBy(filter.groupBy));}\nif (filter.order) {`,
+    //         path: './node_modules/loopback-connector/lib/sql.js',
+    //     },
+    //     addAgregateOps: {
+    //         searchString: `return self.fromRow(model, obj);`,
+    //         replacement: `const object = self.fromRow(model, obj); if (obj\[\`sumOf\${filter.sum}\`\]) { object\[\`sumOf\${filter.sum}\`\] = obj\[\`sumOf\${filter.sum}\`\]; } if (obj\[\`countOf\${filter.count}\`\]) { object\[\`countOf\${filter.count}\`\] = obj\[\`countOf\${filter.count}\`\]; } if (obj\[\`avgOf\${filter.avg}\`\]) { object\[\`avgOf\${filter.avg}\`\] = obj\[\`avgOf\${filter.avg}\`\]; } if (obj\[\`minOf\${filter.min}\`\]) { object\[\`minOf\${filter.min}\`\] = obj\[\`minOf\${filter.min}\`\]; } if (obj\[\`maxOf\${filter.max}\`\]) { object\[\`maxOf\${filter.max}\`\] = obj\[\`maxOf\${filter.max}\`\];} return object;`,
+    //         path: './node_modules/loopback-connector/lib/sql.js',
+    //     },
+    //     addData: {
+    //         searchString: `callback(null, obj);`,
+    //         replacement: `const keys = Object.keys(data);\nkeys.forEach(key => { if ( key.includes('sumOf') || key.includes('countOf') || key.includes('avgOf') || key.includes('minOf') || key.includes('maxOf') ) { obj.__data[key] = data[key]; } });\ncallback(null, obj);`,
+    //         path: './node_modules/loopback-datasource-juggler/lib/dao.js',
+    //     },
+    //     exportGroupBy: {
+    //         searchString: `exports.applyParentProperty = applyParentProperty;`,
+    //         replacement: `exports.applyParentProperty = applyParentProperty;\nexports.groupBy = groupBy;`,
+    //         path: './node_modules/loopback-datasource-juggler/lib/utils.js',
+    //     },
+    //     createGroupByUtil: {
+    //         searchString: `function applyParentProperty(element, parent) {`,
+    //         replacement: `function groupBy(items, key) {return items.reduce((result, item) => ({...result,[item[key]]: [...(result[item[key]] || []),item,],}),{},);}\nfunction applyParentProperty(element, parent) {`,
+    //         path: './node_modules/loopback-datasource-juggler/lib/utils.js',
+    //     },
+    //     addAggregateToFilterSchema: {
+    //         searchString: `const properties = {`,
+    //         replacement: `const properties = {\nsum: { type: 'string', examples: [\"column1\"], },  min: { type: 'string', examples: [\"column1\"], }, max: { type: 'string', examples: [\"column1\"], }, avg: { type: 'string', examples: [\"column1\"], }, count: { type: 'string', examples: [\"column1\"], },`,
+    //         path: './node_modules/@loopback/repository-json-schema/dist/filter-json-schema.js',
+    //     },
+    //     addToWriter: {
+    //         searchString: `result = JSON.stringify(result);`,
+    //         replacement: `let customResult = result;let org = {};if (result && typeof result === 'object') {if (Array.isArray(result)) {customResult = [];result.forEach((item) => {org = {};if (typeof item === 'object') {Object.keys(item).forEach(key => {org[key] = item[key];});customResult.push(org);} else {customResult.push(item);}});} else {org = {};Object.keys(result).forEach(key => {org[key] = result[key];});customResult = org;}}\nresult = JSON.stringify(customResult);`,
+    //         path: './node_modules/@loopback/rest/dist/writer.js',
+    //     },
+    // },
     stringifyAfter: {
         addAssignment: {
             searchString: 'after,',
