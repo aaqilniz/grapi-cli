@@ -29,7 +29,7 @@ export default class Model extends Command {
     }
     let argument = '';
     if (parsed.args.name) { argument = ` ${parsed.args.name}`; }
-    const command = `lb4 model${argument}${configs}--yes`;
+    const command = `yes y | lb4 model${argument}${configs}--yes`;
     const executed: any = await execute(command, 'generating model.');
     if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
     if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));
