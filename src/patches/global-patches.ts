@@ -319,18 +319,6 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             path: `${cliPath}/generators/relation/templates/controller-relation-template-has-one.ts.ejs`,
         }
     },
-    hasOneRelationWithSameTable: {
-        passSourceModelForModelImports: {
-            searchString: 'relationUtils.getRequiredImports(targetModel, relationType);',
-            replacement: 'relationUtils.getRequiredImports(targetModel,relationType,sourceModel);',
-            path: `${cliPath}/generators/relation/has-one-relation.generator.js`,
-        },
-        passSourceModel: {
-            searchString: 'dstRepositoryClassName,',
-            replacement: 'dstRepositoryClassName,this.artifactInfo.srcModelClass,',
-            path: `${cliPath}/generators/relation/has-one-relation.generator.js`,
-        },
-    },
     supportAllOptionInRepoGenerator: {
         checkForAllOption: {
             searchString: 'if (this.options.model) {',
