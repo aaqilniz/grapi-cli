@@ -415,28 +415,6 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             path: `${cliPath}/generators/relation/index.js`,
         },
     },
-    checkInstalledDependencyCorrectly: {
-        datasource: {
-            searchString: 'const deps = pkgJson.dependencies || {};',
-            replacement: `const deps = pkgJson.get('dependencies') || {};`,
-            path: `${cliPath}/generators/datasource/index.js`,
-        },
-        openapi: {
-            searchString: 'const deps = pkgJson.dependencies || {};',
-            replacement: `const deps = pkgJson.get('dependencies') || {};`,
-            path: `${cliPath}/generators/openapi/index.js`,
-        },
-        restCrud: {
-            searchString: 'const deps = pkgJson.dependencies || {};',
-            replacement: `const deps = pkgJson.get('dependencies') || {};`,
-            path: `${cliPath}/generators/rest-crud/index.js`,
-        },
-        service: {
-            searchString: 'const deps = pkgJson.dependencies || {};',
-            replacement: `const deps = pkgJson.get('dependencies') || {};`,
-            path: `${cliPath}/generators/service/index.js`,
-        },
-    },
     checkTypeBeforeParsing: {
         updateIfCondition: {
             searchString: 'if (this.options.connectorDiscoveryOptions)',
