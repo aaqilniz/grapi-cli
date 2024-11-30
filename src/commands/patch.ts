@@ -13,8 +13,8 @@ export default class Patch extends Command {
     const pkg = JSON.parse(await fs.readFile(pkgPath, 'utf8'));
     pkg.scripts['postinstall'] = 'patch-package';
     pkg.dependencies['loopback-connector-mysql'] = '7.0.15';
-    pkg.dependencies['loopback-datasource-juggler'] = '5.1.1';
-    pkg.dependencies['@loopback/rest-crud'] = '0.18.7';
+    pkg.dependencies['loopback-datasource-juggler'] = '5.1.2';
+    pkg.dependencies['@loopback/rest-crud'] = '0.18.8';
     await fs.writeFile(pkgPath, JSON.stringify(pkg, null, 2));
   }
 }

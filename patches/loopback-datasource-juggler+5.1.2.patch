@@ -1,16 +1,8 @@
 diff --git a/node_modules/loopback-datasource-juggler/lib/datasource.js b/node_modules/loopback-datasource-juggler/lib/datasource.js
-index 1c96fd7..4a0dc89 100644
+index f35a777..32f5d30 100644
 --- a/node_modules/loopback-datasource-juggler/lib/datasource.js
 +++ b/node_modules/loopback-datasource-juggler/lib/datasource.js
-@@ -1639,7 +1639,6 @@ DataSource.prototype.discoverSchemas = function(tableName, options, cb) {
-       cb(err);
-       return cb.promise;
-     }
--
-     const columns = results[0];
-     if (!columns || columns.length === 0) {
-       cb(new Error(g.f('Table \'%s\' does not exist.', tableName)));
-@@ -1672,7 +1671,7 @@ DataSource.prototype.discoverSchemas = function(tableName, options, cb) {
+@@ -1716,7 +1716,7 @@ DataSource.prototype.discoverSchemas = function(tableName, options, cb) {
  
      columns.forEach(function(item) {
        const propName = nameMapper('column', item.columnName);
@@ -19,7 +11,7 @@ index 1c96fd7..4a0dc89 100644
          type: item.type,
          required: !item.generated && (item.nullable === 'N' || item.nullable === 'NO' ||
            item.nullable === 0 || item.nullable === false),
-@@ -1683,6 +1682,14 @@ DataSource.prototype.discoverSchemas = function(tableName, options, cb) {
+@@ -1727,12 +1727,23 @@ DataSource.prototype.discoverSchemas = function(tableName, options, cb) {
          scale: item.dataScale,
          generated: item.generated || false,
        };
@@ -30,7 +22,19 @@ index 1c96fd7..4a0dc89 100644
 +      ) {
 +        propertyDetails.index = {unique: true};
 +      }
-+      schema.properties[propName] = propertyDetails;
        if (pks[item.columnName]) {
-         schema.properties[propName].id = pks[item.columnName];
+-        schema.properties[propName].id = pks[item.columnName];
++        propertyDetails[propName].id = pks[item.columnName];
        }
+-      if (uniqueKeys.includes(propName)) {
+-        schema.properties[propName]['index'] = {unique: true};
++      if (
++        uniqueKeys.includes(propName) &&
++        propertyDetails[propName]['index'] === undefined
++      ) {
++        propertyDetails[propName]['index'] = {unique: true};
+       }
++      schema.properties[propName] = propertyDetails;
+       const dbSpecific = schema.properties[propName][dbType] = {
+         columnName: item.columnName,
+         dataType: item.dataType,
