@@ -415,18 +415,6 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             path: `${cliPath}/generators/relation/index.js`,
         },
     },
-    checkTypeBeforeParsing: {
-        updateIfCondition: {
-            searchString: 'if (this.options.connectorDiscoveryOptions)',
-            replacement: `if (this.options.connectorDiscoveryOptions && typeof this.options.connectorDiscoveryOptions === 'string')`,
-            path: `${cliPath}/generators/discover/index.js`,
-        },
-        addElseClause: {
-            searchString: 'debug(`Discovering: ${modelInfo.name}...`);',
-            replacement: `else { discoveryOptions = this.options.connectorDiscoveryOptions; }`,
-            path: `${cliPath}/generators/discover/index.js`,
-        },
-    },
     fixDiscoveryWithMissingModels: {
         ignoreUndefinedModel: {
             searchString: 'const modelInfo = this.discoveringModels[i];',
