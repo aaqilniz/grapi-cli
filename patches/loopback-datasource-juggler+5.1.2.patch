@@ -24,15 +24,15 @@ index f35a777..32f5d30 100644
 +      }
        if (pks[item.columnName]) {
 -        schema.properties[propName].id = pks[item.columnName];
-+        propertyDetails[propName].id = pks[item.columnName];
++        propertyDetails.id = pks[item.columnName];
        }
 -      if (uniqueKeys.includes(propName)) {
 -        schema.properties[propName]['index'] = {unique: true};
 +      if (
 +        uniqueKeys.includes(propName) &&
-+        propertyDetails[propName]['index'] === undefined
++        propertyDetails['index'] === undefined
 +      ) {
-+        propertyDetails[propName]['index'] = {unique: true};
++        propertyDetails['index'] = {unique: true};
        }
 +      schema.properties[propName] = propertyDetails;
        const dbSpecific = schema.properties[propName][dbType] = {
