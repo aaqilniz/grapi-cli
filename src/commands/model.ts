@@ -23,13 +23,15 @@ export default class Model extends Command {
     const parsed = await this.parse(Model);
     if (!parsed.flags.config) return prompt('model', parsed.flags);
     let options = processOptions(parsed.flags);
+    const { force } = options;
+    delete options.force;
     let configs = '';
     if (Object.keys(options).length) {
       configs = ` --config='${JSON.stringify(options)}' `;
     }
     let argument = '';
     if (parsed.args.name) { argument = ` ${parsed.args.name}`; }
-    const command = `yes y | lb4 model${argument}${configs}--yes`;
+    const command = `lb4 model${argument}${configs}--yes${force ? ' --force' : ''}`;
     const executed: any = await execute(command, 'generating model.');
     if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
     if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));
