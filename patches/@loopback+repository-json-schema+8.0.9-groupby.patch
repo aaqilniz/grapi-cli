@@ -1,5 +1,5 @@
 diff --git a/node_modules/@loopback/repository-json-schema/dist/filter-json-schema.js b/node_modules/@loopback/repository-json-schema/dist/filter-json-schema.js
-index 0752c13..ff281ea 100644
+index 0752c13..2af9c33 100644
 --- a/node_modules/@loopback/repository-json-schema/dist/filter-json-schema.js
 +++ b/node_modules/@loopback/repository-json-schema/dist/filter-json-schema.js
 @@ -74,6 +74,32 @@ function getFilterJsonSchemaFor(modelCtor, options = {}) {
@@ -45,11 +45,11 @@ index 0752c13..ff281ea 100644
      // Remove excluded properties
      for (const p of excluded) {
          delete properties[p];
-@@ -194,5 +223,31 @@ function getFieldsJsonSchemaFor(modelCtor, options = {}) {
+@@ -194,5 +223,32 @@ function getFieldsJsonSchemaFor(modelCtor, options = {}) {
      });
      return schema;
  }
-+exports.getGroupByJsonSchemaFor = (modelCtor,options= {}) => {
++function getGroupByJsonSchemaFor(modelCtor,options= {}) {
 +    const schema = {oneOf: []};
 +    if (options.setTitle !== false) {
 +        schema.title = `${modelCtor.modelName}.GroupBy`;
@@ -76,5 +76,6 @@ index 0752c13..ff281ea 100644
 +  return schema;
 +}
  exports.getFieldsJsonSchemaFor = getFieldsJsonSchemaFor;
++exports.getGroupByJsonSchemaFor = getGroupByJsonSchemaFor;
  //# sourceMappingURL=filter-json-schema.js.map
 \ No newline at end of file
