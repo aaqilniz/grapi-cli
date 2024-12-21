@@ -1,0 +1,13 @@
+diff --git a/node_modules/@loopback/repository/dist/repositories/legacy-juggler-bridge.js b/node_modules/@loopback/repository/dist/repositories/legacy-juggler-bridge.js
+index b98edc7..cc12cc7 100644
+--- a/node_modules/@loopback/repository/dist/repositories/legacy-juggler-bridge.js
++++ b/node_modules/@loopback/repository/dist/repositories/legacy-juggler-bridge.js
+@@ -387,7 +387,7 @@ class DefaultCrudRepository {
+         return ensurePromise(this.dataSource.execute(...args));
+     }
+     toEntity(model) {
+-        return new this.entityClass(model.toObject());
++        return new this.entityClass(model.toObject({onlySchema: false}));
+     }
+     toEntities(models) {
+         return models.map(m => this.toEntity(m));

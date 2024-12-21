@@ -288,6 +288,13 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             path: `${cliPath}/generators/datasource/index.js`
         }
     },
+    disableStrictModeInModelDiscovery: {
+        setStrictToFalse: {
+            searchString: '...discoveredSettings,',
+            replacement: `...discoveredSettings,strict: false,`,
+            path: `${cliPath}/generators/discover/import-discovered-model.js`
+        },
+    },
     addEnumValuesToMySQL: {
         declareEnumString: {
             searchString: 'templateData.properties[key][\'type\'] = \'String\';',

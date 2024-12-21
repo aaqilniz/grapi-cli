@@ -1,0 +1,53 @@
+diff --git a/node_modules/loopback-datasource-juggler/lib/dao.js b/node_modules/loopback-datasource-juggler/lib/dao.js
+index f34ed8b..4ae1030 100644
+--- a/node_modules/loopback-datasource-juggler/lib/dao.js
++++ b/node_modules/loopback-datasource-juggler/lib/dao.js
+@@ -1929,7 +1929,18 @@ DataAccessObject.find = function find(query, options, cb) {
+               delete obj.__data.__cachedRelations;
+             }
+           }
+-
++          const keys = Object.keys(data);
++          keys.forEach(key => {
++            if (
++              key.includes('sumOf') ||
++              key.includes('countOf') ||
++              key.includes('avgOf') ||
++              key.includes('minOf') ||
++              key.includes('maxOf')
++            ) {
++              obj.__data[key] = data[key];
++            }
++          });
+           callback(null, obj);
+         }
+ 
+diff --git a/node_modules/loopback-datasource-juggler/lib/utils.js b/node_modules/loopback-datasource-juggler/lib/utils.js
+index c73e9d0..dde7600 100644
+--- a/node_modules/loopback-datasource-juggler/lib/utils.js
++++ b/node_modules/loopback-datasource-juggler/lib/utils.js
+@@ -31,6 +31,7 @@ exports.idsHaveDuplicates = idsHaveDuplicates;
+ exports.isClass = isClass;
+ exports.escapeRegExp = escapeRegExp;
+ exports.applyParentProperty = applyParentProperty;
++exports.groupBy = groupBy;
+ 
+ const g = require('strong-globalize')();
+ const traverse = require('neotraverse/legacy');
+@@ -893,3 +894,15 @@ function applyParentProperty(element, parent) {
+     });
+   }
+ }
++function groupBy(items, key) {
++  return items.reduce(
++    (result, item) => ({
++      ...result,
++      [item[key]]: [
++        ...(result[item[key]] || []),
++        item,
++      ],
++    }),
++    {},
++  );
++}
+\ No newline at end of file
