@@ -1,0 +1,98 @@
+diff --git a/node_modules/@loopback/repository-json-schema/dist/filter-json-schema.js b/node_modules/@loopback/repository-json-schema/dist/filter-json-schema.js
+index 0752c13..ad30832 100644
+--- a/node_modules/@loopback/repository-json-schema/dist/filter-json-schema.js
++++ b/node_modules/@loopback/repository-json-schema/dist/filter-json-schema.js
+@@ -74,6 +74,32 @@ function getFilterJsonSchemaFor(modelCtor, options = {}) {
+             minimum: 1,
+             examples: [100],
+         },
++        sum: {
++            type: 'string',
++            examples: ['column1'],
++          },
++          min: {
++            type: 'string',
++            examples: ['column1'],
++          },
++          max: {
++            type: 'string',
++            examples: ['column1'],
++          },
++          avg: {
++            type: 'string',
++            examples: ['column1'],
++          },
++          count: {
++            type: 'string',
++            examples: ['column1'],
++          },
++          groupBy: {
++            type: 'array',
++            items: {
++              type: 'string',
++            },
++          },
+         skip: {
+             type: 'integer',
+             minimum: 0,
+@@ -95,6 +121,10 @@ function getFilterJsonSchemaFor(modelCtor, options = {}) {
+     if (!excluded.includes('where')) {
+         properties.where = getWhereJsonSchemaFor(modelCtor, options);
+     }
++    if (!excluded.includes('groupBy')) {
++        properties.fields = getGroupByJsonSchemaFor(modelCtor, options);
++      }
++    
+     if (!excluded.includes('fields')) {
+         properties.fields = getFieldsJsonSchemaFor(modelCtor, options);
+     }
+@@ -176,7 +206,9 @@ function getFieldsJsonSchemaFor(modelCtor, options = {}) {
+     if (options.setTitle !== false) {
+         schema.title = `${modelCtor.modelName}.Fields`;
+     }
+-    const properties = Object.keys(modelCtor.definition.properties);
++    const hiddenProperties = modelCtor.definition.settings.hiddenProperties || [];
++    const originalProps = Object.keys(modelCtor.definition.properties);
++    const properties = originalProps.filter(prop => !hiddenProperties.includes(prop));
+     const additionalProperties = modelCtor.definition.settings.strict === false;
+     (_a = schema.oneOf) === null || _a === void 0 ? void 0 : _a.push({
+         type: 'object',
+@@ -194,5 +226,37 @@ function getFieldsJsonSchemaFor(modelCtor, options = {}) {
+     });
+     return schema;
+ }
++
++function getGroupByJsonSchemaFor(modelCtor,options = {}) {
++    const schema = {oneOf: []};
++    if (options.setTitle !== false) {
++      schema.title = `${modelCtor.modelName}.GroupBy`;
++    }
++  
++    const properties = Object.keys(modelCtor.definition.properties);
++    const additionalProperties = modelCtor.definition.settings.strict === false;
++  
++    schema.oneOf?.push({
++      type: 'object',
++      properties: properties.reduce(
++        (prev, crr) => ({...prev, [crr]: {type: 'boolean'}}),
++        {},
++      ),
++      additionalProperties,
++    });
++  
++    schema.oneOf?.push({
++      type: 'array',
++      items: {
++        type: 'string',
++        enum: properties.length && !additionalProperties ? properties : undefined,
++        examples: properties,
++      },
++      uniqueItems: true,
++    });
++  
++    return schema;
++  }
+ exports.getFieldsJsonSchemaFor = getFieldsJsonSchemaFor;
++exports.getGroupByJsonSchemaFor = getGroupByJsonSchemaFor;
+ //# sourceMappingURL=filter-json-schema.js.map
+\ No newline at end of file
