@@ -1,10 +1,10 @@
-# grapi-cli@0.0.79
+# grapi-cli@0.0.80
 
-### @loopback+repository-json-schema+8.0.9+build-schema.patch
+### @loopback+repository-json-schema+8.0.9-build-schema.patch
 
   - adds x-index to openapi specs
 
-### @loopback+repository-json-schema+8.0.9+filter-json-schema.patch
+### @loopback+repository-json-schema+8.0.9-filter-json-schema.patch
 
   - enable groupby
   - enable hidden properties
@@ -13,7 +13,7 @@
 
   - enable hidden properties
 
-### @loopback+repository+7.0.0+groupby.patch
+### @loopback+repository+7.0.0-groupby.patch
 
   - enable groupby
 
@@ -25,7 +25,7 @@
 
   - adds x-index to openapi specs
 
-### loopback-connector+6.1.12+groupby.patch
+### loopback-connector+6.1.12-groupby.patch
 
   - enable groupby
 
@@ -33,6 +33,6 @@
 
   - adds x-index to openapi specs
 
-### loopback-datasource-juggler+5.1.2+groupby.patch
+### loopback-datasource-juggler+5.1.2-groupby.patch
 
   - enable groupby
