@@ -1,0 +1,38 @@
+diff --git a/node_modules/loopback-connector-openapi/lib/openapi-connector.js b/node_modules/loopback-connector-openapi/lib/openapi-connector.js
+index da29ef7..920f0a1 100644
+--- a/node_modules/loopback-connector-openapi/lib/openapi-connector.js
++++ b/node_modules/loopback-connector-openapi/lib/openapi-connector.js
+@@ -128,7 +128,32 @@ OpenApiConnector.prototype.connect = function(cb) {
+           requestInterceptor: self.connectorHooks.beforeExecute,
+           responseInterceptor: self.connectorHooks.afterExecute,
+         };
+-
++        let baseURL, baseURLObject;
++        if (req.spec.openapi) {
++          try {
++            baseURLObject = new URL(self.settings.spec);
++            baseURL = `${baseURLObject.protocol}//${baseURLObject.host}`;
++            if (req.spec.servers && req.spec.servers.length) {
++              req.spec.servers.forEach(function({url}, index) {
++                try {
++                  new URL(url);
++                } catch (error) {
++                  if (url.startsWith('//')) {
++                    url = `${baseURLObject.protocol}:${url}`;
++                  } else {
++                    url = url === '/' ? baseURL : baseURL + url;
++                  }
++                }
++                req.spec.servers[index].url = url;
++              });
++              
++            } else {
++              req.spec.servers = [{url: baseURL}];
++            }
++          } catch (error) {
++            debug('Not a valid URL: %s', error);
++          }
++        }
+         client = await SwaggerClient(req);
+         if (debug.enabled) {
+           debug('swagger loaded: %s', self.spec);

@@ -1,0 +1,28 @@
+diff --git a/node_modules/@loopback/openapi-v3/dist/json-to-schema.js b/node_modules/@loopback/openapi-v3/dist/json-to-schema.js
+index ba9d83c..c80bac4 100644
+--- a/node_modules/@loopback/openapi-v3/dist/json-to-schema.js
++++ b/node_modules/@loopback/openapi-v3/dist/json-to-schema.js
+@@ -94,6 +94,23 @@ function jsonToSchemaObject(json, visited = new Map()) {
+     delete result[converted];
+     // Check if the description contains information about TypeScript type
+     const matched = (_a = result.description) === null || _a === void 0 ? void 0 : _a.match(/^\(tsType: (.+), schemaOptions:/);
++    if (result.description) {
++        const relationMatched = result.description.match(/\\{"relationships".*$/s);
++        if (relationMatched) {
++            const stringifiedRelation = 
++                relationMatched[0]
++                    .replace(/foreignKey/g, 'x-foreign-key')
++                    .replace(/relationType/g, 'x-relation-type')
++                    .replace(/sourceModel/g, 'x-source-model')
++                    .replace(/targetModel/g, 'x-target-model')
++                    .replace(/includeRelations/g, 'x-include-relations')
++                    .replace(/through/g, 'x-through-model');
++            if (stringifiedRelation) {
++                result['x-relationships'] = JSON.parse(stringifiedRelation)['relationships'];
++                result.description = result.description.replace(/\\{"relationships".*$/s,'',);
++            }
++        }
++    }
+     if (matched) {
+         result['x-typescript-type'] = matched[1];
+     }

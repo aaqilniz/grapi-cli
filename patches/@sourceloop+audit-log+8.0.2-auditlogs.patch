@@ -1,0 +1,15 @@
+diff --git a/node_modules/@sourceloop/audit-log/dist/mixins/audit.mixin.js b/node_modules/@sourceloop/audit-log/dist/mixins/audit.mixin.js
+index 12b41b5..2bed77a 100644
+--- a/node_modules/@sourceloop/audit-log/dist/mixins/audit.mixin.js
++++ b/node_modules/@sourceloop/audit-log/dist/mixins/audit.mixin.js
+@@ -14,8 +14,8 @@ function AuditRepositoryMixin(superClass, opts) {
+                 actedAt: new Date(),
+                 actor: this.getActor(user, options === null || options === void 0 ? void 0 : options.actorId),
+                 action,
+-                before,
+-                after,
++                before: JSON.stringify(before),
++                after: JSON.stringify(after),
+                 entityId: entity.getId(),
+                 actedOn: this.entityClass.modelName,
+                 actionKey: opts.actionKey,

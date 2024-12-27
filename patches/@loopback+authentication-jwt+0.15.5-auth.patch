@@ -1,0 +1,30 @@
+diff --git a/node_modules/@loopback/authentication-jwt/dist/services/user.service.d.ts b/node_modules/@loopback/authentication-jwt/dist/services/user.service.d.ts
+index 0060639..3b94458 100644
+--- a/node_modules/@loopback/authentication-jwt/dist/services/user.service.d.ts
++++ b/node_modules/@loopback/authentication-jwt/dist/services/user.service.d.ts
+@@ -7,7 +7,7 @@ import { UserRepository } from '../repositories';
+  * using the email and password. You can modify it if your app has different credential fields
+  */
+ export type Credentials = {
+-    email: string;
++    email?: string;username?: string;
+     password: string;
+ };
+ export declare class MyUserService implements UserService<User, Credentials> {
+diff --git a/node_modules/@loopback/authentication-jwt/dist/services/user.service.js b/node_modules/@loopback/authentication-jwt/dist/services/user.service.js
+index 6f718f1..676746b 100644
+--- a/node_modules/@loopback/authentication-jwt/dist/services/user.service.js
++++ b/node_modules/@loopback/authentication-jwt/dist/services/user.service.js
+@@ -16,9 +16,10 @@ let MyUserService = class MyUserService {
+         this.userRepository = userRepository;
+     }
+     async verifyCredentials(credentials) {
+-        const invalidCredentialsError = 'Invalid email or password.';
++        const invalidCredentialsError = 'Invalid username/email or password.';
++if (!credentials.email && !credentials.username) {throw new rest_1.HttpErrors.Unauthorized('please provide either username or email.');}const whereFilter = {};if (credentials.email){whereFilter.email = credentials.email;}if (credentials.username) {whereFilter.username = credentials.username;}
+         const foundUser = await this.userRepository.findOne({
+-            where: { email: credentials.email },
++            where: whereFilter,
+         });
+         if (!foundUser) {
+             throw new rest_1.HttpErrors.Unauthorized(invalidCredentialsError);

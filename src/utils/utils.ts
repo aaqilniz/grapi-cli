@@ -4,11 +4,14 @@ import {
   readFileSync,
   writeFileSync,
   statSync,
-  readdirSync
+  readdirSync,
+  promises as fsPromises,
+  mkdir
 } from 'fs';
 import { exec, SpawnOptions, spawn } from 'child_process';
 import { MethodDeclaration, ParameterDeclaration, SourceFile } from 'ts-morph';
 import { Patch } from '../types/patch.types.js';
+import { join } from 'path';
 
 const execPromise = (command: string): Promise<ExecutionResponse> => {
   return new Promise((resolve, reject) => {
@@ -215,4 +218,61 @@ export function prompt(command: string, flags: any, args?: any) {
       console.log(`lb4 command was terminated`);
     }
   });
+}
+
+export async function copyFiles(srcDir: string, destDir: string, files: string[]): Promise<void[]> {
+  if (!existsSync(destDir)) await fsPromises.mkdir(destDir);
+  return Promise.all(files.map(file =>
+    fsPromises.copyFile(join(srcDir, file), join(destDir, file))
+  ));
+}
+
+export function findVersionedFile(filePattern: string, directory: string = '.'): string {
+  try {
+    // Split the pattern around the asterisk
+    const [prefix, suffix] = filePattern.split('*');
+
+    // Create different regex patterns based on whether there's content after *
+    let regex: RegExp;
+    if (suffix && suffix !== '.patch') {
+      // Case 1: Pattern has extra content after version (like -build-schema.patch)
+      regex = new RegExp(`^${prefix
+        .replace(/\./g, '\\.')
+        .replace(/\+/g, '\\+')
+        .replace(/\(/g, '\\(')
+        .replace(/\)/g, '\\)')
+        }[\\d\\.]+${suffix
+          .replace(/\./g, '\\.')
+          .replace(/\+/g, '\\+')
+          .replace(/\(/g, '\\(')
+          .replace(/\)/g, '\\)')
+        }$`);
+    } else {
+      // Case 2: Pattern only has version followed by .patch
+      regex = new RegExp(`^${prefix
+        .replace(/\./g, '\\.')
+        .replace(/\+/g, '\\+')
+        .replace(/\(/g, '\\(')
+        .replace(/\)/g, '\\)')
+        }[\\d\\.]+\\.patch$`);
+    }
+
+    // Read directory contents
+    const files = readdirSync(directory);
+
+    // Find matching file
+    const matchingFile = files.find((file: string) => regex.test(file));
+
+    if (!matchingFile) {
+      throw new Error(`No file found matching pattern: ${filePattern}`);
+    }
+
+    return matchingFile;
+
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to find file: ${error.message}`);
+    }
+    throw new Error('An unknown error occurred while finding the file');
+  }
 }

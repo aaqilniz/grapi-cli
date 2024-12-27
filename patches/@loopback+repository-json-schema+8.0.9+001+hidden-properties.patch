@@ -1,0 +1,15 @@
+diff --git a/node_modules/@loopback/repository-json-schema/dist/filter-json-schema.js b/node_modules/@loopback/repository-json-schema/dist/filter-json-schema.js
+index 0752c13..0f62756 100644
+--- a/node_modules/@loopback/repository-json-schema/dist/filter-json-schema.js
++++ b/node_modules/@loopback/repository-json-schema/dist/filter-json-schema.js
+@@ -176,7 +176,9 @@ function getFieldsJsonSchemaFor(modelCtor, options = {}) {
+     if (options.setTitle !== false) {
+         schema.title = `${modelCtor.modelName}.Fields`;
+     }
+-    const properties = Object.keys(modelCtor.definition.properties);
++    const hiddenProperties = modelCtor.definition.settings.hiddenProperties || [];
++    const originalProps = Object.keys(modelCtor.definition.properties);
++    const properties = originalProps.filter(prop => !hiddenProperties.includes(prop));
+     const additionalProperties = modelCtor.definition.settings.strict === false;
+     (_a = schema.oneOf) === null || _a === void 0 ? void 0 : _a.push({
+         type: 'object',
