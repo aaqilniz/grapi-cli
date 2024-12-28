@@ -53,6 +53,7 @@ export default class Patch extends Command {
     if (patches && !patches.includes('openapi')) {
       if (!patches.includes('openAPISpecsExtensions')) patches.push('openAPISpecsExtensions');
       if (!patches.includes('hiddenProperties')) patches.push('hiddenProperties');
+      if (!patches.includes('virtualAsGenerated')) patches.push('virtualAsGenerated');
     }
     if (patches && patches.includes('openapi')) {
       PatchPaths.openapi.forEach(openapi => {
@@ -104,11 +105,11 @@ export default class Patch extends Command {
 
     const pkgPath = './package.json';
     const pkg = JSON.parse(await fs.readFile(pkgPath, 'utf8'));
-    if (patches.hiddenProperties || patches.auth) {
+    if (patches && (patches.hiddenProperties || patches.auth)) {
       pkg.dependencies['@loopback/rest-crud'] = '0.18.8';
     }
 
-    if (patches.openAPISpecsExtensions || patches.virtualAsGenerated) {
+    if (patches && (patches.openAPISpecsExtensions || patches.virtualAsGenerated)) {
       pkg.dependencies['loopback-connector-mysql'] = '7.0.15';
       pkg.dependencies['loopback-datasource-juggler'] = '5.1.2';
     }
