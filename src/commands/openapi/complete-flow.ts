@@ -1,9 +1,11 @@
 import { Args, Command, Flags } from '@oclif/core'
 import chalk from 'chalk';
 
-import { processOptions, execute, standardFlags, prompt } from '../utils/index.js';
+import { processOptions, execute, standardFlags, prompt } from '../../utils/index.js';
+import Cache from '../cache.js';
+import Datasource from '../datasource.js';
 
-export default class Openapi extends Command {
+export default class OpenapiCompleteFlow extends Command {
   static override description = 'generate openapi based apis.';
   static override args = {
     url: Args.string({ description: 'URL or file path of the OpenAPI spec. Type: String. Required: false.', }),
@@ -21,10 +23,13 @@ export default class Openapi extends Command {
   }
 
   public async run(): Promise<void> {
-    const parsed = await this.parse(Openapi);
+    const parsed = await this.parse(OpenapiCompleteFlow);
 
     if (!parsed.flags.config) return prompt('openapi', parsed.flags);
     let options = processOptions(parsed.flags);
+    const { redisDS, cache } = options;
+    delete options.redisDS;
+    delete options.cache;
     let configs = '';
     if (Object.keys(options).length) {
       configs = ` --config='${JSON.stringify(options)}' `;
@@ -32,8 +37,26 @@ export default class Openapi extends Command {
     let argument = '';
     if (parsed.args.url) { argument = ` ${parsed.args.url}`; }
     const command = `lb4 openapi${argument}${configs}--yes`;
-    const executed: any = await execute(command, 'generating openapi based app.');
+    const executed: any = await execute(command, 'generating service.');
     if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
     if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));
+    // generate redis datasource
+    if (redisDS) {
+      if (executed.stdout) console.log(chalk.bold(chalk.blue('generating cache datasources')));
+      await Datasource.run(
+        [
+          `--config=${JSON.stringify(redisDS)}`
+        ]
+      );
+      console.log(chalk.bold(chalk.blue('generated cache datasources')));
+    }
+    if (executed.stdout) console.log(chalk.bold(chalk.blue('generating cache generator')));
+    // generate cache artifacts
+    if (cache) {
+      cache.redisDS = redisDS.name;
+      if (options.prefix) { cache.prefix = options.prefix; }
+      await Cache.run([`--config=${JSON.stringify(cache)}`]);
+      console.log(chalk.bold(chalk.blue('generated cache generator')));
+    }
   }
 }
