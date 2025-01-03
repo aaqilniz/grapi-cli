@@ -1,6 +1,6 @@
 {
   "name": "grapi-cli",
-  "version": "0.0.81",
+  "version": "0.0.87",
   "description": "a cli tool to generate loopback 4 applications with extra features like caching & fuzzy search",
   "keywords": [
     "lb4",

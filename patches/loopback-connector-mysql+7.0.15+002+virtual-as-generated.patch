@@ -1,0 +1,22 @@
+diff --git a/node_modules/loopback-connector-mysql/lib/discovery.js b/node_modules/loopback-connector-mysql/lib/discovery.js
+index 728feb7..38dc16c 100644
+--- a/node_modules/loopback-connector-mysql/lib/discovery.js
++++ b/node_modules/loopback-connector-mysql/lib/discovery.js
+@@ -168,7 +168,7 @@ function mixinDiscovery(MySQL, mysql) {
+             cols.numeric_scale AS "dataScale",
+             cols.column_type AS "columnType",
+             cols.is_nullable = 'YES' AS "nullable",
+-            CASE WHEN cols.extra LIKE '%auto_increment%' THEN 1 ELSE 0 END AS "generated",
++            case when cols.extra like \'%virtual%\' then 1 when cols.extra like \'%stored%\' then 1 when cols.extra LIKE \'%auto_increment%\' THEN 1 else 0 end as "generated",
+             indexes.index_name AS "indexName",
+             indexes.non_unique AS "nonUnique",
+             indexes.seq_in_index AS "seqInIndex",
+@@ -209,7 +209,7 @@ function mixinDiscovery(MySQL, mysql) {
+             cols.numeric_scale AS "dataScale",
+             cols.column_type AS "columnType",
+             cols.is_nullable = 'YES' AS "nullable",
+-            CASE WHEN cols.extra LIKE '%auto_increment%' THEN 1 ELSE 0 END AS "generated",
++            case when cols.extra like \'%virtual%\' then 1 when cols.extra like \'%stored%\' then 1 when cols.extra LIKE \'%auto_increment%\' THEN 1 else 0 end as "generated",
+             indexes.index_name AS "indexName",
+             indexes.seq_in_index AS "indexColumnOrder",
+             indexes.non_unique AS "nonUnique",

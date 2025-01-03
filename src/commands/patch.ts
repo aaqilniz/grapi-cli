@@ -20,8 +20,9 @@ export default class Patch extends Command {
       openAPISpecsExtensions: [
         '@loopback+repository-json-schema+*-oas-extensions.patch',
         '@loopback+openapi-v3+*-oas-extensions.patch',
-        'loopback-connector-mysql+*-index-info.patch',
+        'loopback-connector-mysql+*+001+index-info.patch',
         'loopback-datasource-juggler+*-index-info.patch',
+        '@loopback+rest+*+001+oas-extensions.patch'
       ],
       hiddenProperties: [
         '@loopback+repository-json-schema+*+001+hidden-properties.patch',
@@ -42,7 +43,7 @@ export default class Patch extends Command {
         '@loopback+authentication-jwt+*-auth.patch'
       ],
       virtualAsGenerated: [
-        'loopback-connector-mysql+*-virtual-as-generated.patch',
+        'loopback-connector-mysql+*+002+virtual-as-generated.patch',
       ]
     };
     const __filename = fileURLToPath(import.meta.url);
@@ -50,6 +51,8 @@ export default class Patch extends Command {
     const patchDirectoryPath = path.join(__dirname, '../../patches');
 
     const patchesToCopy: string[] = [];
+
+    //default patches if no openapi patches are to be applied
     if (patches && !patches.includes('openapi')) {
       if (!patches.includes('openAPISpecsExtensions')) patches.push('openAPISpecsExtensions');
       if (!patches.includes('hiddenProperties')) patches.push('hiddenProperties');
@@ -105,13 +108,16 @@ export default class Patch extends Command {
 
     const pkgPath = './package.json';
     const pkg = JSON.parse(await fs.readFile(pkgPath, 'utf8'));
-    if (patches && (patches.hiddenProperties || patches.auth)) {
+
+    if (patches && (patches.includes('hiddenProperties') || patches.includes('auth'))) {
       pkg.dependencies['@loopback/rest-crud'] = '0.18.8';
+      await execute('npm install @loopback/rest-crud@0.18.8');
     }
 
-    if (patches && (patches.openAPISpecsExtensions || patches.virtualAsGenerated)) {
+    if (patches && (patches.includes('openAPISpecsExtensions') || patches.includes('virtualAsGenerated'))) {
       pkg.dependencies['loopback-connector-mysql'] = '7.0.15';
       pkg.dependencies['loopback-datasource-juggler'] = '5.1.2';
+      await execute('npm install loopback-connector-mysql@7.0.15 loopback-datasource-juggler@5.1.2');
     }
     await fs.writeFile(pkgPath, JSON.stringify(pkg, null, 2));
     await execute('npx patch-package');
