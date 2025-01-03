@@ -14,7 +14,7 @@ export default class Patch extends Command {
     const parsed = await this.parse(Patch);
 
     let options = processOptions(parsed.flags);
-    const { patches } = options;
+    const patches = options || [];
     const PatchPaths = {
       openapi: ['loopback-connector-openapi+*-construct-absolute-url.patch'],
       openAPISpecsExtensions: [
