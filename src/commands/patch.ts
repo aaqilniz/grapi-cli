@@ -14,7 +14,7 @@ export default class Patch extends Command {
     const parsed = await this.parse(Patch);
 
     let options = processOptions(parsed.flags);
-    const patches = options || [];
+    const patches = options.patches || [];
     const PatchPaths = {
       openapi: ['loopback-connector-openapi+*-construct-absolute-url.patch'],
       openAPISpecsExtensions: [
@@ -44,6 +44,9 @@ export default class Patch extends Command {
       ],
       virtualAsGenerated: [
         'loopback-connector-mysql+*+002+virtual-as-generated.patch',
+      ],
+      supportRestrictedProperties: [
+        '@loopback+authorization+*+001+restricted-properties.patch',
       ]
     };
     const __filename = fileURLToPath(import.meta.url);
@@ -59,20 +62,20 @@ export default class Patch extends Command {
       if (!patches.includes('virtualAsGenerated')) patches.push('virtualAsGenerated');
     }
     if (patches && patches.includes('openapi')) {
-      PatchPaths.openapi.forEach(openapi => {
-        const patchFileName = findVersionedFile(openapi, patchDirectoryPath);
+      PatchPaths.openapi.forEach(patch => {
+        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
         patchesToCopy.push(patchFileName);
       });
     }
     if (patches && patches.includes('openAPISpecsExtensions')) {
-      PatchPaths.openAPISpecsExtensions.forEach(extensions => {
-        const patchFileName = findVersionedFile(extensions, patchDirectoryPath);
+      PatchPaths.openAPISpecsExtensions.forEach(patch => {
+        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
         patchesToCopy.push(patchFileName);
       });
     }
     if (patches && patches.includes('hiddenProperties')) {
-      PatchPaths.hiddenProperties.forEach(hiddenProperty => {
-        const patchFileName = findVersionedFile(hiddenProperty, patchDirectoryPath);
+      PatchPaths.hiddenProperties.forEach(patch => {
+        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
         patchesToCopy.push(patchFileName);
       });
     }
@@ -80,30 +83,37 @@ export default class Patch extends Command {
       patches.includes('groupBy') &&
       !patches.includes('openapi')
     ) {
-      PatchPaths.groupBy.forEach(groupBy => {
-        const patchFileName = findVersionedFile(groupBy, patchDirectoryPath);
+      PatchPaths.groupBy.forEach(patch => {
+        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
         patchesToCopy.push(patchFileName);
       });
     }
     if (patches && patches.includes('auditLogs')) {
-      PatchPaths.auditLogs.forEach(auditLogs => {
-        const patchFileName = findVersionedFile(auditLogs, patchDirectoryPath);
+      PatchPaths.auditLogs.forEach(patch => {
+        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
         patchesToCopy.push(patchFileName);
       });
     }
     if (patches && patches.includes('auth')) {
-      PatchPaths.auth.forEach(auth => {
-        const patchFileName = findVersionedFile(auth, patchDirectoryPath);
+      PatchPaths.auth.forEach(patch => {
+        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
         patchesToCopy.push(patchFileName);
       });
     }
     if (patches && patches.includes('virtualAsGenerated')) {
-      PatchPaths.virtualAsGenerated.forEach(virtualAsGenerated => {
-        const patchFileName = findVersionedFile(virtualAsGenerated, patchDirectoryPath);
+      PatchPaths.virtualAsGenerated.forEach(patch => {
+        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
         patchesToCopy.push(patchFileName);
       });
     }
 
+    if (patches && patches.includes('supportRestrictedProperties')) {
+      PatchPaths.supportRestrictedProperties.forEach(patch => {
+        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
+        patchesToCopy.push(patchFileName);
+      });
+    }
+    
     copyFiles(patchDirectoryPath, './patches', patchesToCopy);
 
     const pkgPath = './package.json';

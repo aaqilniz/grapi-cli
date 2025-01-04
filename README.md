@@ -14,7 +14,7 @@ $ npm install -g grapi-cli
 $ grapi-cli COMMAND
 running command...
 $ grapi-cli (--version)
-grapi-cli/0.0.88 linux-x64 node-v18.17.1
+grapi-cli/0.0.90 linux-x64 node-v18.17.1
 $ grapi-cli --help [COMMAND]
 USAGE
   $ grapi-cli COMMAND
@@ -108,7 +108,7 @@ DESCRIPTION
   generate application.
 ```
 
-_See code: [src/commands/app.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/app.ts)_
+_See code: [src/commands/app.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/app.ts)_
 
 ## `grapi-cli audit [NAME]`
 
@@ -136,7 +136,7 @@ DESCRIPTION
   generate audit artifacts.
 ```
 
-_See code: [src/commands/audit.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/audit.ts)_
+_See code: [src/commands/audit.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/audit.ts)_
 
 ## `grapi-cli auth`
 
@@ -156,7 +156,7 @@ DESCRIPTION
   adding auth to loopback 4 application.
 ```
 
-_See code: [src/commands/auth.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/auth.ts)_
+_See code: [src/commands/auth.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/auth.ts)_
 
 ## `grapi-cli auth:users`
 
@@ -174,7 +174,7 @@ DESCRIPTION
   adding auth to loopback 4 application.
 ```
 
-_See code: [src/commands/auth/users.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/auth/users.ts)_
+_See code: [src/commands/auth/users.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/auth/users.ts)_
 
 ## `grapi-cli cache`
 
@@ -197,7 +197,7 @@ DESCRIPTION
   creating cache for endpoints
 ```
 
-_See code: [src/commands/cache.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/cache.ts)_
+_See code: [src/commands/cache.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/cache.ts)_
 
 ## `grapi-cli controller [NAME]`
 
@@ -227,7 +227,7 @@ DESCRIPTION
   generate controllers
 ```
 
-_See code: [src/commands/controller.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/controller.ts)_
+_See code: [src/commands/controller.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/controller.ts)_
 
 ## `grapi-cli copyright`
 
@@ -258,7 +258,7 @@ DESCRIPTION
   add/update copyright
 ```
 
-_See code: [src/commands/copyright.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/copyright.ts)_
+_See code: [src/commands/copyright.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/copyright.ts)_
 
 ## `grapi-cli datasource [NAME]`
 
@@ -286,7 +286,7 @@ DESCRIPTION
   generate datasource.
 ```
 
-_See code: [src/commands/datasource.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/datasource.ts)_
+_See code: [src/commands/datasource.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/datasource.ts)_
 
 ## `grapi-cli discover [URL]`
 
@@ -325,7 +325,7 @@ DESCRIPTION
   discover models.
 ```
 
-_See code: [src/commands/discover.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/discover.ts)_
+_See code: [src/commands/discover.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/discover.ts)_
 
 ## `grapi-cli example [EXAMPLE-NAME]`
 
@@ -353,7 +353,7 @@ DESCRIPTION
   download examples.
 ```
 
-_See code: [src/commands/example.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/example.ts)_
+_See code: [src/commands/example.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/example.ts)_
 
 ## `grapi-cli extension [NAME]`
 
@@ -388,7 +388,7 @@ DESCRIPTION
   generate extension.
 ```
 
-_See code: [src/commands/extension.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/extension.ts)_
+_See code: [src/commands/extension.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/extension.ts)_
 
 ## `grapi-cli external:operation`
 
@@ -419,7 +419,7 @@ DESCRIPTION
   adding auth to loopback 4 application.
 ```
 
-_See code: [src/commands/external/operation.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/external/operation.ts)_
+_See code: [src/commands/external/operation.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/external/operation.ts)_
 
 ## `grapi-cli fuzzy`
 
@@ -443,7 +443,7 @@ DESCRIPTION
   generate fuzzy endpoints for lb4 based controllers
 ```
 
-_See code: [src/commands/fuzzy.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/fuzzy.ts)_
+_See code: [src/commands/fuzzy.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/fuzzy.ts)_
 
 ## `grapi-cli help [COMMAND]`
 
@@ -491,7 +491,7 @@ DESCRIPTION
   import lb3 models.
 ```
 
-_See code: [src/commands/import-lb3-models.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/import-lb3-models.ts)_
+_See code: [src/commands/import-lb3-models.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/import-lb3-models.ts)_
 
 ## `grapi-cli interceptor NAME`
 
@@ -523,7 +523,7 @@ DESCRIPTION
   generate interceptor.
 ```
 
-_See code: [src/commands/interceptor.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/interceptor.ts)_
+_See code: [src/commands/interceptor.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/interceptor.ts)_
 
 ## `grapi-cli model [NAME]`
 
@@ -555,7 +555,7 @@ DESCRIPTION
   generate model.
 ```
 
-_See code: [src/commands/model.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/model.ts)_
+_See code: [src/commands/model.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/model.ts)_
 
 ## `grapi-cli model:remove`
 
@@ -573,7 +573,7 @@ DESCRIPTION
   enable adding property to loopoback 4 models
 ```
 
-_See code: [src/commands/model/remove.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/model/remove.ts)_
+_See code: [src/commands/model/remove.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/model/remove.ts)_
 
 ## `grapi-cli observer NAME`
 
@@ -601,7 +601,7 @@ DESCRIPTION
   generate observer.
 ```
 
-_See code: [src/commands/observer.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/observer.ts)_
+_See code: [src/commands/observer.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/observer.ts)_
 
 ## `grapi-cli openapi [URL]`
 
@@ -639,7 +639,7 @@ DESCRIPTION
   generate openapi based apis.
 ```
 
-_See code: [src/commands/openapi.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/openapi.ts)_
+_See code: [src/commands/openapi.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/openapi.ts)_
 
 ## `grapi-cli openapi:complete-flow [URL]`
 
@@ -677,7 +677,7 @@ DESCRIPTION
   generate openapi based apis.
 ```
 
-_See code: [src/commands/openapi/complete-flow.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/openapi/complete-flow.ts)_
+_See code: [src/commands/openapi/complete-flow.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/openapi/complete-flow.ts)_
 
 ## `grapi-cli patch`
 
@@ -690,7 +690,7 @@ FLAGS
       --patches=<value>  An stringified array of patches.
 ```
 
-_See code: [src/commands/patch.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/patch.ts)_
+_See code: [src/commands/patch.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/patch.ts)_
 
 ## `grapi-cli plugins`
 
@@ -993,7 +993,7 @@ DESCRIPTION
   execute post ds patches.
 ```
 
-_See code: [src/commands/post-ds-patches.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/post-ds-patches.ts)_
+_See code: [src/commands/post-ds-patches.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/post-ds-patches.ts)_
 
 ## `grapi-cli post-patches`
 
@@ -1007,7 +1007,7 @@ DESCRIPTION
   execute post patches.
 ```
 
-_See code: [src/commands/post-patches.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/post-patches.ts)_
+_See code: [src/commands/post-patches.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/post-patches.ts)_
 
 ## `grapi-cli pre-patches`
 
@@ -1021,7 +1021,7 @@ DESCRIPTION
   execute pre patches.
 ```
 
-_See code: [src/commands/pre-patches.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/pre-patches.ts)_
+_See code: [src/commands/pre-patches.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/pre-patches.ts)_
 
 ## `grapi-cli pre-relation-patches`
 
@@ -1035,7 +1035,7 @@ DESCRIPTION
   execute pre relation patches.
 ```
 
-_See code: [src/commands/pre-relation-patches.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/pre-relation-patches.ts)_
+_See code: [src/commands/pre-relation-patches.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/pre-relation-patches.ts)_
 
 ## `grapi-cli property:add`
 
@@ -1054,7 +1054,7 @@ DESCRIPTION
   enable adding property to loopoback 4 models
 ```
 
-_See code: [src/commands/property/add.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/property/add.ts)_
+_See code: [src/commands/property/add.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/property/add.ts)_
 
 ## `grapi-cli property:mark-hidden`
 
@@ -1073,7 +1073,7 @@ DESCRIPTION
   enable adding property to loopoback 4 models
 ```
 
-_See code: [src/commands/property/mark-hidden.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/property/mark-hidden.ts)_
+_See code: [src/commands/property/mark-hidden.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/property/mark-hidden.ts)_
 
 ## `grapi-cli property:remove`
 
@@ -1092,7 +1092,7 @@ DESCRIPTION
   enable adding property to loopoback 4 models
 ```
 
-_See code: [src/commands/property/remove.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/property/remove.ts)_
+_See code: [src/commands/property/remove.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/property/remove.ts)_
 
 ## `grapi-cli relation`
 
@@ -1134,7 +1134,7 @@ DESCRIPTION
   generate relations.
 ```
 
-_See code: [src/commands/relation.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/relation.ts)_
+_See code: [src/commands/relation.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/relation.ts)_
 
 ## `grapi-cli repository [NAME]`
 
@@ -1167,7 +1167,7 @@ DESCRIPTION
   generate repositories.
 ```
 
-_See code: [src/commands/repository.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/repository.ts)_
+_See code: [src/commands/repository.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/repository.ts)_
 
 ## `grapi-cli rest-crud`
 
@@ -1195,7 +1195,7 @@ DESCRIPTION
   generate rest crud apis.
 ```
 
-_See code: [src/commands/rest-crud.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/rest-crud.ts)_
+_See code: [src/commands/rest-crud.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/rest-crud.ts)_
 
 ## `grapi-cli service NAME`
 
@@ -1224,7 +1224,7 @@ DESCRIPTION
   generate a service.
 ```
 
-_See code: [src/commands/service.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/service.ts)_
+_See code: [src/commands/service.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/service.ts)_
 
 ## `grapi-cli sql-controller`
 
@@ -1247,7 +1247,7 @@ DESCRIPTION
   describe the command here
 ```
 
-_See code: [src/commands/sql-controller.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/sql-controller.ts)_
+_See code: [src/commands/sql-controller.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/sql-controller.ts)_
 
 ## `grapi-cli update`
 
@@ -1273,7 +1273,7 @@ DESCRIPTION
   update application dependencies.
 ```
 
-_See code: [src/commands/update.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/update.ts)_
 
 ## `grapi-cli update:model`
 
@@ -1294,5 +1294,5 @@ DESCRIPTION
   enable updating loopoback 4 models
 ```
 
-_See code: [src/commands/update/model.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.88/src/commands/update/model.ts)_
+_See code: [src/commands/update/model.ts](https://github.com/aaqilniz/grapi-cli/blob/v0.0.90/src/commands/update/model.ts)_
 <!-- commandsstop -->

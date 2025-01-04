@@ -1,0 +1,48 @@
+diff --git a/node_modules/@loopback/authorization/dist/authorize-interceptor.js b/node_modules/@loopback/authorization/dist/authorize-interceptor.js
+index 1927892..c37343f 100644
+--- a/node_modules/@loopback/authorization/dist/authorize-interceptor.js
++++ b/node_modules/@loopback/authorization/dist/authorize-interceptor.js
+@@ -84,7 +84,20 @@ let AuthorizationInterceptor = class AuthorizationInterceptor {
+             error.statusCode = this.options.defaultStatusCodeForDeny;
+             throw error;
+         }
+-        return next();
++        const restrictedProperties = await invocationCtx.get(keys_1.AuthorizationTags.RESTRICTED_FIELDS);
++        let result = await next();
++        if (result && restrictedProperties) {
++            restrictedProperties.forEach(property => {
++                if (Array.isArray(result)) {
++                    for (let i = 0; i < result.length; i++) {
++                        delete result[i][property];
++                    }
++                } else {
++                    delete result[property];
++                }
++            });
++        }
++        return result;
+     }
+ };
+ exports.AuthorizationInterceptor = AuthorizationInterceptor;
+diff --git a/node_modules/@loopback/authorization/dist/keys.d.ts b/node_modules/@loopback/authorization/dist/keys.d.ts
+index e11f0cd..46068cb 100644
+--- a/node_modules/@loopback/authorization/dist/keys.d.ts
++++ b/node_modules/@loopback/authorization/dist/keys.d.ts
+@@ -16,4 +16,5 @@ export declare namespace AuthorizationTags {
+      * A tag for authorizers
+      */
+     const AUTHORIZER = "authorizer";
++    const RESTRICTED_FIELDS = "restricted.fields";
+ }
+diff --git a/node_modules/@loopback/authorization/dist/keys.js b/node_modules/@loopback/authorization/dist/keys.js
+index b889146..2857169 100644
+--- a/node_modules/@loopback/authorization/dist/keys.js
++++ b/node_modules/@loopback/authorization/dist/keys.js
+@@ -23,5 +23,6 @@ var AuthorizationTags;
+      * A tag for authorizers
+      */
+     AuthorizationTags.AUTHORIZER = 'authorizer';
++    AuthorizationTags.RESTRICTED_FIELDS = 'restricted.fields';
+ })(AuthorizationTags || (exports.AuthorizationTags = AuthorizationTags = {}));
+ //# sourceMappingURL=keys.js.map
+\ No newline at end of file
