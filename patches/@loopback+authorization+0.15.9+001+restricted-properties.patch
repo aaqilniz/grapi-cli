@@ -1,21 +1,35 @@
 diff --git a/node_modules/@loopback/authorization/dist/authorize-interceptor.js b/node_modules/@loopback/authorization/dist/authorize-interceptor.js
-index 1927892..6b76f3c 100644
+index 1927892..e23cc0e 100644
 --- a/node_modules/@loopback/authorization/dist/authorize-interceptor.js
 +++ b/node_modules/@loopback/authorization/dist/authorize-interceptor.js
-@@ -84,7 +84,26 @@ let AuthorizationInterceptor = class AuthorizationInterceptor {
+@@ -84,7 +84,40 @@ let AuthorizationInterceptor = class AuthorizationInterceptor {
              error.statusCode = this.options.defaultStatusCodeForDeny;
              throw error;
          }
 -        return next();
 +        const restrictedProperties = await invocationCtx.get(keys_1.AuthorizationTags.RESTRICTED_FIELDS) || [];
 +        if (
-+            metadata.restrictedProperties && 
++            metadata.restrictedProperties &&
 +            metadata.restrictedProperties.length
 +        ) {
 +            restrictedProperties.push(...metadata.restrictedProperties);
 +        }
++        if (!restrictedProperties.length) return await next();
++        if (invocationCtx.args) {
++            restrictedProperties.forEach(property => {
++                if (Array.isArray(invocationCtx.args)) {
++                    for (let i = 0; i < invocationCtx.args.length; i++) {
++                        if (invocationCtx.args[i]) {
++                            delete invocationCtx.args[i][property];
++                        }
++                    }
++                } else {
++                    delete invocationCtx.args[property];
++                }
++            });
++        }
 +        let result = await next();
-+        if (result && restrictedProperties) {
++        if (result) {
 +            restrictedProperties.forEach(property => {
 +                if (Array.isArray(result)) {
 +                    for (let i = 0; i < result.length; i++) {
