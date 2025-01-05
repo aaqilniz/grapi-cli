@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import { Project, SyntaxKind, PropertyAssignment, ObjectLiteralExpression, MethodDeclaration, Decorator, SourceFile, ImportDeclaration } from "ts-morph";
 import pluralize from 'pluralize';
 
-import { processOptions, execute, getFiles } from '../utils/index.js';
+import { processOptions, execute, getFiles, toPascalCase } from '../utils/index.js';
 
 export default class Auth extends Command {
 
@@ -17,13 +17,15 @@ export default class Auth extends Command {
     include: Flags.string({ char: 'i', description: 'include auth to the apis.' }),
     exclude: Flags.string({ char: 'e', description: 'exclude auth to the apis.' }),
     writeonly: Flags.string({ char: 'r', description: 'auth to writeonly apis.' }),
+    datasource: Flags.string({ description: 'name of the datasource.' }),
   }
 
   public async run(): Promise<void> {
     const parsed = await this.parse(Auth);
     let options = processOptions(parsed.flags);
-    const { include, exclude, writeonly } = options;
+    const { include, exclude, writeonly, datasource, defaultUsers } = options;
     const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+    let authDSName = 'AuthDataSource';
     if (include && exclude) {
       throw new Error('Cannot have include and exclude at the same time.');
     }
@@ -42,7 +44,9 @@ export default class Auth extends Command {
     const __filename = fileURLToPath(import.meta.url); // manually get __filename
     const __dirname = path.dirname(__filename); // manually get __dirname
 
-    fs.copyFileSync(path.join(__dirname, `../files/auth.json`), `./auth.json`); // default users copied
+    if (defaultUsers) {
+      fs.copyFileSync(path.join(__dirname, `../files/auth.json`), `./auth.json`); // default users copied
+    }
 
     // install deps if not already installed
     let pkgToInstall = '';
@@ -61,9 +65,71 @@ export default class Auth extends Command {
 
     project.addSourceFilesAtPaths(`${invokedFrom}/node_modules/**/*.ts`);
 
-    const authDS = fs.existsSync('./src/datasources/auth.datasource.ts');
-    if (!authDS) {
-      promises.push(execute(`lb4 datasource auth -c '{ "name": "auth", "connector": "memory", "file": "./auth.json", "localStorage": "auth" }' --yes`, 'generating datasource for auth.'));
+    if (datasource) {
+      authDSName = `${toPascalCase(datasource)}DataSource`;
+    }
+    await execute(
+      `sed -i "s#export \\* from './user-user-credentials.controller';##g" ./src/controllers/index.ts`,
+      'removing from index.ts'
+    );
+    if (!datasource) {
+      const authDS = fs.existsSync('./src/datasources/auth.datasource.ts');
+      if (!authDS) {
+        await execute(
+          `lb4 datasource auth -c '{ "name": "auth", "connector": "memory", "file": "./auth.json", "localStorage": "auth" }' --yes`,
+          'generating datasource for auth.'
+        );
+        await execute(
+          `lb4 model --config '{"yes":"true","base":"Entity","name":"User","properties":{"username":{"type":"string"},"email":{"type":"string"},"emailVerified":{"type":"number"},"verificationToken":{"type":"string"},"id":{"generated":true,"id":true,"type":"number"}}}'`,
+          'generating user model.'
+        );
+        await execute(
+          `lb4 model --config '{"yes":"true","base":"Entity","name":"UserCredentials","properties":{"password":{"type":"string"},"userId":{"type":"number"},"id":{"generated":true,"id":true,"type":"number"}}}'`,
+          'generating user credentials model.'
+        );
+        await execute(
+          `lb4 repository -c '{"model":"user","repositoryBaseClass":"DefaultCrudRepository", "datasource": "auth"}' --yes`,
+          'generating user repository.'
+        );
+        await execute(
+          `lb4 repository -c '{"model":"user-credentials","repositoryBaseClass":"DefaultCrudRepository", "datasource": "auth"}' --yes`,
+          'generating user credentials repository.'
+        );
+      }
+    }
+    await execute(
+      `lb4 relation --config '{"relationName": "userCredentials", "sourceModel": "User", "destinationModel": "UserCredentials", "foreignKeyName": "userId", "relationType": "hasOne", "registerInclusionResolver": true}' --yes`,
+      'generating relation between User and UserCredentials.'
+    );
+    await execute(`rm ./src/controllers/user-user-credentials.controller.ts`);
+    await execute(`sed -i "s#export \\* from './user-user-credentials.controller';##g" ./src/controllers/index.ts`);
+    const filePath = './src/repositories/user.repository.ts';
+    const sourceFile = project.addSourceFileAtPath(filePath);
+    const userRepositoryClass = sourceFile.getClassOrThrow("UserRepository");
+    if (!userRepositoryClass.getMethod('findCredentials')) {
+      // Create the new method using ts-morph
+      userRepositoryClass.addMethod({
+        name: 'findCredentials',
+        isAsync: true,
+        parameters: [
+          {
+            name: 'userId',
+            type: 'typeof User.prototype.id'
+          }
+        ],
+        returnType: 'Promise<UserCredentials | undefined>',
+        statements: `
+              return this.userCredentials(userId)
+                  .get()
+                  .catch(err => {
+                      if (err.code === 'ENTITY_NOT_FOUND') return undefined;
+                      throw err;
+                  });
+          `
+      });
+      // Save the changes to the file
+      sourceFile.saveSync();
+      console.log('Method `findCredentials` added successfully!');
     }
 
     //executing all the promises    
@@ -90,7 +156,7 @@ export default class Auth extends Command {
       '{JWTAuthenticationComponent, SECURITY_SCHEME_SPEC, UserServiceBindings}',
       '@loopback/authentication-jwt'
     );
-    this.addImport(applicationFile, '{AuthDataSource}', './datasources')
+    this.addImport(applicationFile, `{${authDSName}}`, './datasources')
 
     const appClass = applicationFile?.getClasses()[0];
     const appClassConstructor = appClass?.getConstructors()[0];
@@ -100,7 +166,7 @@ export default class Auth extends Command {
 
     appClassConstructor?.getStatements()
       .forEach((statement, index) => {
-        if (statement.getText().includes('AuthDataSource, UserServiceBindings.DATASOURCE_NAME')) {
+        if (statement.getText().includes(`${authDSName}, UserServiceBindings.DATASOURCE_NAME`)) {
           appStatementsExist = true;
         }
         if (statement.getText().includes('this.component(CrudRestComponent);')) {
@@ -113,7 +179,7 @@ export default class Auth extends Command {
           this.component(MetricsComponent);
           this.component(AuthenticationComponent);
           this.component(JWTAuthenticationComponent);
-          this.dataSource(AuthDataSource, UserServiceBindings.DATASOURCE_NAME);
+          this.dataSource(${authDSName}, UserServiceBindings.DATASOURCE_NAME);
         `);
     }
     applicationFile?.formatText();
