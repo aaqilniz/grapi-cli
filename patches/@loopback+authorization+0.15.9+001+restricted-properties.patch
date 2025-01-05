@@ -1,13 +1,19 @@
 diff --git a/node_modules/@loopback/authorization/dist/authorize-interceptor.js b/node_modules/@loopback/authorization/dist/authorize-interceptor.js
-index 1927892..c37343f 100644
+index 1927892..6b76f3c 100644
 --- a/node_modules/@loopback/authorization/dist/authorize-interceptor.js
 +++ b/node_modules/@loopback/authorization/dist/authorize-interceptor.js
-@@ -84,7 +84,20 @@ let AuthorizationInterceptor = class AuthorizationInterceptor {
+@@ -84,7 +84,26 @@ let AuthorizationInterceptor = class AuthorizationInterceptor {
              error.statusCode = this.options.defaultStatusCodeForDeny;
              throw error;
          }
 -        return next();
-+        const restrictedProperties = await invocationCtx.get(keys_1.AuthorizationTags.RESTRICTED_FIELDS);
++        const restrictedProperties = await invocationCtx.get(keys_1.AuthorizationTags.RESTRICTED_FIELDS) || [];
++        if (
++            metadata.restrictedProperties && 
++            metadata.restrictedProperties.length
++        ) {
++            restrictedProperties.push(...metadata.restrictedProperties);
++        }
 +        let result = await next();
 +        if (result && restrictedProperties) {
 +            restrictedProperties.forEach(property => {
