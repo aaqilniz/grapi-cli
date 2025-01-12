@@ -27,7 +27,7 @@ export default class Patch extends Command {
       hiddenProperties: [
         '@loopback+repository-json-schema+*+001+hidden-properties.patch',
         '@loopback+repository+*-hidden-properties.patch',
-        '@loopback+rest-crud+*-hidden-properties.patch',
+        '@loopback+rest-crud+*+001+hidden-properties.patch',
       ],
       groupBy: [
         '@loopback+repository-json-schema+*+002+groupby.patch',
@@ -39,7 +39,7 @@ export default class Patch extends Command {
         '@sourceloop+audit-log+*-auditlogs.patch'
       ],
       auth: [
-        '@loopback+rest-crud+*-auth.patch',
+        '@loopback+rest-crud+*+002+auth.patch',
         '@loopback+authentication-jwt+*-auth.patch'
       ],
       virtualAsGenerated: [
@@ -47,6 +47,9 @@ export default class Patch extends Command {
       ],
       supportRestrictedProperties: [
         '@loopback+authorization+*+001+restricted-properties.patch',
+      ],
+      authorization: [
+        '@loopback+rest-crud+*+003+authorization.patch',
       ]
     };
     const __filename = fileURLToPath(import.meta.url);
@@ -106,14 +109,17 @@ export default class Patch extends Command {
         patchesToCopy.push(patchFileName);
       });
     }
-
-    if (patches && patches.includes('supportRestrictedProperties')) {
+    if (patches && patches.includes('authorization')) {
+      PatchPaths.authorization.forEach(patch => {
+        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
+        patchesToCopy.push(patchFileName);
+      });
       PatchPaths.supportRestrictedProperties.forEach(patch => {
         const patchFileName = findVersionedFile(patch, patchDirectoryPath);
         patchesToCopy.push(patchFileName);
       });
     }
-    
+
     copyFiles(patchDirectoryPath, './patches', patchesToCopy);
 
     const pkgPath = './package.json';

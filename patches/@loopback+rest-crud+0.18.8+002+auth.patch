@@ -1,5 +1,5 @@
 diff --git a/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js b/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
-index 0393439..b8458c9 100644
+index 78a9090..6952b2a 100644
 --- a/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
 +++ b/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
 @@ -9,6 +9,7 @@ const tslib_1 = require("tslib");
@@ -10,87 +10,71 @@ index 0393439..b8458c9 100644
  /**
   * Create (define) a CRUD Controller class for the given model.
   *
-@@ -55,7 +56,8 @@ function defineCrudRestController(modelCtor, options) {
+@@ -55,6 +56,7 @@ function defineCrudRestController(modelCtor, options) {
          }
      };
      tslib_1.__decorate([
--        (0, rest_1.get)('/', {
 +        authenticatedMethod(options.auth ? options.auth.get : false),
-+(0, rest_1.get)('/', {
+         (0, rest_1.get)('/', {
              ...response.array(200, `Array of ${modelName} instances`, modelCtor, {
                  includeRelations: true,
-             }),
-@@ -66,7 +68,8 @@ function defineCrudRestController(modelCtor, options) {
+@@ -67,6 +69,7 @@ function defineCrudRestController(modelCtor, options) {
          tslib_1.__metadata("design:returntype", Promise)
      ], ReadonlyRestControllerImpl.prototype, "find", null);
      tslib_1.__decorate([
--        (0, rest_1.get)('/{id}', {
 +        authenticatedMethod(options.auth ? options.auth.getById : false),
-+(0, rest_1.get)('/{id}', {
+         (0, rest_1.get)('/{id}', {
              ...response.model(200, `${modelName} instance`, modelCtor, {
                  includeRelations: true,
-             }),
-@@ -78,7 +81,8 @@ function defineCrudRestController(modelCtor, options) {
+@@ -80,6 +83,7 @@ function defineCrudRestController(modelCtor, options) {
          tslib_1.__metadata("design:returntype", Promise)
      ], ReadonlyRestControllerImpl.prototype, "findById", null);
      tslib_1.__decorate([
--        (0, rest_1.get)('/count', {
 +        authenticatedMethod(options.auth ? options.auth.count : false),
-+(0, rest_1.get)('/count', {
+         (0, rest_1.get)('/count', {
              ...response(200, `${modelName} count`, { schema: repository_1.CountSchema }),
          }),
-         tslib_1.__param(0, rest_1.param.where(modelCtor)),
-@@ -121,7 +125,8 @@ function defineCrudRestController(modelCtor, options) {
+@@ -123,6 +127,7 @@ function defineCrudRestController(modelCtor, options) {
          }
      };
      tslib_1.__decorate([
--        (0, rest_1.post)('/', {
 +        authenticatedMethod(options.auth ? options.auth.post : false),
-+(0, rest_1.post)('/', {
+         (0, rest_1.post)('/', {
              ...response.model(200, `${modelName} instance created`, modelCtor),
          }),
-         tslib_1.__param(0, body(modelCtor, {
-@@ -133,7 +138,8 @@ function defineCrudRestController(modelCtor, options) {
+@@ -135,6 +140,7 @@ function defineCrudRestController(modelCtor, options) {
          tslib_1.__metadata("design:returntype", Promise)
      ], CrudRestControllerImpl.prototype, "create", null);
      tslib_1.__decorate([
--        (0, rest_1.patch)('/', {
 +        authenticatedMethod(options.auth ? options.auth.patch : false),
-+(0, rest_1.patch)('/', {
+         (0, rest_1.patch)('/', {
              ...response(200, `Count of ${modelName} models updated`, {
                  schema: repository_1.CountSchema,
-             }),
-@@ -145,7 +151,8 @@ function defineCrudRestController(modelCtor, options) {
+@@ -147,6 +153,7 @@ function defineCrudRestController(modelCtor, options) {
          tslib_1.__metadata("design:returntype", Promise)
      ], CrudRestControllerImpl.prototype, "updateAll", null);
      tslib_1.__decorate([
--        (0, rest_1.patch)('/{id}', {
 +        authenticatedMethod(options.auth ? options.auth.patchById : false),
-+(0, rest_1.patch)('/{id}', {
+         (0, rest_1.patch)('/{id}', {
              responses: {
                  '204': { description: `${modelName} was updated` },
-             },
-@@ -157,7 +164,8 @@ function defineCrudRestController(modelCtor, options) {
+@@ -159,6 +166,7 @@ function defineCrudRestController(modelCtor, options) {
          tslib_1.__metadata("design:returntype", Promise)
      ], CrudRestControllerImpl.prototype, "updateById", null);
      tslib_1.__decorate([
--        (0, rest_1.put)('/{id}', {
 +        authenticatedMethod(options.auth ? options.auth.putById : false),
-+(0, rest_1.put)('/{id}', {
+         (0, rest_1.put)('/{id}', {
              responses: {
                  '204': { description: `${modelName} was updated` },
-             },
-@@ -169,7 +177,8 @@ function defineCrudRestController(modelCtor, options) {
+@@ -171,6 +179,7 @@ function defineCrudRestController(modelCtor, options) {
          tslib_1.__metadata("design:returntype", Promise)
      ], CrudRestControllerImpl.prototype, "replaceById", null);
      tslib_1.__decorate([
--        (0, rest_1.del)('/{id}', {
 +        authenticatedMethod(options.auth ? options.auth.deleteById : false),
-+(0, rest_1.del)('/{id}', {
+         (0, rest_1.del)('/{id}', {
              responses: {
                  '204': { description: `${modelName} was deleted` },
-             },
-@@ -241,4 +250,5 @@ function response(statusCode, description, payload) {
+@@ -243,4 +252,5 @@ function response(statusCode, description, payload) {
      }
      response.array = array;
  })(response || (response = {}));
