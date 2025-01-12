@@ -35,5 +35,9 @@ export default class Openapi extends Command {
     const executed: any = await execute(command, 'generating openapi based app.');
     if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
     if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));
+    await execute(
+      `grapi-cli patch --config '{"patches": ["openapi"]}'`,
+      'applying patches related to openapi.'
+    );
   }
 }

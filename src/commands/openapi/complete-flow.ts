@@ -58,5 +58,9 @@ export default class OpenapiCompleteFlow extends Command {
       await Cache.run([`--config=${JSON.stringify(cache)}`]);
       console.log(chalk.bold(chalk.blue('generated cache generator')));
     }
+    await execute(
+      `grapi-cli patch --config '{"patches": ["openapi"]}'`,
+      'applying patches related to openapi.'
+    );
   }
 }
