@@ -209,5 +209,9 @@ export default class Audit extends Command {
         file?.saveSync();
       }
     }
+    await execute(
+      `grapi-cli patch --config '{"patches": ["auditLogs"]}'`,
+      'applying patches related to audit.'
+    );
   }
 }

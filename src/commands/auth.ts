@@ -361,7 +361,10 @@ export default class Auth extends Command {
     let build: any = await execute(`npm run build`, 'building the app.');
     if (build.stderr) console.log(chalk.bold(chalk.green(build.stderr)));
     if (build.stdout) console.log(chalk.bold(chalk.green(build.stdout)));
-
+    await execute(
+      `grapi-cli patch --config '{"patches": ["auth"]}'`,
+      'applying patches related to auth.'
+    );
     process.exit(0);
   }
 
