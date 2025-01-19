@@ -31,5 +31,9 @@ export default class Datasource extends Command {
     const executed: any = await execute(command, 'generating datasource.');
     if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
     if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));
+    await execute(
+      `grapi-cli patch`,
+      'applying default patches after datasource creation.'
+    );
   }
 }

@@ -90,8 +90,12 @@ export default class AuthorizationPolicy extends Command {
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
     await execute('npm run build && npm run create:policies', 'creating policies.')
     //remove seed file
-    fs.unlinkSync('./dist/seed-policies.js');
-    fs.unlinkSync('./src/seed-policies.ts');
+    if (fs.existsSync('./dist/seed-policies.js')) {
+      fs.unlinkSync('./dist/seed-policies.js');
+    }
+    if (fs.existsSync('./src/seed-policies.ts')) {
+      fs.unlinkSync('./src/seed-policies.ts');
+    }
     console.log('successfully added policies');
     process.exit(0);
   }
@@ -143,8 +147,7 @@ export default class AuthorizationPolicy extends Command {
             existing.policyType === newPolicy.policyType &&
             existing.role === newPolicy.role &&
             existing.object === newPolicy.object &&
-            existing.action === newPolicy.action &&
-            existing.restrictedFields === newPolicy.restrictedFields
+            existing.action === newPolicy.action
           );
         };
         for (let policyIndex = 0; policyIndex < policies.length; policyIndex++) {

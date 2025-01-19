@@ -68,8 +68,12 @@ export default class AuthorizationAssignRole extends Command {
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
     await execute('npm run build && npm run create:roles', 'creating roles.');
     // remove seed file
-    fs.unlinkSync('./dist/seed-roles.js');
-    fs.unlinkSync('./src/seed-roles.ts');
+    if (fs.existsSync('./dist/seed-roles.js')) {
+      fs.unlinkSync('./dist/seed-roles.js');
+    }
+    if (fs.existsSync('./src/seed-roles.ts')) {
+      fs.unlinkSync('./src/seed-roles.ts');
+    }
     console.log('successfully added roles');
     process.exit(0);
   }
