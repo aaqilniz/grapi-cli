@@ -23,6 +23,7 @@ export default class AuthorizationPolicy extends Command {
       'update-single',
       'replace-single',
       'delete-single',
+      '*'
     ];
     let options = processOptions(parsed.flags);
     const { policies } = options;
@@ -38,6 +39,9 @@ export default class AuthorizationPolicy extends Command {
         if (!possibleActions.includes(action)) {
           invalidAction.exits = true;
           invalidAction.action = action;
+        }
+        if (action === '*') {
+          policies[i]['actions'] = possibleActions.filter(item => item !== '*');
         }
       }
     }
@@ -126,6 +130,10 @@ export default class AuthorizationPolicy extends Command {
         namedImports: ['CasbinPolicyRepository'],
         moduleSpecifier: './repositories',
       },
+      {
+        namedImports: ['RestServer'],
+        moduleSpecifier: '@loopback/rest',
+      },
     ]);
 
     // Seed function
@@ -152,16 +160,41 @@ export default class AuthorizationPolicy extends Command {
         };
         for (let policyIndex = 0; policyIndex < policies.length; policyIndex++) {
           const { actions, object, restrictedFields, role } = policies[policyIndex];
+          const routes: Set<string> = new Set();
+          if (object !== '*') { routes.add(object) }
+          if (object === '*') {
+              const restServer = await app.getServer(RestServer);
+              const apiSepcs = await restServer.getApiSpec()
+              const { paths } = apiSepcs;
+
+              Object.keys(paths).forEach((route: any) => {
+                  // rest-crud typically adds the model name as a tag
+                  const basePath = route.split('/')[1];
+                  if (
+                      basePath &&
+                      !basePath.includes('users') &&
+                      !basePath.includes('whoAmI') &&
+                      !basePath.includes('ping') &&
+                      !basePath.includes('signup')
+                  ) {
+                      routes.add('/' + basePath);
+                  }
+              });
+          }
           for (let actionIndex = 0; actionIndex < actions.length; actionIndex++) {
-            const policy: any = {
-              policyType: 'p',
-              role,
-              object,
-              action: actions[actionIndex],
-              restrictedFields: restrictedFields || '',
-            };
-            if (!isPolicyDuplicate(policy, existingPolicies)) {
-              policiesToCreate.push(policy);
+            const routesArray = Array.from(routes);
+            for (let routeIndex = 0; routeIndex < routesArray.length; routeIndex++) {
+                const route = routesArray[routeIndex];
+                const policy: any = {
+                    policyType: 'p',
+                    role,
+                    object: route,
+                    action: actions[actionIndex],
+                    restrictedFields: restrictedFields || '',
+                };
+                if (!isPolicyDuplicate(policy, existingPolicies)) {
+                    policiesToCreate.push(policy);
+                }
             }
           }
         }
