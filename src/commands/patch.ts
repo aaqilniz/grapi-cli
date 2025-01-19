@@ -50,6 +50,9 @@ export default class Patch extends Command {
       ],
       authorization: [
         '@loopback+rest-crud+*+003+authorization.patch',
+      ],
+      uniqueKeyQuery: [
+        'loopback-connector-mysql+*+003+unique-key.patch',
       ]
     };
     const __filename = fileURLToPath(import.meta.url);
@@ -63,6 +66,7 @@ export default class Patch extends Command {
       if (!patches.includes('openAPISpecsExtensions')) patches.push('openAPISpecsExtensions');
       if (!patches.includes('hiddenProperties')) patches.push('hiddenProperties');
       if (!patches.includes('virtualAsGenerated')) patches.push('virtualAsGenerated');
+      if (!patches.includes('uniqueKeyQuery')) patches.push('uniqueKeyQuery');
     }
     if (patches && patches.includes('openapi')) {
       PatchPaths.openapi.forEach(patch => {
@@ -115,6 +119,12 @@ export default class Patch extends Command {
         patchesToCopy.push(patchFileName);
       });
       PatchPaths.supportRestrictedProperties.forEach(patch => {
+        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
+        patchesToCopy.push(patchFileName);
+      });
+    }
+    if (patches && patches.includes('uniqueKeyQuery')) {
+      PatchPaths.uniqueKeyQuery.forEach(patch => {
         const patchFileName = findVersionedFile(patch, patchDirectoryPath);
         patchesToCopy.push(patchFileName);
       });
