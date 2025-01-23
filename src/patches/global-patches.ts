@@ -420,7 +420,7 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
     outDirControllers: {
         outDirOption: {
             searchString: 'return super._setupGenerator();',
-            replacement: `return super._setupGenerator();this.option('outDir', {type: String,description: 'Custom output directory for controller'});if (this.options.outDir) {this.artifactInfo.outDir = path.resolve(this.options.outDir);}`,
+            replacement: `this.option('outDir', {type: String,description: 'Custom output directory for controller'});if (this.options.outDir) {this.artifactInfo.outDir = path.resolve(this.options.outDir);}\nreturn super._setupGenerator();`,
             path: `${cliPath}/generators/controller/index.js`,
         },
         changeParameter: {
