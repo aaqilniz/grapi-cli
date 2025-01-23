@@ -417,6 +417,38 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             path: `${cliPath}/generators/discover/index.js`,
         },
     },
+    outDirControllers: {
+        outDirOption: {
+            searchString: 'return super._setupGenerator();',
+            replacement: `return super._setupGenerator();this.option('outDir', {type: String,description: 'Custom output directory for controller'});if (this.options.outDir) {this.artifactInfo.outDir = path.resolve(this.options.outDir);}`,
+            path: `${cliPath}/generators/controller/index.js`,
+        },
+        changeParameter: {
+            searchString: 'updateIndex(dir',
+            replacement: `updateIndex(this.artifactInfo.relPath`,
+            path: `${cliPath}/lib/base-generator.js`,
+        },
+        addParameter: {
+            searchString: 'this.fs)',
+            replacement: `this.fs, subDir)`,
+            path: `${cliPath}/lib/base-generator.js`,
+        },
+        addSubDir: {
+            searchString: 'async _updateIndexFile(dir, file) {',
+            replacement: `async _updateIndexFile(dir, file) {\nconst subDir = path.relative(this.artifactInfo.relPath, this.artifactInfo.outDir);`,
+            path: `${cliPath}/lib/base-generator.js`,
+        },
+        addParameterToMethod: {
+            searchString: 'fsApis)',
+            replacement: `fsApis, subDir = '')`,
+            path: `${cliPath}/lib/update-index.js`,
+        },
+        changeExport: {
+            searchString: `from './`,
+            replacement: `from './\${subDir? subDir + '/':''}`,
+            path: `${cliPath}/lib/update-index.js`,
+        },
+    }
 
 };
 
