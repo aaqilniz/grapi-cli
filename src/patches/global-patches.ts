@@ -420,7 +420,12 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
     outDirControllers: {
         outDirOption: {
             searchString: 'return super._setupGenerator();',
-            replacement: `this.option('outDir', {type: String,description: 'Custom output directory for controller'});if (this.options.outDir) {this.artifactInfo.outDir = path.resolve(this.options.outDir);}\nreturn super._setupGenerator();`,
+            replacement: `this.option('outDir', {type: String,description: 'Custom output directory for controller'});\nreturn super._setupGenerator();`,
+            path: `${cliPath}/generators/controller/index.js`,
+        },
+        outDirOptionToArtifact: {
+            searchString: 'const dest = this.destinationPath(',
+            replacement: `if (this.options.outDir) {this.artifactInfo.outDir = path.resolve(this.options.outDir);}\nconst dest = this.destinationPath(`,
             path: `${cliPath}/generators/controller/index.js`,
         },
         changeParameter: {
@@ -436,6 +441,11 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
         addSubDir: {
             searchString: 'async _updateIndexFile(dir, file) {',
             replacement: `async _updateIndexFile(dir, file) {\nconst subDir = path.relative(this.artifactInfo.relPath, this.artifactInfo.outDir);`,
+            path: `${cliPath}/lib/base-generator.js`,
+        },
+        removeExtraPath: {
+            searchString: 'updateDirRelPath,',
+            replacement: `'',`,
             path: `${cliPath}/lib/base-generator.js`,
         },
         addParameterToMethod: {
