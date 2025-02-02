@@ -3,6 +3,8 @@ import chalk from 'chalk';
 import { AppGeneratorFlags } from '../types/app.types.js';
 
 import { processOptions, execute, standardFlags, prompt } from '../utils/index.js';
+import { ObjectLiteralExpression, Project, Scope, SyntaxKind, VariableDeclarationKind } from 'ts-morph';
+import { exists, existsSync, mkdirSync, unlinkSync } from 'fs';
 
 export default class App extends Command {
   static override description = 'generate application.'
@@ -23,6 +25,7 @@ export default class App extends Command {
     docker: Flags.boolean({ description: 'Generate Dockerfile and add npm scripts to build/run the project in a docker container.' }),
     repositories: Flags.boolean({ description: 'include repository imports and RepositoryMixin.' }),
     services: Flags.boolean({ description: 'include service-proxy imports and ServiceMixin.' }),
+    controllerDirs: Flags.boolean({ description: 'a comma seperated list of directory names to use as controller directories.' }),
     apiconnect: Flags.boolean({ description: 'Include ApiConnectComponent.' }),
   }
 
@@ -45,5 +48,41 @@ export default class App extends Command {
     const executed: any = await execute(command, 'generating application.');
     if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
     if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));
+    if (!options.controllerDirs) return;
+
+    const controllerDirs = options.controllerDirs.split(',');
+    const project = new Project({});
+    const invokedFrom = process.cwd();
+
+    project.addSourceFilesAtPaths(`${invokedFrom}/${options.name}/src/**/*.ts`);
+    const applicationPath = `${invokedFrom}/${options.name}/src/application.ts`;
+    const applicationFile = project.getSourceFileOrThrow(applicationPath);
+    const applicationClass = applicationFile.getClasses()[0];
+
+    const constructor = applicationClass.getConstructors()[0];
+    const staticCall = constructor.getStatements().find(statement =>
+      statement.getText().includes(`this.bootOptions`)
+    );
+    const sourceFile = project.createSourceFile('temp.ts', staticCall?.getText());
+    const objectLiteral = sourceFile.getFirstDescendant(
+      node => node.getKind() === SyntaxKind.ObjectLiteralExpression
+    ) as ObjectLiteralExpression;
+
+    const dirsProperty = objectLiteral
+      .getDescendantsOfKind(SyntaxKind.PropertyAssignment)
+      .find(prop => prop.getName() === 'dirs');
+
+    if (dirsProperty) {
+      const arrayLiteral = dirsProperty.getInitializerIfKind(SyntaxKind.ArrayLiteralExpression);
+      if (arrayLiteral) {
+        controllerDirs.forEach(dir => {
+          arrayLiteral.addElement(`'${dir}'`);
+        });
+      }
+    }
+    if (staticCall) {
+      staticCall.replaceWithText(sourceFile.getText());
+    }
+    applicationFile.saveSync();
   }
 }
