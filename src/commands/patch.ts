@@ -135,16 +135,6 @@ export default class Patch extends Command {
     const pkgPath = './package.json';
     const pkg = JSON.parse(await fs.readFile(pkgPath, 'utf8'));
 
-    if (patches && (patches.includes('hiddenProperties') || patches.includes('auth'))) {
-      pkg.dependencies['@loopback/rest-crud'] = '0.18.8';
-      await execute('npm install @loopback/rest-crud@0.18.8');
-    }
-
-    if (patches && (patches.includes('openAPISpecsExtensions') || patches.includes('virtualAsGenerated'))) {
-      pkg.dependencies['loopback-connector-mysql'] = '7.0.15';
-      pkg.dependencies['loopback-datasource-juggler'] = '5.1.2';
-      await execute('npm install loopback-connector-mysql@7.0.15 loopback-datasource-juggler@5.1.2');
-    }
     await fs.writeFile(pkgPath, JSON.stringify(pkg, null, 2));
     await execute('npx patch-package');
   }
