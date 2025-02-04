@@ -3,12 +3,11 @@ import chalk from 'chalk';
 import fs from 'fs';
 
 import { processOptions, toPascalCase, toKebabCase, execute, addImport } from '../../utils/index.js';
-import { Project, SyntaxKind, PropertyAssignment, ObjectLiteralExpression, ArrayLiteralExpression, SourceFile, ClassDeclaration, MethodDeclaration, ParameterDeclaration, OptionalKind, ParameterDeclarationStructure } from 'ts-morph';
-import pluralize from 'pluralize';
+import { Project, SyntaxKind, PropertyAssignment, ObjectLiteralExpression, ArrayLiteralExpression, OptionalKind, ParameterDeclarationStructure } from 'ts-morph';
 
 export default class ExternalOperation extends Command {
 
-  static override description = 'adding auth to loopback 4 application.'
+  static override description = 'creating rest endpoints based on configs only.'
 
   static override flags = {
     config: Flags.string({ char: 'c', description: 'Config JSON object' }),
@@ -23,6 +22,7 @@ export default class ExternalOperation extends Command {
     name: Flags.string({ description: 'name of the artifacts.' }),
     apiUri: Flags.string({ description: 'uri of the controller.' }),
     type: Flags.string({ description: 'type of return data.' }),
+    returnModel: Flags.string({ description: 'name of the model in success responses.' }),
     controller: Flags.string({ description: 'controller under which the API should reside.' }),
   }
 
@@ -49,7 +49,8 @@ export default class ExternalOperation extends Command {
         queryParams,
         name,
         apiUri,
-        spliter
+        spliter,
+        returnModel
       } = options;
 
       if (!spliter && !apiUri) spliter = 'v1';
@@ -64,39 +65,31 @@ export default class ExternalOperation extends Command {
 
       let queryParamList: string[] = [];
       let bodyParamList: string[] = [];
-      // let functionName = apiFunction.toLowerCase();
       let serviceName = toPascalCase(controller);
       let modelName = toPascalCase(artifactName);
       let controllerName = toPascalCase(controller);
-      // let modelName = toPascalCase(apiFunction);
       let description = '';
 
       if (!method) method = 'get';
       switch (method.toLowerCase()) {
         case 'get':
-          // functionName = `fetch${toPascalCase(functionName)}`;
           description = `fetch${pathKey ? '' : ' all'} ${toPascalCase(functionName)}.`
           break;
         case 'post':
-          // functionName = `create${toPascalCase(functionName)}`;
           description = `create ${toPascalCase(functionName)}.`
           break;
         case 'patch':
-          // functionName = `update${toPascalCase(functionName)}`;
           description = `update ${toPascalCase(functionName)}.`
           break;
         case 'put':
-          // functionName = `replace${toPascalCase(functionName)}`;
           description = `replace ${toPascalCase(functionName)}.`
           break;
         case 'del':
-          // functionName = `delete${toPascalCase(functionName)}`;
           description = `delete ${toPascalCase(functionName)}`;
           break;
         default:
           break;
       }
-      // if (pathKey) functionName += 'ById';
       if (!queryParams) { queryParams = []; }
       queryParams.forEach((eachParam: any) => {
         Object.keys(eachParam).forEach(key => { queryParamList.push(key); });
@@ -145,7 +138,6 @@ export default class ExternalOperation extends Command {
       let functionParams = '';
 
       queryParamList.forEach((key: string) => { query += `${key}: '{${key}}', `; });
-      // if (bodyParamList.length) body = `body: '{body}', `;
       bodyParamList.forEach((key: string) => { body += `${key}: '{${key}}', `; });
 
       if (pathKey) path = `${pathKey}: '{${pathKey}}'`;
@@ -205,7 +197,9 @@ export default class ExternalOperation extends Command {
 
       const controllerFilePath = `${invokedFrom}/src/controllers/${toKebabCase(controllerName)}.controller.ts`;
       let controllerFile = project.getSourceFile(controllerFilePath);
-      const model = fs.existsSync(`./src/models/${toKebabCase(modelName)}.model.ts`);
+      const modelFileName = returnModel || modelName;
+      const model = fs.existsSync(`./src/models/${toKebabCase(modelFileName)}.model.ts`);
+      addImport(controllerFile, modelName, '../models', true);
 
       if (body) {
         const properties: { [x: string]: object } = {};
@@ -213,14 +207,12 @@ export default class ExternalOperation extends Command {
           name: 'body',
           type: 'any',
           decorators: [{
-            name: 'requestBody()',
+            name: `requestBody({content: {'application/json': {schema: getModelSchemaRef(${modelName})}}})`,
           }]
         }
         if (type) parameter.type = type;
 
         parameters.push(parameter);
-
-        addImport(controllerFile, modelName, '../models', true);
 
         if (!bodyParams) bodyParams = [];
 
@@ -272,21 +264,26 @@ export default class ExternalOperation extends Command {
         const classDeclaration = controllerFile?.getClass(`${toPascalCase(controllerName)}Controller`);
         const classConstructors = classDeclaration?.getConstructors() || [];
         let apiMethod = classDeclaration?.getMethod(functionName.toLowerCase());
+        if (!returnModel) returnModel = modelName;
         if (!apiMethod) {
           let responses = `{
             responses: {
               '200': {
                 description: '${description}',
-                content: {'application/json': {schema: ${model ? `{type: 'array', items: getModelSchemaRef(${modelName})}` : '{}'}}},
+                content: {'application/json': {schema: ${model ? `{type: 'array', items: getModelSchemaRef(${returnModel})}` : '{}'}}},
               },
             },
           }`;
           let methodParameters = queryParamList.toString();
           if (body) {
+            if (
+              methodParameters &&
+              !methodParameters.endsWith(',')) {
+              methodParameters += ','
+            }
             bodyParamList.forEach(bodyParam => {
               methodParameters += `body.${bodyParam},`;
             });
-            // methodParameters = bodyParamList.toString();
           }
           if (pathKey) {
             if (
