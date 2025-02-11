@@ -15,7 +15,7 @@ index 6952b2a..2e1c548 100644
      };
      tslib_1.__decorate([
          authenticatedMethod(options.auth ? options.auth.get : false),
-+        authentorizationMethod(options.authorization, options.basePath, 'view-all'),
++        authorizationMethod(options.authorization, options.basePath, 'view-all'),
          (0, rest_1.get)('/', {
              ...response.array(200, `Array of ${modelName} instances`, modelCtor, {
                  includeRelations: true,
@@ -23,7 +23,7 @@ index 6952b2a..2e1c548 100644
      ], ReadonlyRestControllerImpl.prototype, "find", null);
      tslib_1.__decorate([
          authenticatedMethod(options.auth ? options.auth.getById : false),
-+        authentorizationMethod(options.authorization, options.basePath, 'view-single'),
++        authorizationMethod(options.authorization, options.basePath, 'view-single'),
          (0, rest_1.get)('/{id}', {
              ...response.model(200, `${modelName} instance`, modelCtor, {
                  includeRelations: true,
@@ -31,7 +31,7 @@ index 6952b2a..2e1c548 100644
      ], ReadonlyRestControllerImpl.prototype, "findById", null);
      tslib_1.__decorate([
          authenticatedMethod(options.auth ? options.auth.count : false),
-+        authentorizationMethod(options.authorization, options.basePath, 'view-count'),
++        authorizationMethod(options.authorization, options.basePath, 'view-count'),
          (0, rest_1.get)('/count', {
              ...response(200, `${modelName} count`, { schema: repository_1.CountSchema }),
          }),
@@ -39,7 +39,7 @@ index 6952b2a..2e1c548 100644
      };
      tslib_1.__decorate([
          authenticatedMethod(options.auth ? options.auth.post : false),
-+        authentorizationMethod(options.authorization, options.basePath, 'create'),
++        authorizationMethod(options.authorization, options.basePath, 'create'),
          (0, rest_1.post)('/', {
              ...response.model(200, `${modelName} instance created`, modelCtor),
          }),
@@ -47,7 +47,7 @@ index 6952b2a..2e1c548 100644
      ], CrudRestControllerImpl.prototype, "create", null);
      tslib_1.__decorate([
          authenticatedMethod(options.auth ? options.auth.patch : false),
-+        authentorizationMethod(options.authorization, options.basePath, 'update-all'),
++        authorizationMethod(options.authorization, options.basePath, 'update-all'),
          (0, rest_1.patch)('/', {
              ...response(200, `Count of ${modelName} models updated`, {
                  schema: repository_1.CountSchema,
@@ -55,7 +55,7 @@ index 6952b2a..2e1c548 100644
      ], CrudRestControllerImpl.prototype, "updateAll", null);
      tslib_1.__decorate([
          authenticatedMethod(options.auth ? options.auth.patchById : false),
-+        authentorizationMethod(options.authorization, options.basePath, 'update-single'),
++        authorizationMethod(options.authorization, options.basePath, 'update-single'),
          (0, rest_1.patch)('/{id}', {
              responses: {
                  '204': { description: `${modelName} was updated` },
@@ -63,7 +63,7 @@ index 6952b2a..2e1c548 100644
      ], CrudRestControllerImpl.prototype, "updateById", null);
      tslib_1.__decorate([
          authenticatedMethod(options.auth ? options.auth.putById : false),
-+        authentorizationMethod(options.authorization, options.basePath, 'replace-single'),
++        authorizationMethod(options.authorization, options.basePath, 'replace-single'),
          (0, rest_1.put)('/{id}', {
              responses: {
                  '204': { description: `${modelName} was updated` },
@@ -71,7 +71,7 @@ index 6952b2a..2e1c548 100644
      ], CrudRestControllerImpl.prototype, "replaceById", null);
      tslib_1.__decorate([
          authenticatedMethod(options.auth ? options.auth.deleteById : false),
-+        authentorizationMethod(options.authorization, options.basePath, 'delete-single'),
++        authorizationMethod(options.authorization, options.basePath, 'delete-single'),
          (0, rest_1.del)('/{id}', {
              responses: {
                  '204': { description: `${modelName} was deleted` },
@@ -79,6 +79,6 @@ index 6952b2a..2e1c548 100644
      response.array = array;
  })(response || (response = {}));
  function authenticatedMethod(applyAuth) { return applyAuth ? (0, authentication_1.authenticate)('jwt') : (target, key, descriptor) => { }; }
-+function authentorizationMethod(applyAuthorization, resource, action) {return applyAuthorization ? (0, authorization_1.authorize)({ resource: resource, scopes: [action] }) : (target, key, descriptor) => { };}
++function authorizationMethod(applyAuthorization, resource, action) {return applyAuthorization ? (0, authorization_1.authorize)({ resource: resource, scopes: [action] }) : (target, key, descriptor) => { };}
  //# sourceMappingURL=crud-rest.controller.js.map
 \ No newline at end of file
