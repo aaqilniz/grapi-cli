@@ -16,31 +16,31 @@ export default class Patch extends Command {
     let options = processOptions(parsed.flags);
     const patches = options.patches || [];
     const PatchPaths = {
-      openapi: ['loopback-connector-openapi+*+construct-absolute-url.patch'],
+      openapi: ['loopback-connector-openapi+*+001+construct-absolute-url.patch'],
       openAPISpecsExtensions: [
-        '@loopback+repository-json-schema+*+oas-extensions.patch',
-        '@loopback+openapi-v3+*+oas-extensions.patch',
+        '@loopback+repository-json-schema+*+001+oas-extensions.patch',
+        '@loopback+openapi-v3+*+001+oas-extensions.patch',
         'loopback-connector-mysql+*+001+index-info.patch',
-        'loopback-datasource-juggler+*+index-info.patch',
+        'loopback-datasource-juggler+*+002+index-info.patch',
         '@loopback+rest+*+001+oas-extensions.patch'
       ],
       hiddenProperties: [
-        '@loopback+repository-json-schema+*+001+hidden-properties.patch',
-        '@loopback+repository+*+hidden-properties.patch',
+        '@loopback+repository-json-schema+*+002+hidden-properties.patch',
+        '@loopback+repository+*+002+hidden-properties.patch',
         '@loopback+rest-crud+*+001+hidden-properties.patch',
       ],
       groupBy: [
         '@loopback+repository-json-schema+*+002+groupby.patch',
-        '@loopback+repository+*+groupby.patch',
-        'loopback-connector+*+groupby.patch',
-        'loopback-datasource-juggler+*+groupby.patch'
+        '@loopback+repository+*+001+groupby.patch',
+        'loopback-connector+*+001+groupby.patch',
+        'loopback-datasource-juggler+*+001+groupby.patch'
       ],
       auditLogs: [
-        '@sourceloop+audit-log+*+auditlogs.patch'
+        '@sourceloop+audit-log+*+001+auditlogs.patch'
       ],
       auth: [
         '@loopback+rest-crud+*+002+auth.patch',
-        '@loopback+authentication-jwt+*+auth.patch'
+        '@loopback+authentication-jwt+*+001+auth.patch'
       ],
       virtualAsGenerated: [
         'loopback-connector-mysql+*+002+virtual-as-generated.patch',
@@ -55,8 +55,8 @@ export default class Patch extends Command {
         'loopback-connector-mysql+*+003+unique-key.patch',
       ],
       referencesManyFilters: [
-        'loopback-connector+*+001+refmany-filters.patch',
-        '@loopback+rest-crud+0.18.10+002+refmany-filters.patch'
+        'loopback-connector+*+002+refmany-filters.patch',
+        '@loopback+rest-crud+*+004+refmany-filters.patch'
       ]
     };
     const __filename = fileURLToPath(import.meta.url);

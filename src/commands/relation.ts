@@ -26,6 +26,7 @@ export default class Relation extends Command {
     const parsed = await this.parse(Relation);
     if (!parsed.flags.config) return prompt('relation', parsed.flags);
     let options = processOptions(parsed.flags);
+    const { relationType } = options;
     let configs = '';
     if (Object.keys(options).length) {
       configs = ` --config='${JSON.stringify(options)}' `;
@@ -34,5 +35,11 @@ export default class Relation extends Command {
     const executed: any = await execute(command, 'generating relation.');
     if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
     if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));
+    if (relationType === 'referencesMany') {
+      await execute(
+        `grapi-cli patch --config '{"patches": ["referencesManyFilters"]}'`,
+        'applying patches for filters for referencesMany.'
+      );
+    }
   }
 }

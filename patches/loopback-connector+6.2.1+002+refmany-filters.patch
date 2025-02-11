@@ -1,5 +1,5 @@
 diff --git a/node_modules/loopback-connector/lib/sql.js b/node_modules/loopback-connector/lib/sql.js
-index 8bdb5f1..71798a6 100644
+index e4479c1..7eebcfa 100644
 --- a/node_modules/loopback-connector/lib/sql.js
 +++ b/node_modules/loopback-connector/lib/sql.js
 @@ -1007,8 +1007,8 @@ Connector.defineAliases(SQLConnector.prototype, 'replace', ['replaceAll']);
@@ -92,13 +92,13 @@ index 8bdb5f1..71798a6 100644
          }
        }
      }
-@@ -1444,6 +1468,19 @@ SQLConnector.prototype.buildColumnNames = function(model, filter) {
+@@ -1440,6 +1464,19 @@ SQLConnector.prototype.buildColumnNames = function(model, filter) {
   * @returns {ParameterizedSQL} Statement object {sql: ..., params: ...}
   */
  SQLConnector.prototype.buildSelect = function(model, filter, options) {
 +  let relationType = '';
 +  if (options['model']['definition']) {
-+      const { relations } = options['model']['definition'];
++    const { relations } = options['model']['definition'];
 +      if (relations) {
 +          const relationKeys = Object.keys(relations);
 +          for (let relationIndex = 0; relationIndex < relationKeys.length; relationIndex++) {
@@ -112,3 +112,12 @@ index 8bdb5f1..71798a6 100644
    if (!filter.order) {
      const idNames = this.idNames(model);
      if (idNames && idNames.length) {
+@@ -1453,7 +1490,7 @@ SQLConnector.prototype.buildSelect = function(model, filter, options) {
+ 
+   if (filter) {
+     if (filter.where) {
+-      const whereStmt = this.buildWhere(model, filter.where);
++      const whereStmt = this.buildWhere(model, filter.where, relationType);
+       selectStmt.merge(whereStmt);
+     }
+ 
