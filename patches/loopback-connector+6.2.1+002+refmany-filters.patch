@@ -97,7 +97,7 @@ index e4479c1..7eebcfa 100644
   */
  SQLConnector.prototype.buildSelect = function(model, filter, options) {
 +  let relationType = '';
-+  if (options['model']['definition']) {
++  if (options && options['model'] && options['model']['definition']) {
 +    const { relations } = options['model']['definition'];
 +      if (relations) {
 +          const relationKeys = Object.keys(relations);
