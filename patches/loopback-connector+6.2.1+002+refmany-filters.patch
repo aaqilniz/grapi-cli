@@ -1,5 +1,5 @@
 diff --git a/node_modules/loopback-connector/lib/sql.js b/node_modules/loopback-connector/lib/sql.js
-index e4479c1..7eebcfa 100644
+index e4479c1..5e25ece 100644
 --- a/node_modules/loopback-connector/lib/sql.js
 +++ b/node_modules/loopback-connector/lib/sql.js
 @@ -1007,8 +1007,8 @@ Connector.defineAliases(SQLConnector.prototype, 'replace', ['replaceAll']);
@@ -8,8 +8,8 @@ index e4479c1..7eebcfa 100644
   */
 -SQLConnector.prototype.buildWhere = function(model, where) {
 -  const whereClause = this._buildWhere(model, where);
-+SQLConnector.prototype.buildWhere = function(model, where, relationType) {
-+  const whereClause = this._buildWhere(model, where, relationType);
++SQLConnector.prototype.buildWhere = function(model, where, relationType, relationKeyFrom) {
++  const whereClause = this._buildWhere(model, where, relationType, relationKeyFrom);
    if (whereClause.sql) {
      whereClause.sql = 'WHERE ' + whereClause.sql;
    }
@@ -51,16 +51,17 @@ index e4479c1..7eebcfa 100644
   * @returns {ParameterizedSQL}
   */
 -SQLConnector.prototype._buildWhere = function(model, where) {
-+SQLConnector.prototype._buildWhere = function(model, where, relationType) {
++SQLConnector.prototype._buildWhere = function(model, where, relationType, relationKeyFrom) {
    let columnValue, sqlExp;
    if (!where) {
      return new ParameterizedSQL('');
-@@ -1188,8 +1201,12 @@ SQLConnector.prototype._buildWhere = function(model, where) {
+@@ -1188,8 +1201,13 @@ SQLConnector.prototype._buildWhere = function(model, where) {
        } else {
          columnValue = this.toColumnValue(p, expression);
        }
 -      sqlExp = self.buildExpression(columnName, operator, columnValue, p);
 -      stmt.merge(sqlExp);
++      if (`\`${relationKeyFrom}\`` !== columnName) { relationType = ''; }
 +      sqlExp = self.buildExpression(relationType, columnName, operator, columnValue, p);
 +      if (relationType === 'referencesMany') {
 +        stmt.merge(sqlExp, columnValue);
@@ -70,7 +71,7 @@ index e4479c1..7eebcfa 100644
      } else {
        // The expression is the field value, not a condition
        columnValue = self.toColumnValue(p, expression);
-@@ -1199,10 +1216,17 @@ SQLConnector.prototype._buildWhere = function(model, where) {
+@@ -1199,10 +1217,17 @@ SQLConnector.prototype._buildWhere = function(model, where) {
          if (columnValue instanceof ParameterizedSQL) {
            stmt.merge(columnName + '=').merge(columnValue);
          } else {
@@ -92,11 +93,12 @@ index e4479c1..7eebcfa 100644
          }
        }
      }
-@@ -1440,6 +1464,19 @@ SQLConnector.prototype.buildColumnNames = function(model, filter) {
+@@ -1440,6 +1465,21 @@ SQLConnector.prototype.buildColumnNames = function(model, filter) {
   * @returns {ParameterizedSQL} Statement object {sql: ..., params: ...}
   */
  SQLConnector.prototype.buildSelect = function(model, filter, options) {
 +  let relationType = '';
++  let relationKeyFrom = '';
 +  if (options && options['model'] && options['model']['definition']) {
 +    const { relations } = options['model']['definition'];
 +      if (relations) {
@@ -105,6 +107,7 @@ index e4479c1..7eebcfa 100644
 +              const relationName = relationKeys[relationIndex];
 +              const relation = relations[relationName];
 +              relationType = relation.type;
++              relationKeyFrom = relation.keyFrom;
 +              if (relationType === 'referencesMany') continue;
 +          }
 +      }
@@ -112,12 +115,22 @@ index e4479c1..7eebcfa 100644
    if (!filter.order) {
      const idNames = this.idNames(model);
      if (idNames && idNames.length) {
-@@ -1453,7 +1490,7 @@ SQLConnector.prototype.buildSelect = function(model, filter, options) {
+@@ -1453,7 +1493,7 @@ SQLConnector.prototype.buildSelect = function(model, filter, options) {
  
    if (filter) {
      if (filter.where) {
 -      const whereStmt = this.buildWhere(model, filter.where);
-+      const whereStmt = this.buildWhere(model, filter.where, relationType);
++      const whereStmt = this.buildWhere(model, filter.where, relationType, relationKeyFrom);
        selectStmt.merge(whereStmt);
      }
  
+@@ -1511,7 +1551,9 @@ SQLConnector.prototype.all = function find(model, filter, options, cb) {
+   const self = this;
+   // Order by id if no order is specified
+   filter = filter || {};
++  
+   const stmt = this.buildSelect(model, filter, options);
++  
+   this.execute(stmt.sql, stmt.params, options, function(err, data) {
+     if (err) {
+       return cb(err, []);
