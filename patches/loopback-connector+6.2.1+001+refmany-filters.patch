@@ -1,0 +1,134 @@
+diff --git a/node_modules/loopback-connector/lib/sql.js b/node_modules/loopback-connector/lib/sql.js
+index e4479c1..b80561f 100644
+--- a/node_modules/loopback-connector/lib/sql.js
++++ b/node_modules/loopback-connector/lib/sql.js
+@@ -1007,8 +1007,8 @@ Connector.defineAliases(SQLConnector.prototype, 'replace', ['replaceAll']);
+  * @param {object} where An object for the where conditions
+  * @returns {ParameterizedSQL} The SQL WHERE clause
+  */
+-SQLConnector.prototype.buildWhere = function(model, where) {
+-  const whereClause = this._buildWhere(model, where);
++SQLConnector.prototype.buildWhere = function(model, where, relationType, relationKeyFrom) {
++  const whereClause = this._buildWhere(model, where, relationType, relationKeyFrom);
+   if (whereClause.sql) {
+     whereClause.sql = 'WHERE ' + whereClause.sql;
+   }
+@@ -1024,7 +1024,7 @@ SQLConnector.prototype.buildWhere = function(model, where) {
+  * @returns {ParameterizedSQL} The SQL expression
+  */
+ SQLConnector.prototype.buildExpression =
+-function(columnName, operator, columnValue, propertyValue) {
++function(relationType, columnName, operator, columnValue, propertyValue) {
+   function buildClause(columnValue, separator, grouping) {
+     const values = [];
+     for (let i = 0, n = columnValue.length; i < n; i++) {
+@@ -1067,8 +1067,21 @@ function(columnName, operator, columnValue, propertyValue) {
+       clause = buildClause(columnValue, ' AND ', false);
+       break;
+     case 'inq':
+-      sqlExp += ' IN ';
+-      clause = buildClause(columnValue, ',', true);
++      if (relationType === 'referencesMany') {
++        sqlExp = '';
++        if (columnValue.length === 1) {
++          sqlExp = `JSON_CONTAINS(${columnName}, CAST(${columnValue[0]} as JSON))`;
++        } else {
++          columnValue.forEach(value => {
++            sqlExp += `JSON_CONTAINS(${columnName}, CAST(${value} as JSON)) OR `;
++          });
++          sqlExp = sqlExp.replace(/\s+OR\s*$/, '');
++        }
++        clause = null;
++      } else {
++        sqlExp += ' IN ';
++        clause = buildClause(columnValue, ',', true);
++      }
+       break;
+     case 'nin':
+       sqlExp += ' NOT IN ';
+@@ -1102,7 +1115,7 @@ function(columnName, operator, columnValue, propertyValue) {
+  * @param where
+  * @returns {ParameterizedSQL}
+  */
+-SQLConnector.prototype._buildWhere = function(model, where) {
++SQLConnector.prototype._buildWhere = function(model, where, relationType, relationKeyFrom) {
+   let columnValue, sqlExp;
+   if (!where) {
+     return new ParameterizedSQL('');
+@@ -1188,8 +1201,13 @@ SQLConnector.prototype._buildWhere = function(model, where) {
+       } else {
+         columnValue = this.toColumnValue(p, expression);
+       }
+-      sqlExp = self.buildExpression(columnName, operator, columnValue, p);
+-      stmt.merge(sqlExp);
++      if (`\`${relationKeyFrom}\`` !== columnName) { relationType = ''; }
++      sqlExp = self.buildExpression(relationType, columnName, operator, columnValue, p);
++      if (relationType === 'referencesMany') {
++        stmt.merge(sqlExp, columnValue);
++      } else {
++        stmt.merge(sqlExp);
++      }
+     } else {
+       // The expression is the field value, not a condition
+       columnValue = self.toColumnValue(p, expression);
+@@ -1199,10 +1217,17 @@ SQLConnector.prototype._buildWhere = function(model, where) {
+         if (columnValue instanceof ParameterizedSQL) {
+           stmt.merge(columnName + '=').merge(columnValue);
+         } else {
+-          stmt.merge({
+-            sql: columnName + '=?',
+-            params: [columnValue],
+-          });
++          if (relationType === 'referencesMany') {
++            stmt.merge({
++              sql: `JSON_CONTAINS(${columnName}, CAST(? as JSON))`,
++              params: [columnValue],
++            });
++          } else {
++            stmt.merge({
++              sql: columnName + '=?',
++              params: [columnValue]
++            });
++          }
+         }
+       }
+     }
+@@ -1440,6 +1465,21 @@ SQLConnector.prototype.buildColumnNames = function(model, filter) {
+  * @returns {ParameterizedSQL} Statement object {sql: ..., params: ...}
+  */
+ SQLConnector.prototype.buildSelect = function(model, filter, options) {
++  let relationType = '';
++  let relationKeyFrom = '';
++  if (options && options['model'] && options['model']['definition']) {
++    const { relations } = options['model']['definition'];
++    if (relations) {
++      const relationKeys = Object.keys(relations);
++      for (let relationIndex = 0; relationIndex < relationKeys.length; relationIndex++) {
++        const relationName = relationKeys[relationIndex];
++        const relation = relations[relationName];
++        relationType = relation.type;
++        relationKeyFrom = relation.keyFrom;
++        if (relationType === 'referencesMany') continue;
++      }
++    }
++  }
+   if (!filter.order) {
+     const idNames = this.idNames(model);
+     if (idNames && idNames.length) {
+@@ -1453,7 +1493,7 @@ SQLConnector.prototype.buildSelect = function(model, filter, options) {
+ 
+   if (filter) {
+     if (filter.where) {
+-      const whereStmt = this.buildWhere(model, filter.where);
++      const whereStmt = this.buildWhere(model, filter.where, relationType, relationKeyFrom);
+       selectStmt.merge(whereStmt);
+     }
+ 
+@@ -1512,6 +1552,7 @@ SQLConnector.prototype.all = function find(model, filter, options, cb) {
+   // Order by id if no order is specified
+   filter = filter || {};
+   const stmt = this.buildSelect(model, filter, options);
++  
+   this.execute(stmt.sql, stmt.params, options, function(err, data) {
+     if (err) {
+       return cb(err, []);

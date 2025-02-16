@@ -4,6 +4,20 @@ import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { processOptions, standardFlags, findVersionedFile, copyFiles, execute } from '../utils/index.js';
 
+interface PatchPathsType {
+  openapi: string[];
+  openAPISpecsExtensions: string[];
+  hiddenProperties: string[];
+  groupBy: string[];
+  auditLogs: string[];
+  auth: string[];
+  virtualAsGenerated: string[];
+  supportRestrictedProperties: string[];
+  authorization: string[];
+  uniqueKeyQuery: string[];
+  referencesManyFilters: string[];
+}
+
 export default class Patch extends Command {
 
   static override flags = {
@@ -15,7 +29,7 @@ export default class Patch extends Command {
 
     let options = processOptions(parsed.flags);
     const patches = options.patches || [];
-    const PatchPaths = {
+    const PatchPaths: PatchPathsType = {
       openapi: ['loopback-connector-openapi+*+001+construct-absolute-url.patch'],
       openAPISpecsExtensions: [
         '@loopback+repository-json-schema+*+001+oas-extensions.patch',
@@ -54,10 +68,7 @@ export default class Patch extends Command {
       uniqueKeyQuery: [
         'loopback-connector-mysql+*+003+unique-key.patch',
       ],
-      referencesManyFilters: [
-        'loopback-connector+*+002+refmany-filters.patch',
-        '@loopback+rest-crud+*+004+refmany-filters.patch'
-      ]
+      referencesManyFilters: []
     };
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
@@ -71,7 +82,32 @@ export default class Patch extends Command {
       if (!patches.includes('hiddenProperties')) patches.push('hiddenProperties');
       if (!patches.includes('virtualAsGenerated')) patches.push('virtualAsGenerated');
       if (!patches.includes('uniqueKeyQuery')) patches.push('uniqueKeyQuery');
+      if (patches.includes('groupBy')) {
+        PatchPaths['referencesManyFilters'].push('loopback-connector+*+002+refmany-filters.patch');
+      } else {
+        PatchPaths['referencesManyFilters'].push('loopback-connector+*+001+refmany-filters.patch');
+      }
     }
+    if (
+      patches &&
+      patches.includes('auth') &&
+      !patches.includes('authorization')
+    ) {
+      patches.push('authorization');
+    }
+    if (
+      patches &&
+      patches.includes('authorization') &&
+      !patches.includes('auth')
+    ) {
+      patches.push('auth');
+    }
+    if (patches && patches.includes('auth')) {
+      PatchPaths['referencesManyFilters'].push('loopback-connector+*+002+refmany-filters.patch');
+    } else {
+      PatchPaths['referencesManyFilters'].push('loopback-connector+*+004+refmany-filters.patch');
+    }
+
     if (patches && patches.includes('openapi')) {
       PatchPaths.openapi.forEach(patch => {
         const patchFileName = findVersionedFile(patch, patchDirectoryPath);
