@@ -103,9 +103,10 @@ export default class Patch extends Command {
       patches.push('auth');
     }
     if (patches && patches.includes('auth')) {
-      PatchPaths['referencesManyFilters'].push('loopback-connector+*+002+refmany-filters.patch');
-    } else {
-      PatchPaths['referencesManyFilters'].push('loopback-connector+*+004+refmany-filters.patch');
+      PatchPaths['referencesManyFilters'].push('@loopback+rest-crud+*+002+refmany-filters.patch');
+    }
+    else {
+      PatchPaths['referencesManyFilters'].push('@loopback+rest-crud+*+004+refmany-filters.patch');
     }
 
     if (patches && patches.includes('openapi')) {
