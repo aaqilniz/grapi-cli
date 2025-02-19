@@ -188,6 +188,12 @@ export default class Patch extends Command {
         patchesToCopy.push(patchFileName);
       });
     }
+    if (patches && patches.includes('referencesManyFilters')) {
+      PatchPaths.referencesManyFilters.forEach(patch => {
+        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
+        patchesToCopy.push(patchFileName);
+      });
+    }
     if (patches && patches.includes('customKeyHasMany')) {
       PatchPaths.customKeyHasMany.forEach(patch => {
         const patchFileName = findVersionedFile(patch, patchDirectoryPath);
