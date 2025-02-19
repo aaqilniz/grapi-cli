@@ -1,5 +1,5 @@
 import { Command, Flags } from '@oclif/core';
-import { promises as fs } from 'fs';
+import { existsSync, promises as fs, readdirSync } from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { processOptions, standardFlags, findVersionedFile, copyFiles, execute } from '../utils/index.js';
@@ -16,6 +16,7 @@ interface PatchPathsType {
   authorization: string[];
   uniqueKeyQuery: string[];
   referencesManyFilters: string[];
+  customKeyHasMany: string[];
 }
 
 export default class Patch extends Command {
@@ -44,7 +45,7 @@ export default class Patch extends Command {
         '@loopback+rest-crud+*+001+hidden-properties.patch',
       ],
       groupBy: [
-        '@loopback+repository-json-schema+*+002+groupby.patch',
+        '@loopback+repository-json-schema+*+003+groupby.patch',
         '@loopback+repository+*+001+groupby.patch',
         'loopback-connector+*+001+groupby.patch',
         'loopback-datasource-juggler+*+001+groupby.patch'
@@ -68,21 +69,37 @@ export default class Patch extends Command {
       uniqueKeyQuery: [
         'loopback-connector-mysql+*+003+unique-key.patch',
       ],
-      referencesManyFilters: []
+      referencesManyFilters: [],
+      customKeyHasMany: ['@loopback+repository+*+003+custom-key-has-many.patch']
     };
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
     const patchDirectoryPath = path.join(__dirname, '../../patches');
-
+    const invokedFrom = process.cwd();
     const patchesToCopy: string[] = [];
+    let authPatchesExists = false;
+    const patchDir = `${invokedFrom}/patches`;
+    if (existsSync(patchDir)) {
+      const existingPatches = readdirSync(patchDir);
+      existingPatches.forEach(existingPatch => {
+        if (existingPatch.includes('auth')) { authPatchesExists = true; }
+      });
+    }
 
+    let groupByPatchesExists = false;
+    if (existsSync(patchDir)) {
+      const existingPatches = readdirSync(patchDir);
+      existingPatches.forEach(existingPatch => {
+        if (existingPatch.includes('groupby')) { groupByPatchesExists = true; }
+      });
+    }
     //default patches if no openapi patches are to be applied
     if (patches && !patches.includes('openapi')) {
       if (!patches.includes('openAPISpecsExtensions')) patches.push('openAPISpecsExtensions');
       if (!patches.includes('hiddenProperties')) patches.push('hiddenProperties');
       if (!patches.includes('virtualAsGenerated')) patches.push('virtualAsGenerated');
       if (!patches.includes('uniqueKeyQuery')) patches.push('uniqueKeyQuery');
-      if (patches.includes('groupBy')) {
+      if (patches.includes('groupBy') || groupByPatchesExists) {
         PatchPaths['referencesManyFilters'].push('loopback-connector+*+002+refmany-filters.patch');
       } else {
         PatchPaths['referencesManyFilters'].push('loopback-connector+*+001+refmany-filters.patch');
@@ -102,11 +119,12 @@ export default class Patch extends Command {
     ) {
       patches.push('auth');
     }
-    if (patches && patches.includes('auth')) {
-      PatchPaths['referencesManyFilters'].push('@loopback+rest-crud+*+002+refmany-filters.patch');
+
+    if ((patches && patches.includes('auth')) || authPatchesExists) {
+      PatchPaths['referencesManyFilters'].push('@loopback+rest-crud+*+004+refmany-filters.patch');
     }
     else {
-      PatchPaths['referencesManyFilters'].push('@loopback+rest-crud+*+004+refmany-filters.patch');
+      PatchPaths['referencesManyFilters'].push('@loopback+rest-crud+*+002+refmany-filters.patch');
     }
 
     if (patches && patches.includes('openapi')) {
@@ -170,8 +188,8 @@ export default class Patch extends Command {
         patchesToCopy.push(patchFileName);
       });
     }
-    if (patches && patches.includes('referencesManyFilters')) {
-      PatchPaths.referencesManyFilters.forEach(patch => {
+    if (patches && patches.includes('customKeyHasMany')) {
+      PatchPaths.customKeyHasMany.forEach(patch => {
         const patchFileName = findVersionedFile(patch, patchDirectoryPath);
         patchesToCopy.push(patchFileName);
       });

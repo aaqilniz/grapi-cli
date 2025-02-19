@@ -1,0 +1,65 @@
+diff --git a/node_modules/@loopback/repository/dist/relations/has-many/has-many-through.helpers.js b/node_modules/@loopback/repository/dist/relations/has-many/has-many-through.helpers.js
+index e0c4f07..760b416 100644
+--- a/node_modules/@loopback/repository/dist/relations/has-many/has-many-through.helpers.js
++++ b/node_modules/@loopback/repository/dist/relations/has-many/has-many-through.helpers.js
+@@ -51,7 +51,7 @@ const debug = (0, debug_1.default)('loopback:repository:relations:has-many-throu
+  */
+ function createTargetConstraintFromThrough(relationMeta, throughInstances) {
+     const fkValues = getTargetKeysFromThroughModels(relationMeta, throughInstances);
+-    const targetPrimaryKey = relationMeta.keyTo;
++    const targetPrimaryKey = relationMeta.customReferenceKeyTo || relationMeta.keyTo;
+     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     const constraint = {
+         [targetPrimaryKey]: fkValues.length === 1 ? fkValues[0] : { inq: fkValues },
+@@ -170,7 +170,7 @@ exports.createThroughConstraintFromSource = createThroughConstraintFromSource;
+   >>> [2, 1]
+  */
+ function getTargetIdsFromTargetModels(relationMeta, targetInstances) {
+-    const targetId = relationMeta.keyTo;
++    const targetId = relationMeta.customReferenceKeyTo || relationMeta.keyTo;
+     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     let ids = [];
+     ids = targetInstances.map((targetInstance) => targetInstance[targetId]);
+@@ -245,6 +245,8 @@ function resolveHasManyThroughMetadata(relationMeta) {
+         throughModelProperties[relationMeta.through.keyTo] &&
+         relationMeta.through.keyFrom &&
+         throughModelProperties[relationMeta.through.keyFrom] &&
++        relationMeta.customReferenceKeyTo &&
++        targetModelProperties[relationMeta.customReferenceKeyTo] &&
+         relationMeta.keyTo &&
+         targetModelProperties[relationMeta.keyTo] &&
+         (relationMeta.through.polymorphic === false ||
+@@ -266,7 +268,10 @@ function resolveHasManyThroughMetadata(relationMeta) {
+         const reason = `through model ${throughModel.name} is missing definition of target foreign key`;
+         throw new __1.InvalidRelationError(reason, relationMeta);
+     }
+-    const targetPrimaryKey = (_f = relationMeta.keyTo) !== null && _f !== void 0 ? _f : targetModel.definition.idProperties()[0];
++    let targetPrimaryKey = (_f = relationMeta.keyTo) !== null && _f !== void 0 ? _f : targetModel.definition.idProperties()[0];
++    if (relationMeta.customReferenceKeyTo) {
++        targetPrimaryKey = relationMeta.customReferenceKeyTo;
++    }
+     if (!targetPrimaryKey || !targetModelProperties[targetPrimaryKey]) {
+         const reason = `target model ${targetModel.modelName} does not have any primary key (id property)`;
+         throw new __1.InvalidRelationError(reason, relationMeta);
+@@ -293,7 +298,7 @@ function resolveHasManyThroughMetadata(relationMeta) {
+     }
+     return Object.assign(relationMeta, {
+         keyTo: targetPrimaryKey,
+-        keyFrom: relationMeta.keyFrom,
++        keyFrom: relationMeta.customReferenceKeyFrom || relationMeta.keyFrom,
+         through: {
+             ...relationMeta.through,
+             keyTo: targetFkName,
+diff --git a/node_modules/@loopback/repository/dist/relations/relation.types.d.ts b/node_modules/@loopback/repository/dist/relations/relation.types.d.ts
+index d71855a..2ff5efd 100644
+--- a/node_modules/@loopback/repository/dist/relations/relation.types.d.ts
++++ b/node_modules/@loopback/repository/dist/relations/relation.types.d.ts
+@@ -60,6 +60,8 @@ export interface HasManyDefinition extends RelationDefinitionBase {
+      */
+     keyTo?: string;
+     keyFrom?: string;
++    customReferenceKeyTo?: string;
++    customReferenceKeyFrom?: string;
+     /**
+      * With current architecture design, polymorphic type cannot be supported without through
+      * Consider using Source-hasMany->Through->hasOne->Target(polymorphic) for one-to-many relations
