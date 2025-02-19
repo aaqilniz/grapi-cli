@@ -118,7 +118,7 @@ index e4479c1..93c7e21 100644
 +        const relation = relations[relationName];
 +        relationType = relation.type;
 +        relationKeyFrom = relation.keyFrom;
-+        if (relationType === 'referencesMany') continue;
++        if (relationType === 'referencesMany') break;
 +      }
 +    }
 +  }
