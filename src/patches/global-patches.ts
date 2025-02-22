@@ -458,8 +458,14 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             replacement: `from './\${subDir? subDir + '/':''}`,
             path: `${cliPath}/lib/update-index.js`,
         },
-    }
-
+    },
+    sameTableRelationInDiscover: {
+        setStrictToFalse: {
+            searchString: 'this.copyTemplatedFiles(',
+            replacement: `if (templateData['relationDestinationImports'].includes(templateData['name'])) { templateData['relationDestinationImports'] = templateData['relationDestinationImports'].filter(e => e !== templateData['name']); }\nthis.copyTemplatedFiles(`,
+            path: `${cliPath}/generators/discover/import-discovered-model.js`
+        },
+    },
 };
 
 (async () => {
