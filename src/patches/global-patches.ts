@@ -462,7 +462,7 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
     sameTableRelationInDiscover: {
         setStrictToFalse: {
             searchString: 'this.copyTemplatedFiles(',
-            replacement: `if (templateData['relationDestinationImports'].includes(templateData['name'])) { templateData['relationDestinationImports'] = templateData['relationDestinationImports'].filter(e => e !== templateData['name']); }\nthis.copyTemplatedFiles(`,
+            replacement: `if (templateData && templateData['relationDestinationImports'] && templateData['relationDestinationImports'].includes(templateData['name'])) { templateData['relationDestinationImports'] = templateData['relationDestinationImports'].filter(e => e !== templateData['name']); }\nthis.copyTemplatedFiles(`,
             path: `${cliPath}/generators/discover/index.js`
         },
     },
