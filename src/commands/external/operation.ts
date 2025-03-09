@@ -1,6 +1,6 @@
 import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk';
-import fs from 'fs';
+import fs, { stat, Stats } from 'fs';
 
 import { processOptions, toPascalCase, toKebabCase, execute, addImport } from '../../utils/index.js';
 import { Project, SyntaxKind, PropertyAssignment, ObjectLiteralExpression, ArrayLiteralExpression, OptionalKind, ParameterDeclarationStructure, EnumMember, SourceFile } from 'ts-morph';
@@ -132,8 +132,14 @@ export default class ExternalOperation extends Command {
         }
       }
 
+      let addFilters = false;
       if (!queryParams) queryParams = {}; // prevents checking existing queryParams in the future too.
-      Object.keys(queryParams).forEach(key => { queryParamList.push(key) })
+      Object.keys(queryParams).forEach(key => {
+        queryParamList.push(key);
+        if (key === 'where') {
+          addFilters = true;
+        }
+      })
 
       if (!bodyParams) bodyParams = { properties: {} }; // prevents checking existing queryParams in the future too.
       Object.keys(bodyParams.properties).forEach((key) => { bodyParamList.push(key); });
@@ -342,11 +348,20 @@ export default class ExternalOperation extends Command {
             });
           }
           let temp = JSON.stringify(finalResponses);
-          temp = temp.replaceAll(`"getModelSchemaRef(${modelName})"`, `getModelSchemaRef(${modelName})`)
+          temp = temp.replaceAll(`"getModelSchemaRef(${modelName})"`, `getModelSchemaRef(${modelName})`);
+          const statements = [];
+          queryParams
+          if (addFilters) {
+            statements.push(`let items = (await this.service.${apiFunction}(${methodParameters})) as any[];`)
+            statements.push(`if (where) items = applyWhereFilter(items, where);`);
+            statements.push(`return items;`);
+          } else {
+            statements.push(`return this.service.${apiFunction}(${methodParameters});`);
+          }
           let methodStructure = {
             name: apiFunction,
             parameters,
-            statements: [`return this.service.${apiFunction}(${methodParameters});`],
+            statements,
             isAsync: true,
             decorators: [
               {
