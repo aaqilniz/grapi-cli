@@ -149,6 +149,7 @@ export default class ExternalOperation extends Command {
       let path = '';
       let functionParams = '';
 
+      Object.keys(pathParams).forEach((key: string) => { functionParams += `'${key}',`; });
       queryParamList.forEach((key: string) => {
         query += `${key}: '{${key}}', `;
         functionParams += `'${key}',`;
@@ -157,7 +158,6 @@ export default class ExternalOperation extends Command {
         body += `${key}: '{${key}}', `;
         functionParams += `'${key}',`;
       });
-      Object.keys(pathParams).forEach((key: string) => { functionParams += `'${key}',`; });
 
       if (pathKey) path = `${pathKey}: '{${pathKey}}'`;
 
