@@ -485,7 +485,7 @@ export default class ExternalOperation extends Command {
                 {
                   name: 'patch',
                   arguments: [
-                    `'${apiUri}'`,
+                    `'${apiUri.split('/{')[0]}'`,
                     `{"responses":{"200":{"description":"update contacts","content":{"application/json":{"schema":{"properties":{"count":{"type":"number"}}}}}}}}`
                   ]
                 }
