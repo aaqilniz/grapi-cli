@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 
 import { processOptions, toPascalCase, toKebabCase, execute, addImport } from '../../utils/index.js';
-import { Project, SyntaxKind, PropertyAssignment, ObjectLiteralExpression, ArrayLiteralExpression, OptionalKind, ParameterDeclarationStructure, EnumMember } from 'ts-morph';
+import { Project, SyntaxKind, PropertyAssignment, ObjectLiteralExpression, ArrayLiteralExpression, OptionalKind, ParameterDeclarationStructure, EnumMember, SourceFile } from 'ts-morph';
 
 export default class ExternalOperation extends Command {
 
@@ -42,6 +42,11 @@ export default class ExternalOperation extends Command {
         additionalProperties,
         apiFunction,
         headers,
+        count,
+        replaceById,
+        singleFetchMethodName,
+        fetchMethodName,
+        updateAll
       } = options;
       let {
         method,
@@ -181,6 +186,12 @@ export default class ExternalOperation extends Command {
           }]
         })
       }
+      if (pathKey) {
+        serviceParams += `${pathKey}: ${pathParams[pathKey]['type']}`;
+      }
+      if (serviceParams !== '' && !serviceParams.endsWith(',')) {
+        serviceParams += ',';
+      }
       Object.keys(queryParams).forEach((key) => {
         const type = queryParams[key]['type'];
         parameters.push({
@@ -191,7 +202,7 @@ export default class ExternalOperation extends Command {
             arguments: [`'${key}'`]
           }]
         });
-        serviceParams += `${key}: ${type},`;
+        serviceParams += `${key}?: ${type},`;
       });
 
       const controllerFilePath = `${invokedFrom}/src/controllers/${toKebabCase(controller)}.controller.ts`;
@@ -199,8 +210,8 @@ export default class ExternalOperation extends Command {
       const model = fs.existsSync(`./src/models/${toKebabCase(requestModelName || modelName)}.model.ts`);
       if (model) addImport(controllerFile, requestModelName || modelName, '../models', true);
 
+      let name = `requestBody({content: {'application/json': {schema: getModelSchemaRef(${requestModelName || modelName})}}})`;
       if (body) {
-        let name = `requestBody({content: {'application/json': {schema: getModelSchemaRef(${requestModelName || modelName})}}})`;
         if (bodyParams.type === 'array') {
           name = `requestBody({content: {'application/json': {schema: {type: 'array', items: getModelSchemaRef(${requestModelName || modelName})}}}})`;
         }
@@ -228,6 +239,9 @@ export default class ExternalOperation extends Command {
           }
           properties[key] = property;
           if (!property.required) { type += ' | undefined'; }
+          if (serviceParams !== '' && !serviceParams.endsWith(',')) {
+            serviceParams += ',';
+          }
           serviceParams += `${key}: ${type},`;
         });
         if (additionalProperties) {
@@ -251,9 +265,6 @@ export default class ExternalOperation extends Command {
         }
 
       }
-      if (pathKey) {
-        serviceParams += `${pathKey}: ${pathParams[pathKey]['type']}`;
-      }
 
       const existingController = fs.existsSync(`./src/controllers/${toKebabCase(controller)}.controller.ts`);
       if (!existingController) {
@@ -262,7 +273,7 @@ export default class ExternalOperation extends Command {
         if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
         if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));
       }
-
+      project.addSourceFilesAtPaths(`${invokedFrom}/src/**/*.ts`);
       controllerFile = project.getSourceFile(controllerFilePath);
 
       if (controllerFile) {
@@ -276,6 +287,7 @@ export default class ExternalOperation extends Command {
           content?: { [x: string]: object };
         }
         // Find all class declarations within the source file
+        this.addFilterCode(controllerFile);
         const classDeclaration = controllerFile?.getClass(`${toPascalCase(controller)}Controller`);
         const classConstructors = classDeclaration?.getConstructors() || [];
         let apiMethod = classDeclaration?.getMethod(apiFunction);
@@ -301,24 +313,33 @@ export default class ExternalOperation extends Command {
           finalResponses = { responses: constructedResponses };
         });
         if (!apiMethod) {
-          let methodParameters = queryParamList.toString();
+          let methodParameters = '';
+          let replaceByIdParameters = '';
+          if (pathKey) {
+            methodParameters = `${pathKey}`;
+            replaceByIdParameters = `${pathKey},`;
+          }
+          if (
+            methodParameters &&
+            !methodParameters.endsWith(',')) {
+            methodParameters += ','
+          }
+          methodParameters += queryParamList.toString();
           if (body) {
             if (
               methodParameters &&
               !methodParameters.endsWith(',')) {
               methodParameters += ','
             }
+            if (
+              replaceByIdParameters &&
+              !replaceByIdParameters.endsWith(',')) {
+              replaceByIdParameters += ','
+            }
             bodyParamList.forEach(bodyParam => {
               methodParameters += `body.${bodyParam},`;
+              replaceByIdParameters += `newItem.${bodyParam},`;
             });
-          }
-          if (pathKey) {
-            if (
-              methodParameters &&
-              !methodParameters.endsWith(',')) {
-              methodParameters += ','
-            }
-            methodParameters += `${pathKey}`;
           }
           let temp = JSON.stringify(finalResponses);
           temp = temp.replaceAll(`"getModelSchemaRef(${modelName})"`, `getModelSchemaRef(${modelName})`)
@@ -336,6 +357,143 @@ export default class ExternalOperation extends Command {
             returnType: `Promise<any>`
           }
           classDeclaration?.addMethod(methodStructure);
+          // add count method based on findAll method
+          if (count) {
+            let methodStructure = {
+              name: `count${modelName}`,
+              parameters: [
+                {
+                  name: 'where',
+                  type: 'object',
+                  decorators: [{
+                    name: `param.query.object`,
+                    arguments: [`'where'`]
+                  }]
+                }
+              ],
+              statements: [`
+                    let items = (await this.service.${apiFunction}(${methodParameters})) as any[];
+                    if (where) items = applyWhereFilter(items, where);
+                    return { count: items.length };
+                `],
+              isAsync: true,
+              decorators: [
+                {
+                  name: 'get',
+                  arguments: [
+                    `'${apiUri}/count'`,
+                    `{"responses":{"200":{"description":"Contact count","content":{"application/json":{"schema":{"properties":{"count":{"type":"number"}}}}}}}}`
+                  ]
+                }
+              ],
+              returnType: `Promise<any>`
+            };
+            classDeclaration?.addMethod(methodStructure);
+          }
+          // add replaceById by fetching the single record and updating it
+          if (replaceById) {
+            let methodStructure = {
+              name: `replace${modelName}ById`,
+              parameters: [
+                {
+                  name: 'id',
+                  type: 'number',
+                  decorators: [{
+                    name: `param.path.number`,
+                    arguments: [`'id'`]
+                  }]
+                },
+                {
+                  name: 'body',
+                  type: 'any',
+                  decorators: [{ name }]
+                }
+              ],
+              statements: [`
+                    const item = (await this.service.${singleFetchMethodName}(id)) as any[];
+                    const newItem: any = {};
+                    Object.keys(item).forEach(key => { newItem[key] = body[key] || null; });
+                    return this.service.${apiFunction}(${replaceByIdParameters});
+                `],
+              isAsync: true,
+              decorators: [
+                {
+                  name: 'put',
+                  arguments: [
+                    `'${apiUri}'`,
+                    `{"responses":{"200":{"description":"repalce contact","content":{"application/json":{"schema":{"properties":{"count":{"type":"number"}}}}}}}}`
+                  ]
+                }
+              ],
+              returnType: `Promise<any>`
+            };
+            addImport(controllerFile, 'put', '@loopback/rest', true);
+            classDeclaration?.addMethod(methodStructure);
+          }
+          // add update all by fetching all records and updating them
+          if (updateAll) {
+            if (pathKey) {
+              if (methodParameters.includes(`${pathKey},`)) {
+                methodParameters = methodParameters.replace(`${pathKey},`, '');
+              } else if (methodParameters.includes(`${pathKey}`)) {
+                methodParameters = methodParameters.replace(`${pathKey}`, '');
+              }
+            }
+            name = name.replace(`getModelSchemaRef(${requestModelName || modelName}`, `getModelSchemaRef(${requestModelName || modelName}, {partial: true}`)
+            let methodStructure = {
+              name: `updateAll${modelName}`,
+              parameters: [
+                {
+                  name: 'body',
+                  type: 'any',
+                  decorators: [{ name }]
+                },
+                {
+                  name: 'where',
+                  type: 'object',
+                  decorators: [{
+                    name: `param.query.object`,
+                    arguments: [`'where'`]
+                  }]
+                }
+              ],
+              statements: [`
+                    let items = (await this.service.${fetchMethodName}(where)) as any[];
+                    if (where) items = applyWhereFilter(items, where);
+                    const newItems: any = {};
+                    const primaryKey = getPrimaryKeyFromModel(${modelName});
+                    items.forEach((item: any) => {
+                        newItems[item[primaryKey]] = { ...item }
+                        delete newItems[item[primaryKey]][primaryKey];
+                        Object.keys(body).forEach(bodyKey => {
+                            newItems[item[primaryKey]][bodyKey] = body[bodyKey];
+                        });
+                    });
+                    const promises: any[] = [];
+                    Object.keys(newItems).forEach(id => {
+                        promises.push(this.service.${apiFunction}(parseInt(id),${methodParameters}));
+                    });
+                    try {
+                        await Promise.all(promises);
+                    } catch (error) {
+                        throw error;
+                    }
+                    return Object.keys(newItems).length;
+                `],
+              isAsync: true,
+              decorators: [
+                {
+                  name: 'patch',
+                  arguments: [
+                    `'${apiUri}'`,
+                    `{"responses":{"200":{"description":"update contacts","content":{"application/json":{"schema":{"properties":{"count":{"type":"number"}}}}}}}}`
+                  ]
+                }
+              ],
+              returnType: `Promise<any>`
+            };
+            classDeclaration?.addMethod(methodStructure);
+          }
         }
 
         if (!classConstructors[0].getParameter('service')) {
@@ -368,11 +526,178 @@ export default class ExternalOperation extends Command {
       const serviceFilePath = `${invokedFrom}/src/services/${toKebabCase(serviceName)}.service.ts`;
       let serviceFile = project.getSourceFile(serviceFilePath);
       const serviceInterface = serviceFile?.getInterface(serviceName);
-      serviceInterface?.addMember(`${apiFunction}(${serviceParams}): Promise<object>;`);
+      serviceInterface?.addMember(`${apiFunction}(${serviceParams}): Promise<object | object[]>;`);
       serviceFile?.formatText();
       serviceFile?.saveSync();
       dsFile?.saveSync();
     }
+  }
+  addFilterCode(controllerFile: SourceFile): void {
+    // Define the functions to add
+    const functionsToAdd = `
+    interface WhereFilter {
+        [key: string]: any;
+    }
+    function getPrimaryKeyFromModel(model: any) {
+        // Get the model definition
+        const modelDefinition = model.definition;
 
+        // Directly check for ID properties
+        const idProperties = [];
+
+        for (const property in modelDefinition.properties) {
+            if (modelDefinition.properties[property].id) {
+                idProperties.push(property);
+            }
+        }
+        // Return the first ID property or default to 'id'
+        return idProperties.length > 0 ? idProperties[0] : 'id';
+    }
+
+    function applyWhereFilter<T>(items: T[], where: WhereFilter): T[] {
+        return items.filter(item => evaluateCondition(item, where));
+    }
+
+    function evaluateCondition<T>(item: T, condition: WhereFilter): boolean {
+        // Handle empty condition
+        if (!condition || Object.keys(condition).length === 0) {
+            return true;
+        }
+
+        // Check each condition
+        return Object.entries(condition).every(([key, value]) => {
+            // Handle special operators
+            if (key === 'and' && Array.isArray(value)) {
+                return value.every(subCondition => evaluateCondition(item, subCondition));
+            }
+
+            if (key === 'or' && Array.isArray(value)) {
+                return value.some(subCondition => evaluateCondition(item, subCondition));
+            }
+
+            if (key === 'nor' && Array.isArray(value)) {
+                return !value.some(subCondition => evaluateCondition(item, subCondition));
+            }
+
+            // Regular field comparison
+            const itemValue = getNestedProperty(item, key);
+
+            // Handle different types of value conditions
+            if (value === null) {
+                return itemValue === null;
+            } else if (typeof value === 'object' && !Array.isArray(value)) {
+                return evaluateOperators(itemValue, value);
+            } else if (value instanceof RegExp) {
+                return value.test(String(itemValue));
+            } else {
+                return itemValue === value;
+            }
+        });
+    }
+
+    /**
+     * Get a potentially nested property from an object using dot notation
+     */
+    function getNestedProperty<T>(obj: T, path: string): any {
+        return path.split('.').reduce((current: any, part) => {
+            return current && current[part] !== undefined ? current[part] : null;
+        }, obj);
+    }
+    /**
+     * Evaluate the comparison operators (gt, lt, gte, lte, neq, etc.)
+     */
+    function evaluateOperators(itemValue: any, operators: Record<string, any>): boolean {
+        return Object.entries(operators).every(([operator, operatorValue]) => {
+            switch (operator) {
+                case 'eq':
+                    return itemValue === operatorValue;
+                case 'neq':
+                    return itemValue !== operatorValue;
+                case 'gt':
+                    return itemValue > operatorValue;
+                case 'gte':
+                    return itemValue >= operatorValue;
+                case 'lt':
+                    return itemValue < operatorValue;
+                case 'lte':
+                    return itemValue <= operatorValue;
+                case 'inq':
+                    return Array.isArray(operatorValue) && operatorValue.includes(itemValue);
+                case 'nin':
+                    return Array.isArray(operatorValue) && !operatorValue.includes(itemValue);
+                case 'between':
+                    return Array.isArray(operatorValue) &&
+                        operatorValue.length >= 2 &&
+                        itemValue >= operatorValue[0] &&
+                        itemValue <= operatorValue[1];
+                case 'like':
+                    return typeof itemValue === 'string' &&
+                        new RegExp(String(operatorValue).replace(/%/g, '.*')).test(itemValue);
+                case 'nlike':
+                    return typeof itemValue === 'string' &&
+                        !new RegExp(String(operatorValue).replace(/%/g, '.*')).test(itemValue);
+                case 'regexp':
+                    const regex = operatorValue instanceof RegExp ?
+                        operatorValue :
+                        new RegExp(operatorValue);
+                    return regex.test(String(itemValue));
+                default:
+                    return false;
+            }
+        });
+    }
+    `;
+    const fileText = controllerFile.getFullText();
+    const functionSignatures = [
+      'function applyWhereFilter<T>',
+      'function evaluateCondition<T>',
+      'function getNestedProperty<T>',
+      'function evaluateOperators'
+    ];
+
+    // Check if at least one of these function signatures exists in the file
+    const functionsExist = functionSignatures.some(signature => fileText.includes(signature));
+
+    if (!functionsExist) {
+      const classDeclaration1 = controllerFile.getFirstDescendantByKind(SyntaxKind.ClassDeclaration);
+      if (classDeclaration1) {
+        // Find suitable position after imports but before class
+        let insertPosition = 0;
+
+        // Get all imports to find the last one
+        const importDeclarations = controllerFile.getImportDeclarations();
+        if (importDeclarations.length > 0) {
+          const lastImport = importDeclarations[importDeclarations.length - 1];
+          insertPosition = lastImport.getEnd() + 1; // Position after the last import
+        }
+
+        // Check if there are comments after imports (like the "Uncomment these imports" comment)
+        const comments = controllerFile.getDescendantsOfKind(SyntaxKind.SingleLineCommentTrivia);
+        for (const comment of comments) {
+          const commentPos = comment.getEnd();
+          if (commentPos > insertPosition && commentPos < classDeclaration1.getStart()) {
+            // Find the end of the comment block
+            const commentText = comment.getText();
+            if (commentText.includes("Uncomment these imports") ||
+              commentText.includes("cool features")) {
+              insertPosition = commentPos + 1;
+            }
+          }
+        }
+
+        // Add a newline before insertion if needed
+        const textToInsert = insertPosition > 0 ? '\n\n' + functionsToAdd : functionsToAdd;
+
+        // Insert the functions
+        controllerFile.insertText(insertPosition, textToInsert);
+
+        // Save the changes
+        controllerFile.saveSync();
+
+        console.log("Functions added successfully to the controller file.");
+      } else {
+        console.error("Could not find the class declaration in the file.");
+      }
+    }
   }
 }
