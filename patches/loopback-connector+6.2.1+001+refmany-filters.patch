@@ -1,19 +1,56 @@
 diff --git a/node_modules/loopback-connector/lib/sql.js b/node_modules/loopback-connector/lib/sql.js
-index e4479c1..93c7e21 100644
+index e4479c1..96de5d4 100644
 --- a/node_modules/loopback-connector/lib/sql.js
 +++ b/node_modules/loopback-connector/lib/sql.js
-@@ -1007,8 +1007,8 @@ Connector.defineAliases(SQLConnector.prototype, 'replace', ['replaceAll']);
+@@ -912,7 +912,7 @@ SQLConnector.prototype._buildWhereObjById = function(model, id, data) {
+  */
+ SQLConnector.prototype.buildUpdate = function(model, where, data, options) {
+   const fields = this.buildFieldsForUpdate(model, data);
+-  return this._constructUpdateQuery(model, where, fields);
++  return this._constructUpdateQuery(model, where, fields, options);
+ };
+ 
+ /**
+@@ -936,9 +936,9 @@ SQLConnector.prototype.buildReplace = function(model, where, data, options) {
+  * @returns {Object} update query Constructed update query.
+  * @private
+  */
+-SQLConnector.prototype._constructUpdateQuery = function(model, where, fields) {
++SQLConnector.prototype._constructUpdateQuery = function(model, where, fields, options) {
+   const updateClause = new ParameterizedSQL('UPDATE ' + this.tableEscaped(model));
+-  const whereClause = this.buildWhere(model, where);
++  const whereClause = this.buildWhere(model, where, options);
+   updateClause.merge([fields, whereClause]);
+   return this.parameterize(updateClause);
+ };
+@@ -1007,8 +1007,24 @@ Connector.defineAliases(SQLConnector.prototype, 'replace', ['replaceAll']);
   * @param {object} where An object for the where conditions
   * @returns {ParameterizedSQL} The SQL WHERE clause
   */
 -SQLConnector.prototype.buildWhere = function(model, where) {
 -  const whereClause = this._buildWhere(model, where);
-+SQLConnector.prototype.buildWhere = function(model, where, relationType, relationKeyFrom) {
++SQLConnector.prototype.buildWhere = function(model, where, options) {
++  let relationType = '';
++  let relationKeyFrom = '';
++  if (options && options['model'] && options['model']['definition']) {
++    const { relations } = options['model']['definition'];
++    if (relations) {
++      const relationKeys = Object.keys(relations);
++      for (let relationIndex = 0; relationIndex < relationKeys.length; relationIndex++) {
++        const relationName = relationKeys[relationIndex];
++        const relation = relations[relationName];
++        relationType = relation.type;
++        relationKeyFrom = relation.keyFrom;
++        if (relationType === 'referencesMany') break;
++      }
++    }
++  }
++  
 +  const whereClause = this._buildWhere(model, where, relationType, relationKeyFrom);
    if (whereClause.sql) {
      whereClause.sql = 'WHERE ' + whereClause.sql;
    }
-@@ -1024,7 +1024,8 @@ SQLConnector.prototype.buildWhere = function(model, where) {
+@@ -1024,7 +1040,8 @@ SQLConnector.prototype.buildWhere = function(model, where) {
   * @returns {ParameterizedSQL} The SQL expression
   */
  SQLConnector.prototype.buildExpression =
@@ -23,7 +60,7 @@ index e4479c1..93c7e21 100644
    function buildClause(columnValue, separator, grouping) {
      const values = [];
      for (let i = 0, n = columnValue.length; i < n; i++) {
-@@ -1067,8 +1068,21 @@ function(columnName, operator, columnValue, propertyValue) {
+@@ -1067,8 +1084,21 @@ function(columnName, operator, columnValue, propertyValue) {
        clause = buildClause(columnValue, ' AND ', false);
        break;
      case 'inq':
@@ -47,7 +84,7 @@ index e4479c1..93c7e21 100644
        break;
      case 'nin':
        sqlExp += ' NOT IN ';
-@@ -1102,7 +1116,7 @@ function(columnName, operator, columnValue, propertyValue) {
+@@ -1102,7 +1132,7 @@ function(columnName, operator, columnValue, propertyValue) {
   * @param where
   * @returns {ParameterizedSQL}
   */
@@ -56,7 +93,7 @@ index e4479c1..93c7e21 100644
    let columnValue, sqlExp;
    if (!where) {
      return new ParameterizedSQL('');
-@@ -1124,7 +1138,7 @@ SQLConnector.prototype._buildWhere = function(model, where) {
+@@ -1124,7 +1154,7 @@ SQLConnector.prototype._buildWhere = function(model, where) {
        const clauses = where[key];
        if (Array.isArray(clauses)) {
          for (let i = 0, n = clauses.length; i < n; i++) {
@@ -65,7 +102,7 @@ index e4479c1..93c7e21 100644
            if (stmtForClause.sql) {
              stmtForClause.sql = '(' + stmtForClause.sql + ')';
              branchParams = branchParams.concat(stmtForClause.params);
-@@ -1188,8 +1202,13 @@ SQLConnector.prototype._buildWhere = function(model, where) {
+@@ -1188,8 +1218,13 @@ SQLConnector.prototype._buildWhere = function(model, where) {
        } else {
          columnValue = this.toColumnValue(p, expression);
        }
@@ -81,7 +118,7 @@ index e4479c1..93c7e21 100644
      } else {
        // The expression is the field value, not a condition
        columnValue = self.toColumnValue(p, expression);
-@@ -1199,10 +1218,17 @@ SQLConnector.prototype._buildWhere = function(model, where) {
+@@ -1199,10 +1234,17 @@ SQLConnector.prototype._buildWhere = function(model, where) {
          if (columnValue instanceof ParameterizedSQL) {
            stmt.merge(columnName + '=').merge(columnValue);
          } else {
@@ -103,38 +140,16 @@ index e4479c1..93c7e21 100644
          }
        }
      }
-@@ -1440,6 +1466,21 @@ SQLConnector.prototype.buildColumnNames = function(model, filter) {
-  * @returns {ParameterizedSQL} Statement object {sql: ..., params: ...}
-  */
- SQLConnector.prototype.buildSelect = function(model, filter, options) {
-+  let relationType = '';
-+  let relationKeyFrom = '';
-+  if (options && options['model'] && options['model']['definition']) {
-+    const { relations } = options['model']['definition'];
-+    if (relations) {
-+      const relationKeys = Object.keys(relations);
-+      for (let relationIndex = 0; relationIndex < relationKeys.length; relationIndex++) {
-+        const relationName = relationKeys[relationIndex];
-+        const relation = relations[relationName];
-+        relationType = relation.type;
-+        relationKeyFrom = relation.keyFrom;
-+        if (relationType === 'referencesMany') break;
-+      }
-+    }
-+  }
-   if (!filter.order) {
-     const idNames = this.idNames(model);
-     if (idNames && idNames.length) {
-@@ -1453,7 +1494,7 @@ SQLConnector.prototype.buildSelect = function(model, filter, options) {
+@@ -1453,7 +1495,7 @@ SQLConnector.prototype.buildSelect = function(model, filter, options) {
  
    if (filter) {
      if (filter.where) {
 -      const whereStmt = this.buildWhere(model, filter.where);
-+      const whereStmt = this.buildWhere(model, filter.where, relationType, relationKeyFrom);
++      const whereStmt = this.buildWhere(model, filter.where, options);
        selectStmt.merge(whereStmt);
      }
  
-@@ -1512,6 +1553,7 @@ SQLConnector.prototype.all = function find(model, filter, options, cb) {
+@@ -1512,6 +1554,7 @@ SQLConnector.prototype.all = function find(model, filter, options, cb) {
    // Order by id if no order is specified
    filter = filter || {};
    const stmt = this.buildSelect(model, filter, options);
@@ -142,3 +157,12 @@ index e4479c1..93c7e21 100644
    this.execute(stmt.sql, stmt.params, options, function(err, data) {
      if (err) {
        return cb(err, []);
+@@ -1592,7 +1635,7 @@ SQLConnector.prototype.count = function(model, where, options, cb) {
+ 
+   let stmt = new ParameterizedSQL('SELECT count(*) as "cnt" FROM ' +
+     this.tableEscaped(model));
+-  stmt = stmt.merge(this.buildWhere(model, where));
++  stmt = stmt.merge(this.buildWhere(model, where, options));
+   stmt = this.parameterize(stmt);
+   this.execute(stmt.sql, stmt.params, options,
+     function(err, res) {

@@ -1,0 +1,29 @@
+diff --git a/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js b/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
+index 0393439..1404b28 100644
+--- a/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
++++ b/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
+@@ -45,13 +45,13 @@ function defineCrudRestController(modelCtor, options) {
+             this.repository = repository;
+         }
+         async find(filter) {
+-            return this.repository.find(filter);
++            return this.repository.find(filter, options);
+         }
+         async findById(id, filter) {
+             return this.repository.findById(id, filter);
+         }
+         async count(where) {
+-            return this.repository.count(where);
++            return this.repository.count(where, options);
+         }
+     };
+     tslib_1.__decorate([
+@@ -105,7 +105,7 @@ function defineCrudRestController(modelCtor, options) {
+             return this.repository.updateAll(
+             // FIXME(bajtos) Improve repository API to support this use case
+             // with no explicit type-casts required
+-            data, where);
++            data, where, options);
+         }
+         async updateById(id, data) {
+             await this.repository.updateById(id, 
