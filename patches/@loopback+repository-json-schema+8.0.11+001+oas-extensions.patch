@@ -1,8 +1,8 @@
 diff --git a/node_modules/@loopback/repository-json-schema/dist/build-schema.js b/node_modules/@loopback/repository-json-schema/dist/build-schema.js
-index e148019..beb5ecd 100644
+index e148019..eeb0b8b 100644
 --- a/node_modules/@loopback/repository-json-schema/dist/build-schema.js
 +++ b/node_modules/@loopback/repository-json-schema/dist/build-schema.js
-@@ -163,6 +163,24 @@ function metaToJsonProperty(meta) {
+@@ -163,6 +163,25 @@ function metaToJsonProperty(meta) {
      const propDef = {};
      let result;
      let propertyType = meta.type;
@@ -24,10 +24,19 @@ index e148019..beb5ecd 100644
 +    if (meta.index !== undefined) {
 +        propDef['x-index'] = meta.index;
 +    }
++    propDef['x-primary-key'] = meta.id ? true: false;
      if (isArrayType(propertyType) && meta.itemType) {
          if (isArrayType(meta.itemType) && !meta.jsonSchema) {
              throw new Error('You must provide the "jsonSchema" field when define ' +
-@@ -429,15 +447,105 @@ function modelToJsonSchema(ctor, jsonSchemaOptions = {}) {
+@@ -362,6 +381,7 @@ function modelToJsonSchema(ctor, jsonSchemaOptions = {}) {
+         result.properties[p] = result.properties[p] || {};
+         const metaProperty = Object.assign({}, meta.properties[p]);
+         // populating "properties" key
++        
+         result.properties[p] = metaToJsonProperty(metaProperty);
+         // handling 'required' metadata
+         const optional = options.optional.includes(p);
+@@ -429,15 +449,105 @@ function modelToJsonSchema(ctor, jsonSchemaOptions = {}) {
              const targetSchema = getJsonSchema(targetType, targetOptions);
              const targetRef = { $ref: `#/definitions/${targetSchema.title}` };
              const propDef = getNavigationalPropertyForRelation(relMeta, targetRef);
