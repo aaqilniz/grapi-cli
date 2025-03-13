@@ -1,8 +1,8 @@
 diff --git a/node_modules/@loopback/rest/dist/validation/ajv-factory.provider.js b/node_modules/@loopback/rest/dist/validation/ajv-factory.provider.js
-index c52ef52..3070581 100644
+index c52ef52..947ed09 100644
 --- a/node_modules/@loopback/rest/dist/validation/ajv-factory.provider.js
 +++ b/node_modules/@loopback/rest/dist/validation/ajv-factory.provider.js
-@@ -43,6 +43,10 @@ let AjvFactoryProvider = class AjvFactoryProvider {
+@@ -43,6 +43,11 @@ let AjvFactoryProvider = class AjvFactoryProvider {
              const ajvInst = new ajv_1.default(ajvOptions);
              ajvInst.addKeyword('components');
              ajvInst.addKeyword('x-typescript-type');
