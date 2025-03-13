@@ -10,6 +10,7 @@ index c52ef52..3070581 100644
 +            ajvInst.addKeyword('x-scale');
 +            ajvInst.addKeyword('x-generated');
 +            ajvInst.addKeyword('x-length');
++            ajvInst.addKeyword('x-primary-key');
              (0, ajv_keywords_1.default)(ajvInst, validationOptions.ajvKeywords);
              (0, ajv_errors_1.default)(ajvInst, validationOptions.ajvErrors);
              if (this.keywords) {
