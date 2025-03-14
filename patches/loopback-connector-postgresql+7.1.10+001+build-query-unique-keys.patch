@@ -1,0 +1,38 @@
+diff --git a/node_modules/loopback-connector-postgresql/lib/discovery.js b/node_modules/loopback-connector-postgresql/lib/discovery.js
+index 0393c52..6c6e8d4 100644
+--- a/node_modules/loopback-connector-postgresql/lib/discovery.js
++++ b/node_modules/loopback-connector-postgresql/lib/discovery.js
+@@ -335,6 +335,33 @@ function mixinDiscovery(PostgreSQL) {
+     return sql;
+   };
+ 
++  /**
++   * Discover unique keys for a given table
++   * @param {String} table The table name
++   * @param {Object} options The options for discovery
++   */
++
++  /*!
++   * Retrieves a list of column names that have unique key index
++   * @param schema
++   * @param table
++   * @returns {string}
++   */
++  PostgreSQL.prototype.buildQueryUniqueKeys = function(schema, table) {
++    const sql = 'SELECT a.attname AS "columnName", n.nspname AS "owner", c.relname AS "tableName" '
++      + 'FROM pg_index i '
++      + 'JOIN pg_class c ON c.oid = i.indrelid '
++      + 'JOIN pg_namespace n ON n.oid = c.relnamespace '
++      + 'JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum = ANY(i.indkey) '
++      + 'WHERE i.indisunique = true '
++      + 'AND i.indisprimary = false '
++      + 'AND n.nspname = \'' + schema + '\' '
++      + 'AND c.relname = \'' + table + '\' '
++      + 'ORDER BY a.attnum';
++    return sql;
++  };
++
++
+   /**
+    * Discover foreign keys that reference to the primary key of this table
+    * @param {String} table The table name

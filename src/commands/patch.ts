@@ -17,6 +17,7 @@ interface PatchPathsType {
   uniqueKeyQuery: string[];
   referencesManyFilters: string[];
   customKeyHasMany: string[];
+  buildQueryUniqueKeys: string[];
 }
 
 export default class Patch extends Command {
@@ -35,7 +36,6 @@ export default class Patch extends Command {
       openAPISpecsExtensions: [
         '@loopback+repository-json-schema+*+001+oas-extensions.patch',
         '@loopback+openapi-v3+*+001+oas-extensions.patch',
-        'loopback-connector-mysql+*+001+index-info.patch',
         'loopback-datasource-juggler+*+002+index-info.patch',
         '@loopback+rest+*+001+oas-extensions.patch'
       ],
@@ -57,21 +57,38 @@ export default class Patch extends Command {
         '@loopback+rest-crud+*+002+auth.patch',
         '@loopback+authentication-jwt+*+001+auth.patch'
       ],
-      virtualAsGenerated: [
-        'loopback-connector-mysql+*+002+virtual-as-generated.patch',
-      ],
+      virtualAsGenerated: [],
       supportRestrictedProperties: [
         '@loopback+authorization+*+001+restricted-properties.patch',
       ],
       authorization: [
         '@loopback+rest-crud+*+003+authorization.patch',
       ],
-      uniqueKeyQuery: [
-        'loopback-connector-mysql+*+003+unique-key.patch',
-      ],
+      uniqueKeyQuery: [],
       referencesManyFilters: [],
-      customKeyHasMany: ['@loopback+repository+*+003+custom-key-has-many.patch']
+      customKeyHasMany: ['@loopback+repository+*+003+custom-key-has-many.patch'],
+      buildQueryUniqueKeys: []
     };
+    let connectorName = '';
+    const pkgPath = './package.json';
+    const pkg = JSON.parse(await fs.readFile(pkgPath, 'utf8'));
+    let mysqlConnectorInstalled = false;
+    let postgresConnectorInstalled = false;
+    if (pkg['dependencies']['loopback-connector-postgresql']) {
+      postgresConnectorInstalled = true;
+    }
+    if (pkg['dependencies']['loopback-connector-mysql']) {
+      mysqlConnectorInstalled = true;
+    }
+
+    if (options.connector === 'mysql' || mysqlConnectorInstalled) {
+      PatchPaths.openAPISpecsExtensions.push('loopback-connector-mysql+*+001+index-info.patch');
+      PatchPaths.virtualAsGenerated.push('loopback-connector-mysql+*+002+virtual-as-generated.patch');
+      PatchPaths.uniqueKeyQuery.push('loopback-connector-mysql+*+003+unique-key.patch');
+    }
+    if (options.connector === 'postgresql' || postgresConnectorInstalled) {
+      PatchPaths.buildQueryUniqueKeys.push('loopback-connector-postgresql+*+001+build-query-unique-keys.patch');
+    }
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
     const patchDirectoryPath = path.join(__dirname, '../../patches');
@@ -200,13 +217,15 @@ export default class Patch extends Command {
         patchesToCopy.push(patchFileName);
       });
     }
+    if (patches && patches.includes('buildQueryUniqueKeys')) {
+      PatchPaths.buildQueryUniqueKeys.forEach(patch => {
+        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
+        patchesToCopy.push(patchFileName);
+      });
+    }
 
     copyFiles(patchDirectoryPath, './patches', patchesToCopy);
 
-    const pkgPath = './package.json';
-    const pkg = JSON.parse(await fs.readFile(pkgPath, 'utf8'));
-
-    await fs.writeFile(pkgPath, JSON.stringify(pkg, null, 2));
     await execute('npx patch-package');
   }
 }

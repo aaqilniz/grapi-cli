@@ -31,8 +31,12 @@ export default class Datasource extends Command {
     const executed: any = await execute(command, 'generating datasource.');
     if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
     if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));
+    let extraPatches = ''
+    if (options.connector === 'postgresql') {
+      extraPatches = ` --config '{"patches": ["buildQueryUniqueKeys"]}'`;
+    }
     await execute(
-      `grapi-cli patch`,
+      `grapi-cli patch${extraPatches}`,
       'applying default patches after datasource creation.'
     );
   }
