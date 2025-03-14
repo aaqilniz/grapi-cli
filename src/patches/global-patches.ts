@@ -466,6 +466,23 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             path: `${cliPath}/generators/discover/index.js`
         },
     },
+    retainPropertyDetailsAfterCreatingRelation: {
+        addUtilMethod: {
+            searchString: 'exports.getPropertyType = function (classObj, propertyName) {',
+            replacement: `exports.getPropertyDecoratorDetails = function (classObj, propertyName) {return classObj.getProperty(propertyName).getDecorator('property').getArguments()[0].getText();};\nexports.getPropertyType = function (classObj, propertyName) {`,
+            path: `${cliPath}/generators/relation/utils.generator.js`
+        },
+        fetchForeignKeyDetails: {
+            searchString: 'const sourceClass = relationUtils.getClassObj(sourceFile, sourceModel);',
+            replacement: `const sourceClass = relationUtils.getClassObj(sourceFile, sourceModel);\nconst foreignKeyDetails = relationUtils.getPropertyDecoratorDetails(sourceClass, foreignKeyName);`,
+            path: `${cliPath}/generators/relation/belongs-to-relation.generator.js`
+        },
+        addDetailsToUpdatedProperty: {
+            searchString: 'relationUtils.addProperty(sourceClass, modelProperty);',
+            replacement: `if (foreignKeyDetails.includes('nullable: true') || foreignKeyDetails.includes('nullable: true')) { modelProperty['hasQuestionToken'] = true;} modelProperty['decorators'][0]['arguments'].push("{}"); modelProperty['decorators'][0]['arguments'].push(foreignKeyDetails);\nrelationUtils.addProperty(sourceClass, modelProperty);`,
+            path: `${cliPath}/generators/relation/belongs-to-relation.generator.js`
+        }
+    },
 };
 
 (async () => {
