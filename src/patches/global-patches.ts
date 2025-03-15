@@ -479,7 +479,7 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
         },
         addDetailsToUpdatedProperty: {
             searchString: 'relationUtils.addProperty(sourceClass, modelProperty);',
-            replacement: `if(foreignKeyDetails !== '') {if (foreignKeyDetails.includes('nullable: true') || foreignKeyDetails.includes('nullable: true')) { modelProperty['hasQuestionToken'] = true;} if (!modelProperty['decorators'][0]['arguments'][0].includes(',')) { modelProperty['decorators'][0]['arguments'].push("{}"); } modelProperty['decorators'][0]['arguments'].push(foreignKeyDetails);\nrelationUtils.addProperty(sourceClass, modelProperty);}`,
+            replacement: `if(foreignKeyDetails !== '') {if (foreignKeyDetails.includes('nullable: true') || foreignKeyDetails.includes('nullable: true')) { modelProperty['hasQuestionToken'] = true;} if (!modelProperty['decorators'][0]['arguments'][0].includes(',')) { modelProperty['decorators'][0]['arguments'].push("{}"); } modelProperty['decorators'][0]['arguments'].push(foreignKeyDetails);}\nrelationUtils.addProperty(sourceClass, modelProperty);`,
             path: `${cliPath}/generators/relation/belongs-to-relation.generator.js`
         }
     },
