@@ -469,7 +469,7 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
     retainPropertyDetailsAfterCreatingRelation: {
         addUtilMethod: {
             searchString: 'exports.getPropertyType = function (classObj, propertyName) {',
-            replacement: `exports.getPropertyDecoratorDetails = function (classObj, propertyName) {if(!classObj.getProperty(propertyName)) {return ''}\nreturn classObj.getProperty(propertyName).getDecorator('property').getArguments()[0].getText();};\nexports.getPropertyType = function (classObj, propertyName) {`,
+            replacement: `exports.getPropertyDecoratorDetails = function (classObj, propertyName) {propertyName = utils.camelCase(propertyName);\n if(!classObj.getProperty(propertyName)) {return ''}\nreturn classObj.getProperty(propertyName).getDecorator('property').getArguments()[0].getText();};\nexports.getPropertyType = function (classObj, propertyName) {`,
             path: `${cliPath}/generators/relation/utils.generator.js`
         },
         fetchForeignKeyDetails: {
