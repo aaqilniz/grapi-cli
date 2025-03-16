@@ -18,6 +18,7 @@ interface PatchPathsType {
   referencesManyFilters: string[];
   customKeyHasMany: string[];
   buildQueryUniqueKeys: string[];
+  setDefaultIdType: string[];
 }
 
 export default class Patch extends Command {
@@ -67,7 +68,8 @@ export default class Patch extends Command {
       uniqueKeyQuery: [],
       referencesManyFilters: [],
       customKeyHasMany: ['@loopback+repository+*+003+custom-key-has-many.patch'],
-      buildQueryUniqueKeys: []
+      buildQueryUniqueKeys: [],
+      setDefaultIdType: ['loopback-datasource-juggler+*+001+set-use-default-id-type.patch'],
     };
     let connectorName = '';
     const pkgPath = './package.json';
@@ -116,6 +118,7 @@ export default class Patch extends Command {
       if (!patches.includes('hiddenProperties')) patches.push('hiddenProperties');
       if (!patches.includes('virtualAsGenerated')) patches.push('virtualAsGenerated');
       if (!patches.includes('uniqueKeyQuery')) patches.push('uniqueKeyQuery');
+      if (!patches.includes('setDefaultIdType')) patches.push('setDefaultIdType');
       if (patches.includes('groupBy') || groupByPatchesExists) {
         PatchPaths['referencesManyFilters'].push('loopback-connector+*+002+refmany-filters.patch');
       } else {
@@ -219,6 +222,12 @@ export default class Patch extends Command {
     }
     if (patches && patches.includes('buildQueryUniqueKeys')) {
       PatchPaths.buildQueryUniqueKeys.forEach(patch => {
+        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
+        patchesToCopy.push(patchFileName);
+      });
+    }
+    if (patches && patches.includes('setDefaultIdType')) {
+      PatchPaths.setDefaultIdType.forEach(patch => {
         const patchFileName = findVersionedFile(patch, patchDirectoryPath);
         patchesToCopy.push(patchFileName);
       });
