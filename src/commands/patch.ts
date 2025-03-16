@@ -67,7 +67,7 @@ export default class Patch extends Command {
       referencesManyFilters: [],
       customKeyHasMany: ['@loopback+repository+*+003+custom-key-has-many.patch'],
       buildQueryUniqueKeys: [],
-      setDefaultIdType: ['loopback-datasource-juggler+*+001+set-use-default-id-type.patch'],
+      setDefaultIdType: ['loopback-datasource-juggler+*+003+set-use-default-id-type.patch'],
     };
     let connectorName = '';
     const pkgPath = './package.json';
