@@ -14,7 +14,6 @@ interface PatchPathsType {
   virtualAsGenerated: string[];
   supportRestrictedProperties: string[];
   authorization: string[];
-  uniqueKeyQuery: string[];
   referencesManyFilters: string[];
   customKeyHasMany: string[];
   buildQueryUniqueKeys: string[];
@@ -65,7 +64,6 @@ export default class Patch extends Command {
       authorization: [
         '@loopback+rest-crud+*+003+authorization.patch',
       ],
-      uniqueKeyQuery: [],
       referencesManyFilters: [],
       customKeyHasMany: ['@loopback+repository+*+003+custom-key-has-many.patch'],
       buildQueryUniqueKeys: [],
@@ -86,7 +84,6 @@ export default class Patch extends Command {
     if (options.connector === 'mysql' || mysqlConnectorInstalled) {
       PatchPaths.openAPISpecsExtensions.push('loopback-connector-mysql+*+001+index-info.patch');
       PatchPaths.virtualAsGenerated.push('loopback-connector-mysql+*+002+virtual-as-generated.patch');
-      PatchPaths.uniqueKeyQuery.push('loopback-connector-mysql+*+003+unique-key.patch');
     }
     if (options.connector === 'postgresql' || postgresConnectorInstalled) {
       PatchPaths.buildQueryUniqueKeys.push('loopback-connector-postgresql+*+001+build-query-unique-keys.patch');
@@ -117,7 +114,6 @@ export default class Patch extends Command {
       if (!patches.includes('openAPISpecsExtensions')) patches.push('openAPISpecsExtensions');
       if (!patches.includes('hiddenProperties')) patches.push('hiddenProperties');
       if (!patches.includes('virtualAsGenerated')) patches.push('virtualAsGenerated');
-      if (!patches.includes('uniqueKeyQuery')) patches.push('uniqueKeyQuery');
       if (!patches.includes('setDefaultIdType')) patches.push('setDefaultIdType');
       if (patches.includes('groupBy') || groupByPatchesExists) {
         PatchPaths['referencesManyFilters'].push('loopback-connector+*+002+refmany-filters.patch');
@@ -198,12 +194,6 @@ export default class Patch extends Command {
         patchesToCopy.push(patchFileName);
       });
       PatchPaths.supportRestrictedProperties.forEach(patch => {
-        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
-        patchesToCopy.push(patchFileName);
-      });
-    }
-    if (patches && patches.includes('uniqueKeyQuery')) {
-      PatchPaths.uniqueKeyQuery.forEach(patch => {
         const patchFileName = findVersionedFile(patch, patchDirectoryPath);
         patchesToCopy.push(patchFileName);
       });
