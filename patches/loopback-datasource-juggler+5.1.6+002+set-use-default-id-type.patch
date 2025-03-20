@@ -1,12 +1,11 @@
 diff --git a/node_modules/loopback-datasource-juggler/lib/datasource.js b/node_modules/loopback-datasource-juggler/lib/datasource.js
-index c163af7..6091e88 100644
+index c163af7..279705f 100644
 --- a/node_modules/loopback-datasource-juggler/lib/datasource.js
 +++ b/node_modules/loopback-datasource-juggler/lib/datasource.js
-@@ -1744,6 +1744,16 @@ DataSource.prototype.discoverSchemas = function(tableName, options, cb) {
+@@ -1744,6 +1744,14 @@ DataSource.prototype.discoverSchemas = function(tableName, options, cb) {
          propertyDetails['index'] = {unique: true};
        }
        schema.properties[propName] = propertyDetails;
-+
 +      // set useDefaultIdType: false in the case of id property with generated: 1 and has string type
 +      if (
 +        schema.properties[propName]['id'] && 
@@ -15,7 +14,6 @@ index c163af7..6091e88 100644
 +      ) {
 +        schema.properties[propName]['useDefaultIdType'] = false;
 +      }
-+      
        const dbSpecific = schema.properties[propName][dbType] = {
          columnName: item.columnName,
          dataType: item.dataType,

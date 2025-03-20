@@ -18,6 +18,7 @@ interface PatchPathsType {
   customKeyHasMany: string[];
   buildQueryUniqueKeys: string[];
   setDefaultIdType: string[];
+  enableCacheForRestCrud: string[];
 }
 
 export default class Patch extends Command {
@@ -36,19 +37,19 @@ export default class Patch extends Command {
       openAPISpecsExtensions: [
         '@loopback+repository-json-schema+*+001+oas-extensions.patch',
         '@loopback+openapi-v3+*+001+oas-extensions.patch',
-        'loopback-datasource-juggler+*+002+index-info.patch',
+        'loopback-datasource-juggler+*+001+index-info.patch',
         '@loopback+rest+*+001+oas-extensions.patch'
       ],
       hiddenProperties: [
+        '@loopback+rest-crud+*+001+hidden-properties.patch',
         '@loopback+repository-json-schema+*+002+hidden-properties.patch',
         '@loopback+repository+*+002+hidden-properties.patch',
-        '@loopback+rest-crud+*+001+hidden-properties.patch',
       ],
       groupBy: [
-        '@loopback+repository-json-schema+*+003+groupby.patch',
         '@loopback+repository+*+001+groupby.patch',
         'loopback-connector+*+001+groupby.patch',
-        'loopback-datasource-juggler+*+001+groupby.patch'
+        '@loopback+repository-json-schema+*+003+groupby.patch',
+        'loopback-datasource-juggler+*+003+groupby.patch'
       ],
       auditLogs: [
         '@sourceloop+audit-log+*+001+auditlogs.patch'
@@ -64,12 +65,12 @@ export default class Patch extends Command {
       authorization: [
         '@loopback+rest-crud+*+003+authorization.patch',
       ],
-      referencesManyFilters: [],
+      referencesManyFilters: ['@loopback+rest-crud+*+002+refmany-filters.patch'],
       customKeyHasMany: ['@loopback+repository+*+003+custom-key-has-many.patch'],
       buildQueryUniqueKeys: [],
-      setDefaultIdType: ['loopback-datasource-juggler+*+003+set-use-default-id-type.patch'],
+      setDefaultIdType: ['loopback-datasource-juggler+*+002+set-use-default-id-type.patch'],
+      enableCacheForRestCrud: ['@loopback+rest-crud+*+003+apply-caching.patch'],
     };
-    let connectorName = '';
     const pkgPath = './package.json';
     const pkg = JSON.parse(await fs.readFile(pkgPath, 'utf8'));
     let mysqlConnectorInstalled = false;
@@ -91,36 +92,18 @@ export default class Patch extends Command {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
     const patchDirectoryPath = path.join(__dirname, '../../patches');
-    const invokedFrom = process.cwd();
     const patchesToCopy: string[] = [];
-    let authPatchesExists = false;
-    const patchDir = `${invokedFrom}/patches`;
-    if (existsSync(patchDir)) {
-      const existingPatches = readdirSync(patchDir);
-      existingPatches.forEach(existingPatch => {
-        if (existingPatch.includes('auth')) { authPatchesExists = true; }
-      });
-    }
 
-    let groupByPatchesExists = false;
-    if (existsSync(patchDir)) {
-      const existingPatches = readdirSync(patchDir);
-      existingPatches.forEach(existingPatch => {
-        if (existingPatch.includes('groupby')) { groupByPatchesExists = true; }
-      });
-    }
     //default patches if no openapi patches are to be applied
     if (patches && !patches.includes('openapi')) {
       if (!patches.includes('openAPISpecsExtensions')) patches.push('openAPISpecsExtensions');
       if (!patches.includes('hiddenProperties')) patches.push('hiddenProperties');
       if (!patches.includes('virtualAsGenerated')) patches.push('virtualAsGenerated');
       if (!patches.includes('setDefaultIdType')) patches.push('setDefaultIdType');
-      if (patches.includes('groupBy') || groupByPatchesExists) {
-        PatchPaths['referencesManyFilters'].push('loopback-connector+*+002+refmany-filters.patch');
-      } else {
-        PatchPaths['referencesManyFilters'].push('loopback-connector+*+001+refmany-filters.patch');
-      }
+      if (!patches.includes('referencesManyFilters')) patches.push('referencesManyFilters');
+      if (!patches.includes('enableCacheForRestCrud')) patches.push('enableCacheForRestCrud');
     }
+
     if (
       patches &&
       patches.includes('auth') &&
@@ -135,94 +118,23 @@ export default class Patch extends Command {
     ) {
       patches.push('auth');
     }
+    if (patches.includes('authorization')) {
+      patches.push('supportRestrictedProperties');
+    }
+    const patchesList = Object.keys(PatchPaths);
 
-    if ((patches && patches.includes('auth')) || authPatchesExists) {
-      PatchPaths['referencesManyFilters'].push('@loopback+rest-crud+*+004+refmany-filters.patch');
+    for (let index = 0; index < patchesList.length; index++) {
+      const patchName = patchesList[index];
+      console.log(patchName, patches && patches.includes(patchName));
+      if (patches && patches.includes(patchName)) {
+        //groupBy patch is only applied for non-openapi based apps
+        if (patchName === 'groupBy' && patches.includes('openapi')) break;
+        (PatchPaths as any)[patchName].forEach((patch: string) => {
+          const patchFileName = findVersionedFile(patch, patchDirectoryPath);
+          patchesToCopy.push(patchFileName);
+        });
+      }
     }
-    else {
-      PatchPaths['referencesManyFilters'].push('@loopback+rest-crud+*+002+refmany-filters.patch');
-    }
-
-    if (patches && patches.includes('openapi')) {
-      PatchPaths.openapi.forEach(patch => {
-        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
-        patchesToCopy.push(patchFileName);
-      });
-    }
-    if (patches && patches.includes('openAPISpecsExtensions')) {
-      PatchPaths.openAPISpecsExtensions.forEach(patch => {
-        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
-        patchesToCopy.push(patchFileName);
-      });
-    }
-    if (patches && patches.includes('hiddenProperties')) {
-      PatchPaths.hiddenProperties.forEach(patch => {
-        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
-        patchesToCopy.push(patchFileName);
-      });
-    }
-    if (patches &&
-      patches.includes('groupBy') &&
-      !patches.includes('openapi')
-    ) {
-      PatchPaths.groupBy.forEach(patch => {
-        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
-        patchesToCopy.push(patchFileName);
-      });
-    }
-    if (patches && patches.includes('auditLogs')) {
-      PatchPaths.auditLogs.forEach(patch => {
-        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
-        patchesToCopy.push(patchFileName);
-      });
-    }
-    if (patches && patches.includes('auth')) {
-      PatchPaths.auth.forEach(patch => {
-        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
-        patchesToCopy.push(patchFileName);
-      });
-    }
-    if (patches && patches.includes('virtualAsGenerated')) {
-      PatchPaths.virtualAsGenerated.forEach(patch => {
-        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
-        patchesToCopy.push(patchFileName);
-      });
-    }
-    if (patches && patches.includes('authorization')) {
-      PatchPaths.authorization.forEach(patch => {
-        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
-        patchesToCopy.push(patchFileName);
-      });
-      PatchPaths.supportRestrictedProperties.forEach(patch => {
-        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
-        patchesToCopy.push(patchFileName);
-      });
-    }
-    if (patches && patches.includes('referencesManyFilters')) {
-      PatchPaths.referencesManyFilters.forEach(patch => {
-        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
-        patchesToCopy.push(patchFileName);
-      });
-    }
-    if (patches && patches.includes('customKeyHasMany')) {
-      PatchPaths.customKeyHasMany.forEach(patch => {
-        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
-        patchesToCopy.push(patchFileName);
-      });
-    }
-    if (patches && patches.includes('buildQueryUniqueKeys')) {
-      PatchPaths.buildQueryUniqueKeys.forEach(patch => {
-        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
-        patchesToCopy.push(patchFileName);
-      });
-    }
-    if (patches && patches.includes('setDefaultIdType')) {
-      PatchPaths.setDefaultIdType.forEach(patch => {
-        const patchFileName = findVersionedFile(patch, patchDirectoryPath);
-        patchesToCopy.push(patchFileName);
-      });
-    }
-
     copyFiles(patchDirectoryPath, './patches', patchesToCopy);
 
     await execute('npx patch-package');

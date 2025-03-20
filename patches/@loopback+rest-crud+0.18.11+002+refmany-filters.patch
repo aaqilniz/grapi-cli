@@ -1,5 +1,5 @@
 diff --git a/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js b/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
-index 0393439..1404b28 100644
+index 78a9090..79af56a 100644
 --- a/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
 +++ b/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
 @@ -45,13 +45,13 @@ function defineCrudRestController(modelCtor, options) {
@@ -18,7 +18,7 @@ index 0393439..1404b28 100644
          }
      };
      tslib_1.__decorate([
-@@ -105,7 +105,7 @@ function defineCrudRestController(modelCtor, options) {
+@@ -107,7 +107,7 @@ function defineCrudRestController(modelCtor, options) {
              return this.repository.updateAll(
              // FIXME(bajtos) Improve repository API to support this use case
              // with no explicit type-casts required
