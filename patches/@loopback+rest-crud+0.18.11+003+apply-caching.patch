@@ -1,12 +1,12 @@
 diff --git a/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js b/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
-index 79af56a..3107668 100644
+index 79af56a..da45f5a 100644
 --- a/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
 +++ b/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
 @@ -55,6 +55,7 @@ function defineCrudRestController(modelCtor, options) {
          }
      };
      tslib_1.__decorate([
-+        cacheMethod(options),
++        cacheMethod(options.cache ? options.cache.get : false , options),
          (0, rest_1.get)('/', {
              ...response.array(200, `Array of ${modelName} instances`, modelCtor, {
                  includeRelations: true,
@@ -14,7 +14,7 @@ index 79af56a..3107668 100644
          tslib_1.__metadata("design:returntype", Promise)
      ], ReadonlyRestControllerImpl.prototype, "find", null);
      tslib_1.__decorate([
-+        cacheMethod(options),
++        cacheMethod(options.cache ? options.cache.getById : false , options),
          (0, rest_1.get)('/{id}', {
              ...response.model(200, `${modelName} instance`, modelCtor, {
                  includeRelations: true,
@@ -22,7 +22,7 @@ index 79af56a..3107668 100644
          tslib_1.__metadata("design:returntype", Promise)
      ], ReadonlyRestControllerImpl.prototype, "findById", null);
      tslib_1.__decorate([
-+        cacheMethod(options),
++        cacheMethod(options.cache ? options.cache.count : false , options),
          (0, rest_1.get)('/count', {
              ...response(200, `${modelName} count`, { schema: repository_1.CountSchema }),
          }),
@@ -30,6 +30,6 @@ index 79af56a..3107668 100644
      }
      response.array = array;
  })(response || (response = {}));
-+function cacheMethod({cache, ds, ttl}) {return cache ? (0, cache)(ds, ttl || 600000) : (target, key, descriptor) => { }}
++function cacheMethod(cache, {cachePackage, ds, ttl}) {return cache ? (0, cachePackage)(ds, ttl || 600000) : (target, key, descriptor) => { }}
  //# sourceMappingURL=crud-rest.controller.js.map
 \ No newline at end of file

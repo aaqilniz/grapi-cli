@@ -173,6 +173,7 @@ export default class Cache extends Command {
     for (let i = 0; i < modelEndpointFiles.length; i++) {
       const filePath = modelEndpointFiles[i];
       const file = project.getSourceFile(filePath);
+      addImport(file, 'cache', '@aaqilniz/rest-cache');
       const variables = file?.getVariableDeclarations() || [];
 
       for (let j = 0; j < variables.length; j++) {
@@ -391,8 +392,9 @@ export default class Cache extends Command {
     dsName: string
   ): void {
     const cacheProperty = initializer?.getProperty('cache');
-    const cacheTTLProperty = initializer?.getProperty('cacheTTL');
-    const dsNameProperty = initializer?.getProperty('dsName');
+    const cacheTTLProperty = initializer?.getProperty('ttl');
+    const dsNameProperty = initializer?.getProperty('ds');
+    const cachePackageProperty = initializer?.getProperty('cachePackage');
 
     if (!cacheProperty) {
       const cacheObject: ObjectLiteralExpression = project.createSourceFile('temp.ts', `const cache = {};`, { overwrite: true })
@@ -404,10 +406,13 @@ export default class Cache extends Command {
       initializer?.addPropertyAssignment({ name: 'cache', initializer: cacheObject.getText() });
     }
     if (!cacheTTLProperty) {
-      initializer?.addPropertyAssignment({ name: 'cacheTTL', initializer: `${cacheTTL || 60 * 1000}` });
+      initializer?.addPropertyAssignment({ name: 'ttl', initializer: `${cacheTTL || 60 * 1000}` });
     }
     if (!dsNameProperty) {
-      initializer?.addPropertyAssignment({ name: 'dsName', initializer: `'${dsName}'` });
+      initializer?.addPropertyAssignment({ name: 'ds', initializer: `'${dsName}'` });
+    }
+    if (!cachePackageProperty) {
+      initializer?.addPropertyAssignment({ name: 'cachePackage', initializer: 'cache' });
     }
   }
 
