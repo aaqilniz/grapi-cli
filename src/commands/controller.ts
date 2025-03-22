@@ -19,11 +19,15 @@ export default class Controller extends Command {
     const parsed = await this.parse(Controller);
     if (!parsed.flags.config) return prompt('controller', parsed.flags);
     let options = processOptions(parsed.flags);
+    const { force } = options;
+    delete options.force;
     let configs = '';
     if (Object.keys(options).length) {
       configs = ` --config='${JSON.stringify(options)}' `;
     }
-    const command = `lb4 controller${configs}--yes`;
+    let argument = '';
+    if (parsed.args.name) { argument = ` ${parsed.args.name}`; }
+    const command = `lb4 controller${argument}${configs}--yes${force ? ' --force' : ''}`;
     const executed: any = await execute(command, 'generating application.');
     if (executed.stderr) console.log(chalk.bold(chalk.green(executed.stderr)));
     if (executed.stdout) console.log(chalk.bold(chalk.green(executed.stdout)));
