@@ -276,3 +276,58 @@ export function findVersionedFile(filePattern: string, directory: string = '.'):
     throw new Error('An unknown error occurred while finding the file');
   }
 }
+
+export async function removeCodeSection(filePath: string, startPattern: string | RegExp, endPattern: string | RegExp, additionalLines = 0) {
+  // Read the file
+  const fileContent = await fsPromises.readFile(filePath, 'utf8');
+
+  // Split content into lines
+  const lines = fileContent.split('\n');
+
+  // Create pattern matcher functions
+  const matchesStartPattern = typeof startPattern === 'string'
+    ? (line: string) => line.includes(startPattern)
+    : (line: string) => startPattern.test(line);
+
+  const matchesEndPattern = typeof endPattern === 'string'
+    ? (line: string) => line.includes(endPattern)
+    : (line: string) => endPattern.test(line);
+
+  // Find start and end line numbers
+  let startLine = -1;
+  let endLine = -1;
+
+  for (let i = 0; i < lines.length; i++) {
+    if (startLine === -1 && matchesStartPattern(lines[i])) {
+      startLine = i + 1; // Convert to 1-based indexing
+    }
+
+    if (startLine !== -1 && endLine === -1 && matchesEndPattern(lines[i])) {
+      endLine = i + 1 + additionalLines; // Convert to 1-based indexing and add additional lines
+      break;
+    }
+  }
+
+  if (startLine === -1 || endLine === -1) {
+    console.log('Pattern not found in the file.');
+    return;
+  }
+
+  // Make sure endLine doesn't exceed file length
+  endLine = Math.min(endLine, lines.length);
+
+  // Create a new array excluding the specified range
+  const newLines = lines.filter((_, index) => {
+    const lineNumber = index + 1; // Convert to 1-based indexing
+    return lineNumber < startLine || lineNumber > endLine;
+  });
+
+  // Join lines back together
+  const newContent = newLines.join('\n');
+
+  // Write the modified content back to the file
+  fsPromises.writeFile(filePath, newContent);
+
+  const linesRemoved = endLine - startLine + 1;
+  console.log(`Removed ${linesRemoved} lines (${startLine}-${endLine}) from ${filePath}`);
+}

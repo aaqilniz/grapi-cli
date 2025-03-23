@@ -10,15 +10,16 @@ interface PatchPathsType {
   hiddenProperties: string[];
   groupBy: string[];
   auditLogs: string[];
-  auth: string[];
+  security: string[];
+  userNameLogin: string[];
   virtualAsGenerated: string[];
   supportRestrictedProperties: string[];
-  authorization: string[];
   referencesManyFilters: string[];
   customKeyHasMany: string[];
   buildQueryUniqueKeys: string[];
   setDefaultIdType: string[];
   enableCacheForRestCrud: string[];
+  filtersInCount: string[];
 }
 
 export default class Patch extends Command {
@@ -54,22 +55,20 @@ export default class Patch extends Command {
       auditLogs: [
         '@sourceloop+audit-log+*+001+auditlogs.patch'
       ],
-      auth: [
-        '@loopback+rest-crud+*+002+auth.patch',
-        '@loopback+authentication-jwt+*+001+auth.patch'
+      security: [
+        '@loopback+rest-crud+*+005+security.patch'
       ],
-      virtualAsGenerated: [],
+      userNameLogin: ['@loopback+authentication-jwt+*+001+auth.patch'],
       supportRestrictedProperties: [
         '@loopback+authorization+*+001+restricted-properties.patch',
       ],
-      authorization: [
-        '@loopback+rest-crud+*+003+authorization.patch',
-      ],
+      virtualAsGenerated: [],
       referencesManyFilters: ['@loopback+rest-crud+*+002+refmany-filters.patch'],
       customKeyHasMany: ['@loopback+repository+*+003+custom-key-has-many.patch'],
       buildQueryUniqueKeys: [],
       setDefaultIdType: ['loopback-datasource-juggler+*+002+set-use-default-id-type.patch'],
       enableCacheForRestCrud: ['@loopback+rest-crud+*+003+apply-caching.patch'],
+      filtersInCount: ['@loopback+rest-crud+*+004+filters-in-count.patch']
     };
     const pkgPath = './package.json';
     const pkg = JSON.parse(await fs.readFile(pkgPath, 'utf8'));
@@ -94,6 +93,16 @@ export default class Patch extends Command {
     const patchDirectoryPath = path.join(__dirname, '../../patches');
     const patchesToCopy: string[] = [];
 
+    let groupByPatchesExists = false;
+    const invokedFrom = process.cwd();
+    const patchDir = `${invokedFrom}/patches`;
+    if (existsSync(patchDir)) {
+      const existingPatches = readdirSync(patchDir);
+      existingPatches.forEach(existingPatch => {
+        if (existingPatch.includes('groupby')) { groupByPatchesExists = true; }
+      });
+    }
+
     //default patches if no openapi patches are to be applied
     if (patches && !patches.includes('openapi')) {
       if (!patches.includes('openAPISpecsExtensions')) patches.push('openAPISpecsExtensions');
@@ -102,25 +111,23 @@ export default class Patch extends Command {
       if (!patches.includes('setDefaultIdType')) patches.push('setDefaultIdType');
       if (!patches.includes('referencesManyFilters')) patches.push('referencesManyFilters');
       if (!patches.includes('enableCacheForRestCrud')) patches.push('enableCacheForRestCrud');
+      if (!patches.includes('security')) patches.push('security');
+      if (!patches.includes('filtersInCount')) patches.push('filtersInCount');
+      if (patches.includes('groupBy') || groupByPatchesExists) {
+        PatchPaths['referencesManyFilters'].push('loopback-connector+*+002+refmany-filters.patch');
+      } else {
+        PatchPaths['referencesManyFilters'].push('loopback-connector+*+001+refmany-filters.patch');
+      }
     }
 
     if (
       patches &&
-      patches.includes('auth') &&
-      !patches.includes('authorization')
+      (patches.includes('auth') || patches.includes('authorization'))
     ) {
-      patches.push('authorization');
-    }
-    if (
-      patches &&
-      patches.includes('authorization') &&
-      !patches.includes('auth')
-    ) {
-      patches.push('auth');
-    }
-    if (patches.includes('authorization')) {
+      patches.push('userNameLogin');
       patches.push('supportRestrictedProperties');
     }
+
     const patchesList = Object.keys(PatchPaths);
 
     for (let index = 0; index < patchesList.length; index++) {

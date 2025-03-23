@@ -1,6 +1,6 @@
 import { Patch } from '../types/index.js';
 import { existsSync } from 'fs';
-import { applyPatches, getNpmGlobalDir } from '../utils/utils.js';
+import { applyPatches, getNpmGlobalDir, removeCodeSection } from '../utils/utils.js';
 import { applyPrePatches } from './pre-patches.js';
 
 const cliPath = await getNpmGlobalDir();
@@ -483,14 +483,103 @@ if (this.options.controllerType === 'REST') { this.artifactInfo.controllerType =
             path: `${cliPath}/generators/relation/belongs-to-relation.generator.js`
         }
     },
+    enableRelationsWhileDiscovery: {
+        declareRelationVariable: {
+            searchString: 'this.artifactInfo.indexesToBeUpdated =',
+            replacement: `    const relations = []; const repositoryConfigs = { datasource: '', repositories: new Set(), repositoryBaseClass: 'DefaultCrudRepository' };\nthis.artifactInfo.indexesToBeUpdated =`,
+            path: `${cliPath}/generators/discover/index.js`
+        },
+        constructConfigs: {
+            searchString: 'if (targetModel) {',
+            replacement: `if (targetModel) {
+                const configs = {};
+                configs['sourceModel'] = templateData.name;
+                configs['destinationModel'] = targetModel.name;
+                configs['foreignKeyName'] = relation.foreignKey;
+                configs['relationType'] = relation.type;
+                configs['registerInclusionResolver'] = true;
+                configs['yes'] = true;
+                relations.push(configs);
+                repositoryConfigs['datasource'] = this.options.datasource || this.options.dataSource;
+                repositoryConfigs.repositories.add(templateData.name);
+                repositoryConfigs.repositories.add(targetModel.name);`,
+            path: `${cliPath}/generators/discover/index.js`
+        },
+        assignConfigsToArtifactInfo: {
+            searchString: `this.artifactInfo.type = 'Models';`,
+            replacement: `this.artifactInfo.relationConfigs = relations; this.artifactInfo.repositoryConfigs = repositoryConfigs;this.artifactInfo.type = 'Models';`,
+            path: `${cliPath}/generators/discover/index.js`
+        },
+        executeRepoAndRelationGenerator: {
+            searchString: `// User Output`,
+            replacement: `
+                if (
+                this.artifactInfo.repositoryConfigs &&
+                this.artifactInfo.repositoryConfigs.repositories.size
+                ) {
+                    const { repositories, datasource, repositoryBaseClass } = this.artifactInfo.repositoryConfigs;
+                    for (let index = 0; index < [...repositories].length; index++) {
+                        const model = [...repositories][index];
+                        const config = { repositoryBaseClass, datasource, model, name: model }
+                        try {
+                            const { execSync } = require('child_process');
+                            const cmd = "lb4 repository --config='" + JSON.stringify(config) + "' --yes";
+                            execSync(cmd, {
+                                cwd: process.cwd(),
+                                stdio: ['ignore', 'pipe', 'pipe'],
+                                encoding: 'utf8'
+                            });
+                        } catch (error) {
+                        console.log(error);
+                    }
+                }
+                } else {
+                    debug('No repository configurations found, skipping repository generation');
+                }
+                if (
+                    this.artifactInfo.relationConfigs &&
+                    this.artifactInfo.relationConfigs.length
+                ) {
+                    for (const configs of this.artifactInfo.relationConfigs) {
+                    try {
+                        const { execSync } = require('child_process');
+                        const cmd = "lb4 relation --config='" + JSON.stringify(configs) + "' --yes";
+                        execSync(cmd, {
+                            cwd: process.cwd(),
+                            stdio: ['ignore', 'pipe', 'pipe'],
+                            encoding: 'utf8'
+                        });
+                    } catch (error) {
+                        console.log(error);
+                    }
+                    }
+                } else {
+                    debug('No relation configurations found, skipping relation generation');
+                }
+            `,
+            path: `${cliPath}/lib/artifact-generator.js`
+        },
+    }
 };
 
 (async () => {
     applyPatches(patches);
     applyPrePatches();
+    await removeCodeSection(
+        `${cliPath}/generators/discover/index.js`,
+        'Object.assign(templateData.properties[relation.foreignKey], {',
+        'foreignKey: relation.foreignKey,',
+        1
+    );
 })();
 
 export const globalPatches = async () => {
     applyPatches(patches);
     applyPrePatches();
+    await removeCodeSection(
+        `${cliPath}/generators/discover/index.js`,
+        'Object.assign(templateData.properties[relation.foreignKey], {',
+        'foreignKey: relation.foreignKey,',
+        1
+    );
 }

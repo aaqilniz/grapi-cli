@@ -1,83 +1,93 @@
 diff --git a/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js b/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
-index 2407556..2cc4db8 100644
+index eda2766..30b5ccc 100644
 --- a/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
 +++ b/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
-@@ -9,6 +9,7 @@ const tslib_1 = require("tslib");
+@@ -9,6 +9,8 @@ const tslib_1 = require("tslib");
  const repository_1 = require("@loopback/repository");
  const rest_1 = require("@loopback/rest");
  const assert_1 = tslib_1.__importDefault(require("assert"));
 +const authentication_1 = require("@loopback/authentication");
++const authorization_1 = require("@loopback/authorization");
  /**
   * Create (define) a CRUD Controller class for the given model.
   *
-@@ -56,6 +57,7 @@ function defineCrudRestController(modelCtor, options) {
+@@ -56,6 +58,8 @@ function defineCrudRestController(modelCtor, options) {
      };
      tslib_1.__decorate([
-         cacheMethod(options),
+         cacheMethod(options.cache ? options.cache.get : false , options),
 +        authenticatedMethod(options.auth ? options.auth.get : false),
++        authorizationMethod(options.authorization, options.basePath, 'view-all'),
          (0, rest_1.get)('/', {
              ...response.array(200, `Array of ${modelName} instances`, modelCtor, {
                  includeRelations: true,
-@@ -69,6 +71,7 @@ function defineCrudRestController(modelCtor, options) {
+@@ -69,6 +73,8 @@ function defineCrudRestController(modelCtor, options) {
      ], ReadonlyRestControllerImpl.prototype, "find", null);
      tslib_1.__decorate([
-         cacheMethod(options),
+         cacheMethod(options.cache ? options.cache.getById : false , options),
 +        authenticatedMethod(options.auth ? options.auth.getById : false),
++        authorizationMethod(options.authorization, options.basePath, 'view-single'),
          (0, rest_1.get)('/{id}', {
              ...response.model(200, `${modelName} instance`, modelCtor, {
                  includeRelations: true,
-@@ -83,6 +86,7 @@ function defineCrudRestController(modelCtor, options) {
+@@ -83,6 +89,8 @@ function defineCrudRestController(modelCtor, options) {
      ], ReadonlyRestControllerImpl.prototype, "findById", null);
      tslib_1.__decorate([
-         cacheMethod(options),
+         cacheMethod(options.cache ? options.cache.count : false , options),
 +        authenticatedMethod(options.auth ? options.auth.count : false),
++        authorizationMethod(options.authorization, options.basePath, 'view-count'),
          (0, rest_1.get)('/count', {
              ...response(200, `${modelName} count`, { schema: repository_1.CountSchema }),
          }),
-@@ -126,6 +130,7 @@ function defineCrudRestController(modelCtor, options) {
+@@ -136,6 +144,8 @@ function defineCrudRestController(modelCtor, options) {
          }
      };
      tslib_1.__decorate([
 +        authenticatedMethod(options.auth ? options.auth.post : false),
++        authorizationMethod(options.authorization, options.basePath, 'create'),
          (0, rest_1.post)('/', {
              ...response.model(200, `${modelName} instance created`, modelCtor),
          }),
-@@ -138,6 +143,7 @@ function defineCrudRestController(modelCtor, options) {
+@@ -148,6 +158,8 @@ function defineCrudRestController(modelCtor, options) {
          tslib_1.__metadata("design:returntype", Promise)
      ], CrudRestControllerImpl.prototype, "create", null);
      tslib_1.__decorate([
 +        authenticatedMethod(options.auth ? options.auth.patch : false),
++        authorizationMethod(options.authorization, options.basePath, 'update-all'),
          (0, rest_1.patch)('/', {
              ...response(200, `Count of ${modelName} models updated`, {
                  schema: repository_1.CountSchema,
-@@ -150,6 +156,7 @@ function defineCrudRestController(modelCtor, options) {
+@@ -160,6 +172,8 @@ function defineCrudRestController(modelCtor, options) {
          tslib_1.__metadata("design:returntype", Promise)
      ], CrudRestControllerImpl.prototype, "updateAll", null);
      tslib_1.__decorate([
 +        authenticatedMethod(options.auth ? options.auth.patchById : false),
++        authorizationMethod(options.authorization, options.basePath, 'update-single'),
          (0, rest_1.patch)('/{id}', {
              responses: {
                  '204': { description: `${modelName} was updated` },
-@@ -162,6 +169,7 @@ function defineCrudRestController(modelCtor, options) {
+@@ -172,6 +186,8 @@ function defineCrudRestController(modelCtor, options) {
          tslib_1.__metadata("design:returntype", Promise)
      ], CrudRestControllerImpl.prototype, "updateById", null);
      tslib_1.__decorate([
 +        authenticatedMethod(options.auth ? options.auth.putById : false),
++        authorizationMethod(options.authorization, options.basePath, 'replace-single'),
          (0, rest_1.put)('/{id}', {
              responses: {
                  '204': { description: `${modelName} was updated` },
-@@ -174,6 +182,7 @@ function defineCrudRestController(modelCtor, options) {
+@@ -184,6 +200,8 @@ function defineCrudRestController(modelCtor, options) {
          tslib_1.__metadata("design:returntype", Promise)
      ], CrudRestControllerImpl.prototype, "replaceById", null);
      tslib_1.__decorate([
 +        authenticatedMethod(options.auth ? options.auth.deleteById : false),
++        authorizationMethod(options.authorization, options.basePath, 'delete-single'),
          (0, rest_1.del)('/{id}', {
              responses: {
                  '204': { description: `${modelName} was deleted` },
-@@ -247,4 +256,5 @@ function response(statusCode, description, payload) {
+@@ -257,4 +275,6 @@ function response(statusCode, description, payload) {
      response.array = array;
  })(response || (response = {}));
- function cacheMethod({cache, ds, ttl}) {return cache ? (0, cache)(ds, ttl || 600000) : (target, key, descriptor) => { }}
+ function cacheMethod(cache, {cachePackage, ds, ttl}) {return cache ? (0, cachePackage)(ds, ttl || 600000) : (target, key, descriptor) => { }}
 +function authenticatedMethod(applyAuth) { return applyAuth ? (0, authentication_1.authenticate)('jwt') : (target, key, descriptor) => { }; }
++function authorizationMethod(applyAuthorization, resource, action) {return applyAuthorization ? (0, authorization_1.authorize)({ resource: resource, scopes: [action] }) : (target, key, descriptor) => { };}
  //# sourceMappingURL=crud-rest.controller.js.map
 \ No newline at end of file

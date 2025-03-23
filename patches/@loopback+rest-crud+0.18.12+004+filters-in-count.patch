@@ -1,0 +1,34 @@
+diff --git a/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js b/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
+index da45f5a..eda2766 100644
+--- a/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
++++ b/node_modules/@loopback/rest-crud/dist/crud-rest.controller.js
+@@ -50,8 +50,8 @@ function defineCrudRestController(modelCtor, options) {
+         async findById(id, filter) {
+             return this.repository.findById(id, filter);
+         }
+-        async count(where) {
+-            return this.repository.count(where, options);
++        async count(filter, where) {
++            return this.repository.count(where || filter.where, options);
+         }
+     };
+     tslib_1.__decorate([
+@@ -86,7 +86,17 @@ function defineCrudRestController(modelCtor, options) {
+         (0, rest_1.get)('/count', {
+             ...response(200, `${modelName} count`, { schema: repository_1.CountSchema }),
+         }),
+-        tslib_1.__param(0, rest_1.param.where(modelCtor)),
++        tslib_1.__param(0, rest_1.param.query.object('filter', (0, rest_1.getFilterSchemaFor)(modelCtor, {
++            exclude: [
++                'fields',
++                'order',
++                'limit',
++                'skip',
++                'offset',
++                'include',
++            ]
++        }))),
++        tslib_1.__param(1, rest_1.param.where(modelCtor)),
+         tslib_1.__metadata("design:type", Function),
+         tslib_1.__metadata("design:paramtypes", [Object]),
+         tslib_1.__metadata("design:returntype", Promise)
